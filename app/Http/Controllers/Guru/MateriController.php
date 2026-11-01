@@ -39,10 +39,12 @@ class MateriController extends Controller
                 'regex:/^[a-zA-Z0-9 ]+$/',
                 Rule::unique('materi', 'judul_materi')
                     ->where('kelas', $request->input('kelas'))
-                    ->where('jurusan', $request->input('jurusan')),
+                    ->where('jurusan', $request->input('jurusan'))
+                    ->where('tahun', $request->input('tahun')),
             ],
             'nip' => 'nullable|exists:admin_guru,nip',
             'kelas' => 'required|in:10 1,10 2,11 1,11 2,12 1,12 2',
+            'tahun' => 'required|digits:4|integer|min:2020|max:2099',
             'jurusan' => 'required|in:Teknik Alat Berat,Teknik Kendaraan Ringan,Teknik Sepeda Motor,Teknik Pemesinan,Teknik Instalasi Listrik,Teknik Pembangkit Listrik,Teknik Mekatronika,Teknik Audio Video,Teknik Komputer & Jaringan,Teknik Konstruksi & Perumahan,Desain Permodelan & Informasi Bangunan,Desain Komunikasi Visual',
             'isi_materi' => 'nullable|string',
             'upload_file' => 'required|mimes:pdf,pptx,ppt,doc,docx|max:25600',
@@ -55,6 +57,11 @@ class MateriController extends Controller
             'upload_file.required' => 'File modul materi wajib diupload.',
             'upload_file.mimes' => 'Format file harus PDF, PPT, PPTX, DOC, atau DOCX.',
             'upload_file.max' => 'Ukuran file tidak boleh lebih dari 25 MB.',
+            'tahun.required' => 'Tahun wajib diisi.',
+            'tahun.digits' => 'Tahun harus berupa 4 digit angka.',
+            'tahun.integer' => 'Tahun harus berupa angka.',
+            'tahun.min' => 'Tahun minimal 2020.',
+            'tahun.max' => 'Tahun maksimal 2099.',
         ]);
 
         $filePath = null;
@@ -68,6 +75,7 @@ class MateriController extends Controller
             'judul_materi' => $request->judul_materi,
             'nip' => $nip,
             'kelas' => $request->kelas,
+            'tahun' => $request->tahun,
             'jurusan' => $request->jurusan,
             'isi_materi' => $request->isi_materi ?? '',
             'upload_file' => $filePath,
@@ -112,10 +120,12 @@ class MateriController extends Controller
                 Rule::unique('materi', 'judul_materi')
                     ->ignore($materi->id_materi, 'id_materi')
                     ->where('kelas', $request->input('kelas'))
-                    ->where('jurusan', $request->input('jurusan')),
+                    ->where('jurusan', $request->input('jurusan'))
+                    ->where('tahun', $request->input('tahun')),
             ],
             'nip' => 'nullable|exists:admin_guru,nip',
             'kelas' => 'required|in:10 1,10 2,11 1,11 2,12 1,12 2',
+            'tahun' => 'required|digits:4|integer|min:2020|max:2099',
             'jurusan' => 'required|in:Teknik Alat Berat,Teknik Kendaraan Ringan,Teknik Sepeda Motor,Teknik Pemesinan,Teknik Instalasi Listrik,Teknik Pembangkit Listrik,Teknik Mekatronika,Teknik Audio Video,Teknik Komputer & Jaringan,Teknik Konstruksi & Perumahan,Desain Permodelan & Informasi Bangunan,Desain Komunikasi Visual',
             'isi_materi' => 'nullable|string',
             'upload_file' => 'nullable|mimes:pdf,pptx,ppt,doc,docx|max:25600',
@@ -125,12 +135,18 @@ class MateriController extends Controller
             'judul_materi.unique' => 'Judul materi sudah ada untuk kelas dan jurusan yang sama.',
             'kelas.required' => 'Kelas wajib dipilih.',
             'jurusan.required' => 'Jurusan wajib dipilih.',
+            'tahun.required' => 'Tahun wajib diisi.',
+            'tahun.digits' => 'Tahun harus berupa 4 digit angka.',
+            'tahun.integer' => 'Tahun harus berupa angka.',
+            'tahun.min' => 'Tahun minimal 2020.',
+            'tahun.max' => 'Tahun maksimal 2099.',
         ]);
 
         $data = [
             'judul_materi' => $request->judul_materi,
             'nip' => $request->input('nip') ?: $materi->nip,
             'kelas' => $request->kelas,
+            'tahun' => $request->tahun,
             'jurusan' => $request->jurusan,
             'isi_materi' => $request->isi_materi ?? '',
         ];

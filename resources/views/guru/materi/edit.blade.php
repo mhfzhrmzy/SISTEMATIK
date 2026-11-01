@@ -37,12 +37,28 @@
             </div>
 
             <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Tahun Ajaran <span class="text-red-500">*</span></label>
+                <input type="text"
+                       name="tahun"
+                       id="tahun"
+                       value="{{ old('tahun', $materi->tahun) }}"
+                       placeholder="Contoh: 2025"
+                       minlength="4"
+                       maxlength="4"
+                       class="w-full border rounded px-3 py-2 text-gray-700 {{ $errors->has('tahun') ? 'border-red-400 bg-red-50' : 'border-gray-300' }}"
+                       required>
+                @error('tahun')
+                    <p class="text-red-600 text-xs mt-1 font-medium">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">Kelas <span class="text-red-500">*</span></label>
                 <select name="kelas" id="kelas" class="w-full border rounded px-3 py-2 text-gray-700 {{ $errors->has('kelas') ? 'border-red-400 bg-red-50' : 'border-gray-300' }}" required>
                     <option value="">-- Pilih Kelas --</option>
-                    @foreach(['10', '11', '12'] as $k)
+                    @foreach(['10 1', '10 2', '11 1', '11 2', '12 1', '12 2'] as $k)
                         <option value="{{ $k }}" {{ old('kelas', $materi->kelas) == $k ? 'selected' : '' }}>
-                            Kelas {{ $k }}
+                            Kelas {{ str_replace(' ', '.', $k) }}
                         </option>
                     @endforeach
                 </select>

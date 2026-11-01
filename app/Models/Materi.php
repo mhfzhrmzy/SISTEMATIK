@@ -10,7 +10,7 @@ class Materi extends Model
 
     protected $primaryKey = 'id_materi';
 
-    protected $fillable = ['nip', 'kelas', 'jurusan', 'judul_materi', 'isi_materi', 'upload_file'];
+    protected $fillable = ['nip', 'kelas', 'tahun', 'jurusan', 'judul_materi', 'isi_materi', 'upload_file'];
 
     public function adminGuru()
     {

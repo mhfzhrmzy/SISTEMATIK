@@ -22,6 +22,7 @@ class MateriSiswaController extends Controller
         $materis = Materi::with(['adminGuru', 'quiz'])
             ->where('kelas', $siswa->kelas)
             ->where('jurusan', $siswa->jurusan)
+            ->where('tahun', $siswa->tahun)
             ->latest()
             ->get();
 
@@ -127,7 +128,7 @@ class MateriSiswaController extends Controller
     {
         $siswa = auth('siswa')->user();
 
-        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan) {
+        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan || $materi->tahun !== $siswa->tahun) {
             return redirect()
                 ->route('portal.materi.index')
                 ->with('error', 'Kamu tidak memiliki akses ke materi ini.');
@@ -168,7 +169,7 @@ class MateriSiswaController extends Controller
     {
         $siswa = auth('siswa')->user();
 
-        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan) {
+        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan || $materi->tahun !== $siswa->tahun) {
             return redirect()
                 ->route('portal.materi.index')
                 ->with('error', 'Kamu tidak memiliki akses ke materi ini.');
@@ -211,7 +212,7 @@ class MateriSiswaController extends Controller
     {
         $siswa = auth('siswa')->user();
 
-        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan) {
+        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan || $materi->tahun !== $siswa->tahun) {
             return redirect()
                 ->route('portal.materi.index')
                 ->with('error', 'Kamu tidak memiliki akses ke file materi ini.');
