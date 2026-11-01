@@ -5,32 +5,22 @@
 @section('content')
 <div class="space-y-4 sm:space-y-5">
 
-    {{-- 1. Informasi Profil Siswa & Poin (Simetris & Sejajar) --}}
+    {{-- 1. Informasi Profil Siswa --}}
     @php
         $siswaUser = $siswa ?? auth('siswa')->user();
     @endphp
-    <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 pb-3.5 border-b border-gray-200/70">
-        {{-- Data Siswa --}}
-        <div class="flex flex-col justify-center">
-            <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937] tracking-tight leading-tight">
-                {{ $siswaUser->nama_lengkap }}
-            </h1>
+    <div class="pb-3.5 border-b border-gray-200/70">
+        <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937] tracking-tight leading-tight">
+            {{ $siswaUser->nama_lengkap }}
+        </h1>
 
-            <p class="text-xs sm:text-sm font-semibold text-[#7B1038] leading-snug mt-0.5">
-                Kelas {{ $siswaUser->kelas }} • {{ $siswaUser->jurusan }}
-            </p>
+        <p class="text-xs sm:text-sm font-semibold text-[#7B1038] leading-snug mt-0.5">
+            Kelas {{ $siswaUser->kelas }} • {{ $siswaUser->jurusan }}
+        </p>
 
-            <p class="text-[11px] sm:text-xs text-[#6B7280] font-mono leading-none mt-1">
-                NISN: {{ $siswaUser->nisn }}
-            </p>
-        </div>
-
-        {{-- Badge Poin Langsung (x Poin) --}}
-        <div class="bg-white rounded-xl px-4 py-2 shadow-xs border border-gray-100 flex items-center justify-center shrink-0 self-start sm:self-center">
-            <span class="text-sm sm:text-base font-bold text-[#7B1038] tracking-tight leading-none">
-                {{ number_format($siswaUser->poin ?? 0, 0, ',', '.') }} Poin
-            </span>
-        </div>
+        <p class="text-[11px] sm:text-xs text-[#6B7280] font-mono leading-none mt-1">
+            NISN: {{ $siswaUser->nisn }}
+        </p>
     </div>
 
     {{-- 2. Header Bagian & Filter Tab --}}
