@@ -72,18 +72,11 @@
                      data-status="{{ $materi->statusKey }}">
 
                     <div>
-                        {{-- Baris Atas: Kode Modul & Status Badge --}}
-                        <div class="flex items-center justify-between gap-2 mb-3">
+                        {{-- Baris Atas: Kode Modul --}}
+                        <div class="mb-3">
                             <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-100 text-[#5E0C2B] tracking-wide">
                                 {{ $materi->kode_modul }}
                             </span>
-
-                            @if ($materi->statusLabel)
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold {{ $materi->statusBadgeClass }}">
-                                    <span class="w-1.5 h-1.5 rounded-full {{ $materi->statusDotClass }}"></span>
-                                    {{ $materi->statusLabel }}
-                                </span>
-                            @endif
                         </div>
 
                         {{-- Judul Materi --}}

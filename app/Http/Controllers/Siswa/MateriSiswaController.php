@@ -84,27 +84,10 @@ class MateriSiswaController extends Controller
 
             if ($progress === 100) {
                 $statusKey = 'selesai';
-                $statusLabel = 'Selesai';
-                $statusBadgeClass = 'bg-emerald-50 text-emerald-700';
-                $statusDotClass = 'bg-emerald-500';
             } elseif ($progress > 0) {
                 $statusKey = 'sedang-berjalan';
-                $statusLabel = 'Sedang Berjalan';
-                $statusBadgeClass = 'bg-[#E8F8F0] text-[#1F9254]';
-                $statusDotClass = 'bg-[#1F9254]';
             } else {
-                if (! $hasPretest && ! $hasPosttest) {
-                    // Guru mengupload materi saja -> hilangkan indikator belum dimulai
-                    $statusKey = 'semua';
-                    $statusLabel = null;
-                    $statusBadgeClass = null;
-                    $statusDotClass = null;
-                } else {
-                    $statusKey = 'belum-dimulai';
-                    $statusLabel = 'Belum Dimulai';
-                    $statusBadgeClass = 'bg-gray-100 text-[#6B7280]';
-                    $statusDotClass = 'bg-gray-400';
-                }
+                $statusKey = (! $hasPretest && ! $hasPosttest) ? 'semua' : 'belum-dimulai';
             }
 
             $materi->kode_modul = ($siswa->kelas ?? '10').$jurusanClean.'-'.sprintf('%02d', $index + 1);
@@ -120,9 +103,6 @@ class MateriSiswaController extends Controller
             $materi->isMateriSelesai = $isMateriSelesai;
             $materi->progress = $progress;
             $materi->statusKey = $statusKey;
-            $materi->statusLabel = $statusLabel;
-            $materi->statusBadgeClass = $statusBadgeClass;
-            $materi->statusDotClass = $statusDotClass;
         }
 
         $countSemua = $materis->count();
