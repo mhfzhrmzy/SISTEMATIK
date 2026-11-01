@@ -19,6 +19,17 @@
         </a>
     </div>
 
+    @if (session('success'))
+        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- Filter tanggal --}}
+    <div>
+        @include('siswa.sertifikat._filter')
+    </div>
+
     {{-- Grid Kartu Sertifikat --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
         @forelse ($sertifikat as $item)
@@ -41,7 +52,7 @@
                 </div>
                 <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
                     <a href="{{ asset('storage/' . $item->file_sertifikat) }}" target="_blank"
-                       class="font-semibold text-[#7B1038] hover:underline">
+                    class="font-semibold text-[#7B1038] hover:underline">
                         📄 Lihat Berkas
                     </a>
                     @if ($item->tipe_sertifikat === 'mandiri')
@@ -55,7 +66,11 @@
             </div>
         @empty
             <div class="col-span-full bg-gray-50 p-10 text-center text-xs sm:text-sm text-[#6B7280] rounded-2xl">
-                Belum ada sertifikat yang diunggah. Klik tombol <b>+ Upload Sertifikat Baru</b> di atas untuk menambahkan berkas.
+                @if ($filterAktif)
+                    Tidak ada sertifikat pada rentang tanggal ini.
+                @else
+                    Belum ada sertifikat yang diunggah. Klik tombol <b>+ Upload Sertifikat Baru</b> di atas untuk menambahkan berkas.
+                @endif
             </div>
         @endforelse
     </div>

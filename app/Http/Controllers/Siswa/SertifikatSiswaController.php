@@ -7,6 +7,7 @@ use App\Models\Sertifikat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class SertifikatSiswaController extends Controller
 {
@@ -15,14 +16,41 @@ class SertifikatSiswaController extends Controller
         return Auth::guard('siswa')->user()->nisn ?? Auth::user()->nisn;
     }
 
-    public function index()
+        public function index(Request $request)
     {
-        $sertifikat = Sertifikat::where('nisn', $this->currentNisn())
+        $nisn   = $this->currentNisn();
+        $dari   = $this->parseTanggal($request->query('dari'));
+        $sampai = $this->parseTanggal($request->query('sampai'));
+
+        // Kalau tertukar, tukar balik
+        if ($dari && $sampai && $dari->gt($sampai)) {
+            [$dari, $sampai] = [$sampai, $dari];
+        }
+
+        $sertifikat = Sertifikat::where('nisn', $nisn)
+            ->when($dari, fn ($q) => $q->whereDate('tanggal_terbit', '>=', $dari->toDateString()))
+            ->when($sampai, fn ($q) => $q->whereDate('tanggal_terbit', '<=', $sampai->toDateString()))
             ->with(['materi', 'guru'])
+            ->orderByDesc('tanggal_terbit')
             ->latest()
             ->get();
 
-        return view('siswa.sertifikat.index', compact('sertifikat'));
+        $filterAktif = (bool) ($dari || $sampai);
+
+        return view('siswa.sertifikat.index', compact('sertifikat', 'dari', 'sampai', 'filterAktif'));
+    }
+
+    private function parseTanggal(?string $value): ?Carbon
+    {
+        if (!$value) {
+            return null;
+        }
+
+        try {
+            return Carbon::createFromFormat('Y-m-d', $value)->startOfDay();
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     public function create()
