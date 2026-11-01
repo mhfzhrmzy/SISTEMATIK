@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SiswaManajemenController extends Controller
 {
+    /** Daftar kelas yang tersedia di SMK. */
+    private const DAFTAR_KELAS = ['10 1', '10 2', '11 1', '11 2', '12 1', '12 2'];
+
     /** Daftar jurusan yang tersedia di SMK. */
     private const DAFTAR_JURUSAN = [
         'Teknik Alat Berat', 'Teknik Kendaraan Ringan', 'Teknik Sepeda Motor',
@@ -47,7 +50,8 @@ class SiswaManajemenController extends Controller
         $validated = $request->validate([
             'nisn' => ['required', 'digits:10', 'unique:pengguna_siswa,nisn'],
             'nama_lengkap' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s]+$/'],
-            'kelas' => ['required', 'in:10,11,12'],
+            'kelas' => ['required', 'in:'.implode(',', self::DAFTAR_KELAS)],
+            'tahun' => ['required', 'digits:4'],
             'jurusan' => ['required', 'in:'.implode(',', self::DAFTAR_JURUSAN)],
             'password' => ['required', 'string', 'min:6'],
             'foto_profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
@@ -55,6 +59,7 @@ class SiswaManajemenController extends Controller
             'nisn.digits' => 'NISN wajib tepat 10 digit angka.',
             'nama_lengkap.regex' => 'Nama lengkap hanya boleh berisi huruf dan spasi.',
             'kelas.required' => 'Kelas wajib dipilih.',
+            'tahun.required' => 'Tahun wajib diisi.',
             'jurusan.required' => 'Jurusan wajib dipilih.',
             'foto_profile.max' => 'Ukuran foto profil tidak boleh lebih dari 5 MB.',
         ]);
@@ -82,7 +87,8 @@ class SiswaManajemenController extends Controller
         $validated = $request->validate([
             'nisn' => ['required', 'digits:10', Rule::unique('pengguna_siswa', 'nisn')->ignore($siswa->nisn, 'nisn')],
             'nama_lengkap' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s]+$/'],
-            'kelas' => ['required', 'in:10,11,12'],
+            'kelas' => ['required', 'in:'.implode(',', self::DAFTAR_KELAS)],
+            'tahun' => ['required', 'digits:4'],
             'jurusan' => ['required', 'in:'.implode(',', self::DAFTAR_JURUSAN)],
             'password' => ['nullable', 'string', 'min:6'],
             'foto_profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
@@ -90,6 +96,7 @@ class SiswaManajemenController extends Controller
             'nisn.digits' => 'NISN wajib tepat 10 digit angka.',
             'nama_lengkap.regex' => 'Nama lengkap hanya boleh berisi huruf dan spasi.',
             'kelas.required' => 'Kelas wajib dipilih.',
+            'tahun.required' => 'Tahun wajib diisi.',
             'jurusan.required' => 'Jurusan wajib dipilih.',
             'foto_profile.max' => 'Ukuran foto profil tidak boleh lebih dari 5 MB.',
         ]);
@@ -177,12 +184,16 @@ class SiswaManajemenController extends Controller
             $nisn = str_pad($digitsOnly, 10, '0', STR_PAD_LEFT);
             $namaLengkap = trim($row[1] ?? '');
             $kelas = trim($row[2] ?? '');
-            $jurusan = trim($row[3] ?? '');
-            $passwordRaw = trim($row[4] ?? '');
+            $tahun = trim($row[3] ?? '');
+            $jurusan = trim($row[4] ?? '');
+            $passwordRaw = trim($row[5] ?? '');
 
             if (strlen($nisn) === 10 && $namaLengkap !== '') {
-                if (! in_array($kelas, ['10', '11', '12'], true)) {
-                    $kelas = '10';
+                if (! in_array($kelas, self::DAFTAR_KELAS, true)) {
+                    $kelas = '10 1';
+                }
+                if (! preg_match('/^\d{4}$/', $tahun)) {
+                    $tahun = date('Y');
                 }
                 if (! in_array($jurusan, self::DAFTAR_JURUSAN, true)) {
                     $jurusan = 'Teknik Komputer & Jaringan';
@@ -192,7 +203,7 @@ class SiswaManajemenController extends Controller
 
                 PenggunaSiswa::updateOrCreate(
                     ['nisn' => $nisn],
-                    ['nama_lengkap' => $namaLengkap, 'kelas' => $kelas, 'jurusan' => $jurusan, 'password' => $password, 'poin' => 0]
+                    ['nama_lengkap' => $namaLengkap, 'kelas' => $kelas, 'tahun' => $tahun, 'jurusan' => $jurusan, 'password' => $password, 'poin' => 0]
                 );
 
                 $importedCount++;
@@ -220,9 +231,9 @@ class SiswaManajemenController extends Controller
 
         return response()->stream(function () {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['nisn', 'nama_lengkap', 'kelas', 'jurusan', 'password']);
-            fputcsv($handle, ['0051234567', 'Ahmad Subagyo', '10', 'Teknik Komputer & Jaringan', 'password123']);
-            fputcsv($handle, ['0051234568', 'Budi Utomo', '11', 'Desain Komunikasi Visual', 'password123']);
+            fputcsv($handle, ['nisn', 'nama_lengkap', 'kelas', 'tahun', 'jurusan', 'password']);
+            fputcsv($handle, ['0051234567', 'Ahmad Subagyo', '10 1', '2026', 'Teknik Komputer & Jaringan', 'password123']);
+            fputcsv($handle, ['0051234568', 'Budi Utomo', '11 2', '2026', 'Desain Komunikasi Visual', 'password123']);
             fclose($handle);
         }, 200, $headers);
     }

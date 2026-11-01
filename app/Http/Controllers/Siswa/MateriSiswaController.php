@@ -107,7 +107,7 @@ class MateriSiswaController extends Controller
                 }
             }
 
-            $materi->kode_modul = ($siswa->kelas ?? '10').$jurusanClean.'-'.sprintf('%02d', $index + 1);
+            $materi->kode_modul = str_replace(' ', '', $siswa->kelas ?? '10').$jurusanClean.'-'.sprintf('%02d', $index + 1);
             $materi->pretest = $pretest;
             $materi->posttest = $posttest;
             $materi->pretestAttempt = $pretestAttempt;

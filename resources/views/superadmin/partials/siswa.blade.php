@@ -52,10 +52,16 @@
                 <label class="mb-1 block text-xs font-bold text-slate-700">Kelas</label>
                 <select name="kelas" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition bg-white">
                     <option value="" disabled {{ old('kelas') ? '' : 'selected' }}>-- Pilih Kelas --</option>
-                    @foreach (['10', '11', '12'] as $k)
+                    @foreach (['10 1', '10 2', '11 1', '11 2', '12 1', '12 2'] as $k)
                         <option value="{{ $k }}" {{ old('kelas') === $k ? 'selected' : '' }}>Kelas {{ $k }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div>
+                <label class="mb-1 block text-xs font-bold text-slate-700">Tahun</label>
+                <input type="text" name="tahun" value="{{ old('tahun', date('Y')) }}" maxlength="4" inputmode="numeric" pattern="[0-9]*" required
+                       placeholder="Contoh: 2026"
+                       class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition">
             </div>
             <div>
                 <label class="mb-1 block text-xs font-bold text-slate-700">Jurusan</label>
@@ -114,6 +120,7 @@
                         <th class="px-4 py-3">NISN</th>
                         <th class="px-4 py-3">Nama Lengkap</th>
                         <th class="px-4 py-3">Kelas</th>
+                        <th class="px-4 py-3">Tahun</th>
                         <th class="px-4 py-3">Jurusan</th>
                         <th class="px-4 py-3 text-right rounded-r-xl">Aksi</th>
                     </tr>
@@ -135,11 +142,12 @@
                             <td class="px-4 py-3">
                                 <span class="bg-blue-50 text-blue-700 border border-blue-200/60 font-medium px-2.5 py-0.5 rounded-full text-[10px]">Kelas {{ $siswa->kelas }}</span>
                             </td>
+                            <td class="px-4 py-3 font-normal text-slate-600">{{ $siswa->tahun }}</td>
                             <td class="px-4 py-3 font-normal text-slate-600">{{ $siswa->jurusan }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end gap-3">
                                     <button type="button"
-                                            onclick="openEditSiswaModal('{{ $siswa->nisn }}', '{{ addslashes($siswa->nama_lengkap) }}', '{{ $siswa->kelas }}', '{{ addslashes($siswa->jurusan) }}')"
+                                            onclick="openEditSiswaModal('{{ $siswa->nisn }}', '{{ addslashes($siswa->nama_lengkap) }}', '{{ $siswa->kelas }}', '{{ $siswa->tahun }}', '{{ addslashes($siswa->jurusan) }}')"
                                             class="text-amber-600 font-medium hover:underline cursor-pointer">Edit</button>
                                     <form action="{{ route('siswa.destroy', $siswa) }}" method="POST" onsubmit="return confirm('Hapus akun siswa ini?')">
                                         @csrf @method('DELETE')
@@ -151,7 +159,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-8 text-center text-slate-400 font-medium">Belum ada akun siswa registered.</td>
+                            <td colspan="7" class="px-4 py-8 text-center text-slate-400 font-medium">Belum ada akun siswa registered.</td>
                         </tr>
                     @endforelse
                 </tbody>
