@@ -88,9 +88,21 @@
                     {{-- Question number + text --}}
                     <div class="mb-5">
                         <span class="text-xs font-bold text-blue-500 uppercase tracking-widest">Pertanyaan {{ $index + 1 }}</span>
-                        <p class="text-base font-semibold text-gray-800 mt-2 leading-relaxed">
-                            {{ $soal->pertanyaan }}
-                        </p>
+                        <div class="flex items-start gap-2 mt-2">
+                            <p class="text-base font-semibold text-gray-800 leading-relaxed flex-1" id="question-text-{{ $index }}">
+                                {{ $soal->pertanyaan }}
+                            </p>
+                            <button type="button"
+                                    onclick="playTTS(this, '{{ $soal->pertanyaan }}', {{ $index }})"
+                                    class="tts-btn shrink-0 w-8 h-8 rounded-full border border-blue-200 hover:bg-blue-50 text-blue-500 hover:text-blue-700 flex items-center justify-center transition"
+                                    id="tts-btn-{{ $index }}"
+                                    title="Dengarkan soal">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 6v12M8.464 8.464C6.26 10.669 6.26 14.332 8.464 16.536"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 12a7 7 0 01-7 7m0-14a7 7 0 017 7"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     {{-- Answer choices --}}
@@ -167,6 +179,107 @@ const totalSoal = slides.length;
 let absoluteTimerInterval = null;
 let absoluteSecondsLeft = null;
 let quizLocked = false;
+
+const ttsCache = new Map();
+let currentAudio = null;
+let currentTtsBtn = null;
+
+function playTTS(btn, text, index) {
+    if (currentAudio && currentTtsBtn && currentTtsBtn !== btn) {
+        currentAudio.pause();
+        currentAudio = null;
+        if (currentTtsBtn) {
+            currentTtsBtn.classList.remove('bg-blue-100', 'border-blue-400');
+            currentTtsBtn.disabled = false;
+            currentTtsBtn.innerHTML = _ttsIconPlay();
+        }
+    }
+
+    if (currentAudio && currentTtsBtn === btn) {
+        currentAudio.pause();
+        currentAudio = null;
+        currentTtsBtn = null;
+        btn.disabled = false;
+        btn.classList.remove('bg-blue-100', 'border-blue-400');
+        btn.innerHTML = _ttsIconPlay();
+        return;
+    }
+
+    if (ttsCache.has(index)) {
+        const audio = new Audio(ttsCache.get(index));
+        currentAudio = audio;
+        currentTtsBtn = btn;
+        btn.disabled = true;
+        btn.classList.add('bg-blue-100', 'border-blue-400');
+        btn.innerHTML = _ttsIconPause();
+        audio.play();
+        audio.addEventListener('ended', () => {
+            if (currentAudio === audio) {
+                currentAudio = null;
+                if (currentTtsBtn === btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('bg-blue-100', 'border-blue-400');
+                    btn.innerHTML = _ttsIconPlay();
+                }
+                currentTtsBtn = null;
+            }
+        });
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = _ttsIconLoading();
+
+    fetch('{{ url("api/tts") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({text: text})
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.blob();
+    })
+    .then(blob => {
+        if (blob.size === 0) throw new Error('Audio kosong');
+        const url = URL.createObjectURL(blob);
+        ttsCache.set(index, url);
+        const audio = new Audio(url);
+        currentAudio = audio;
+        currentTtsBtn = btn;
+        btn.innerHTML = _ttsIconPause();
+        btn.classList.add('bg-blue-100', 'border-blue-400');
+        audio.play();
+        audio.addEventListener('ended', () => {
+            if (currentAudio === audio) {
+                currentAudio = null;
+                if (currentTtsBtn === btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('bg-blue-100', 'border-blue-400');
+                    btn.innerHTML = _ttsIconPlay();
+                }
+                currentTtsBtn = null;
+            }
+        });
+    })
+    .catch(err => {
+        console.error('[TTS]', err);
+        alert('Gagal memuat audio: ' + err.message);
+        btn.disabled = false;
+        btn.classList.remove('bg-blue-100', 'border-blue-400');
+        btn.innerHTML = _ttsIconPlay();
+        currentTtsBtn = null;
+    });
+}
+
+function _ttsIconPlay() {
+    return `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 6v12M8.464 8.464C6.26 10.669 6.26 14.332 8.464 16.536"/><path stroke-linecap="round" stroke-linejoin="round" d="M19 12a7 7 0 01-7 7m0-14a7 7 0 017 7"/></svg>`;
+}
+function _ttsIconPause() {
+    return `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+}
+function _ttsIconLoading() {
+    return `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>`;
+}
 
 // Inisialisasi timer absolut dari data-sisa-detik (server-derived)
 const absoluteTimerBox = document.getElementById('absolute-timer-box');

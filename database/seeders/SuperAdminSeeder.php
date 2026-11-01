@@ -12,7 +12,7 @@ class SuperAdminSeeder extends Seeder
     {
         SuperAdmin::create([
             'nip' => '123456789012345678',
-            'nama_lengkap' => 'Super Administrator',
+            'nama_lengkap' => 'SuperAdministrator',
             'password' => Hash::make('password123'),
         ]);
     }

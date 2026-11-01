@@ -35,8 +35,9 @@ return [
         ],
     ],
 
-    'google_tts' => [
-        'key' => env('GOOGLE_TTS_API_KEY'),
+    'elevenlabs' => [
+        'key' => env('ELEVENLABS_API_KEY'),
+        'voice_id' => env('ELEVENLABS_VOICE_ID', 'pNInz6obpgDQGcFmaJgB'),
     ],
 
 ];
