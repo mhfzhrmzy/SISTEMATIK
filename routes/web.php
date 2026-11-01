@@ -12,6 +12,7 @@ use App\Http\Controllers\Siswa\MateriSiswaController;
 use App\Http\Controllers\Siswa\ProfilSiswaController;
 use App\Http\Controllers\Siswa\QuizSiswaController;
 use App\Http\Controllers\Siswa\SertifikatSiswaController;
+use App\Http\Controllers\TtsController;
 use App\Http\Controllers\Superadmin\GuruManajemenController;
 use App\Http\Controllers\Superadmin\SiswaManajemenController;
 use App\Http\Controllers\Superadmin\SuperadminController;
@@ -154,4 +155,7 @@ Route::middleware('role:siswa')->group(function () {
         Route::post('/sertifikat', 'store')->name('sertifikat.store');
         Route::delete('/sertifikat/{sertifikat}', 'destroy')->name('sertifikat.destroy');
     });
+
+    // TTS
+    Route::get('/test-audio', [App\Http\Controllers\TtsController::class, 'testTts']);
 });

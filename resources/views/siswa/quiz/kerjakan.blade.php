@@ -93,14 +93,26 @@
                 <div class="soal-slide bg-white rounded-2xl shadow-xs p-6 sm:p-7 {{ $index > 0 ? 'hidden' : '' }}"
                      data-index="{{ $index }}">
 
-                    {{-- Question number + text --}}
+                    {{-- Question number + text + tombol TTS --}}
                     <div class="mb-5">
                         <span class="text-xs font-bold text-[#7B1038] uppercase tracking-wider">
                             Pertanyaan {{ $index + 1 }} dari {{ $quiz->soal->count() }}
                         </span>
-                        <p class="text-base sm:text-lg font-semibold text-[#1F2937] mt-2 leading-relaxed">
-                            {{ $soal->pertanyaan }}
-                        </p>
+                        <div class="flex items-start gap-2 mt-2">
+                            <p class="text-base sm:text-lg font-semibold text-[#1F2937] leading-relaxed flex-1" id="question-text-{{ $index }}">
+                                {{ $soal->pertanyaan }}
+                            </p>
+                            <button type="button"
+                                    onclick="playTTS(this, @js($soal->pertanyaan), {{ $index }})"
+                                    class="tts-btn shrink-0 w-8 h-8 rounded-full border border-[#7B1038]/30 hover:bg-[#7B1038]/10 text-[#7B1038] flex items-center justify-center transition"
+                                    id="tts-btn-{{ $index }}"
+                                    title="Dengarkan soal">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 6v12M8.464 8.464C6.26 10.669 6.26 14.332 8.464 16.536"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 12a7 7 0 01-7 7m0-14a7 7 0 017 7"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     {{-- Answer choices --}}
@@ -176,6 +188,97 @@ let absoluteTimerInterval = null;
 let absoluteSecondsLeft = null;
 let quizLocked = false;
 
+// ===== TTS =====
+const ttsCache = new Map();
+let currentAudio = null;
+let currentTtsBtn = null;
+const TTS_ACTIVE_CLASSES = ['bg-[#7B1038]/10', 'border-[#7B1038]'];
+
+function resetTtsBtn(btn) {
+    if (!btn) return;
+    btn.disabled = false;
+    btn.classList.remove(...TTS_ACTIVE_CLASSES);
+    btn.innerHTML = _ttsIconPlay();
+}
+
+function startAudio(btn, url) {
+    const audio = new Audio(url);
+    currentAudio = audio;
+    currentTtsBtn = btn;
+    btn.disabled = false;
+    btn.classList.add(...TTS_ACTIVE_CLASSES);
+    btn.innerHTML = _ttsIconPause();
+    audio.play();
+    audio.addEventListener('ended', () => {
+        if (currentAudio === audio) {
+            currentAudio = null;
+            currentTtsBtn = null;
+        }
+        resetTtsBtn(btn);
+    });
+}
+
+function playTTS(btn, text, index) {
+    // Klik tombol yang sedang diputar = stop
+    if (currentAudio && currentTtsBtn === btn) {
+        currentAudio.pause();
+        currentAudio = null;
+        currentTtsBtn = null;
+        resetTtsBtn(btn);
+        return;
+    }
+
+    // Klik tombol lain = hentikan audio sebelumnya
+    if (currentAudio && currentTtsBtn && currentTtsBtn !== btn) {
+        currentAudio.pause();
+        resetTtsBtn(currentTtsBtn);
+        currentAudio = null;
+        currentTtsBtn = null;
+    }
+
+    // Pakai cache kalau sudah pernah dimuat
+    if (ttsCache.has(index)) {
+        startAudio(btn, ttsCache.get(index));
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = _ttsIconLoading();
+
+    fetch('{{ url("api/tts") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({text: text})
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.blob();
+    })
+    .then(blob => {
+        if (blob.size === 0) throw new Error('Audio kosong');
+        const url = URL.createObjectURL(blob);
+        ttsCache.set(index, url);
+        startAudio(btn, url);
+    })
+    .catch(err => {
+        console.error('[TTS]', err);
+        alert('Gagal memuat audio: ' + err.message);
+        resetTtsBtn(btn);
+        currentTtsBtn = null;
+    });
+}
+
+function _ttsIconPlay() {
+    return `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 6v12M8.464 8.464C6.26 10.669 6.26 14.332 8.464 16.536"/><path stroke-linecap="round" stroke-linejoin="round" d="M19 12a7 7 0 01-7 7m0-14a7 7 0 017 7"/></svg>`;
+}
+function _ttsIconPause() {
+    return `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+}
+function _ttsIconLoading() {
+    return `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>`;
+}
+
+// ===== Timer =====
 // Inisialisasi timer absolut dari data-sisa-detik (server-derived)
 const absoluteTimerBox = document.getElementById('absolute-timer-box');
 if (absoluteTimerBox) {
@@ -208,6 +311,9 @@ document.querySelectorAll('.answer-label').forEach(label => {
 function lockQuizAndSubmit() {
     if (quizLocked) return;
     quizLocked = true;
+
+    // Hentikan audio TTS kalau masih jalan
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
 
     // Kunci semua input
     document.querySelectorAll('.answer-radio').forEach(r => r.disabled = true);
@@ -269,7 +375,16 @@ function updateAbsoluteDisplay() {
     }
 }
 
+// ===== Navigasi soal =====
 function showSlide(index) {
+    // Hentikan audio saat pindah soal
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+        resetTtsBtn(currentTtsBtn);
+        currentTtsBtn = null;
+    }
+
     slides.forEach((s, idx) => {
         s.classList.toggle('hidden', idx !== index);
     });

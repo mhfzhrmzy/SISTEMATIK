@@ -10,69 +10,72 @@ use Illuminate\Support\Facades\Storage;
 
 class TtsController extends Controller
 {
-    public function synthesize(Request $request): JsonResponse
+    public function synthesize(Request $request)
     {
         $validated = $request->validate([
             'text' => ['required', 'string', 'max:2000'],
-            'lang' => ['nullable', 'string'],
-            'voice' => ['nullable', 'string'],
         ]);
 
         $text = $validated['text'];
-        $lang = $validated['lang'] ?? 'id-ID';
-        $voice = $validated['voice'] ?? 'id-ID';
+        $apiKey = env('ELEVENLABS_API_KEY');
+        $voiceId = env('ELEVENLABS_VOICE_ID', 'pNInz6obpgDQGcFmaJgB');
 
-        $cacheKey = 'tts/'.md5($text.$lang.$voice).'.mp3';
+        $cacheKey = 'tts/'.md5($text.$voiceId).'.mp3';
 
+        // Jika cache audio sudah ada di storage lokal, langsung kembalikan filenya
         if (Storage::disk('public')->exists($cacheKey)) {
             return response()->file(Storage::disk('public')->path($cacheKey), [
                 'Content-Type' => 'audio/mpeg',
             ]);
         }
 
-        $apiKey = config('services.google_tts.key');
-
         if (! $apiKey) {
             return response()->json([
-                'message' => 'Google TTS API key tidak dikonfigurasi.',
+                'message' => 'ElevenLabs API key tidak dikonfigurasi di file .env.',
             ], 500);
         }
 
         try {
-            $response = Http::withHeaders([
-                'x-goog-api-key' => $apiKey,
-            ])->post('https://texttospeech.googleapis.com/v1/text:synthesize', [
-                'input' => ['text' => $text],
-                'voice' => ['languageCode' => $lang, 'name' => $voice],
-                'audioConfig' => ['audioEncoding' => 'MP3', 'speakingRate' => 1.0],
-            ]);
+            // Ditambahkan ->withoutVerifying() agar aman dari pemblokiran SSL di localhost
+            $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'xi-api-key' => $apiKey,
+                    'Content-Type' => 'application/json',
+                ])->post("https://api.elevenlabs.io/v1/text-to-speech/{$voiceId}", [
+                    'text' => $text,
+                    'model_id' => 'eleven_multilingual_v2',
+                    'voice_settings' => [
+                        'stability' => 0.45,
+                        'similarity_boost' => 0.8,
+                        'style' => 0.0,
+                        'use_speaker_boost' => true
+                    ],
+                ]);
 
             if (! $response->successful()) {
                 return response()->json([
-                    'message' => 'Gagal menghasilkan audio.',
-                    'error' => $response->body(),
-                ], 502);
+                    'message' => 'Gagal menghasilkan audio dari ElevenLabs.',
+                    'error_detail' => $response->body(), // Menggunakan ->body() agar tidak memicu HTTP 500 jika bukan JSON
+                ], $response->status());
             }
 
-            $data = $response->json();
-
-            if (! isset($data['audioContent'])) {
-                return response()->json([
-                    'message' => 'Respons audio kosong.',
-                ], 502);
+            // Pastikan direktori subfolder 'tts' dibuat otomatis jika belum ada
+            if (!Storage::disk('public')->exists('tts')) {
+                Storage::disk('public')->makeDirectory('tts');
             }
 
-            $audioContent = base64_decode($data['audioContent']);
-            Storage::disk('public')->put($cacheKey, $audioContent);
+            // Simpan file biner audio
+            Storage::disk('public')->put($cacheKey, $response->body());
 
             return response()->file(Storage::disk('public')->path($cacheKey), [
                 'Content-Type' => 'audio/mpeg',
             ]);
+
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Terjadi kesalahan saat menghasilkan audio.',
+                'message' => 'Terjadi kesalahan sistem internal di localhost.',
                 'error' => $e->getMessage(),
-            ], 502);
+            ], 500);
         }
     }
 }

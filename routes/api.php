@@ -5,15 +5,16 @@ use App\Http\Controllers\Api\LeaderboardController as LeaderboardApiController;
 use App\Http\Controllers\Api\MateriController as MateriApiController;
 use App\Http\Controllers\Api\QuizController as QuizApiController;
 use App\Http\Controllers\Api\SertifikatController as SertifikatApiController;
-use App\Http\Controllers\Api\TtsController;
+use App\Http\Controllers\Api\TtsController as ApiTtsController; // Diimpor dengan alias ApiTtsController
 use Illuminate\Support\Facades\Route;
 
 // === PUBLIC ROUTES ===
 Route::post('/login/siswa', [AuthController::class, 'loginSiswa']);
 Route::post('/login/guru', [AuthController::class, 'loginGuru']);
 
-// TTS public (tanpa auth) — bisa langsung pakai dari Flutter
-Route::post('/tts', [TtsController::class, 'synthesize']);
+// TTS Public 
+Route::post('/tts', [ApiTtsController::class, 'synthesize']);
+
 
 // === SISWA (token auth) ===
 Route::middleware('auth:sanctum')->prefix('siswa')->group(function () {
@@ -39,4 +40,5 @@ Route::middleware('auth:sanctum')->prefix('siswa')->group(function () {
     // Sertifikat
     Route::get('/sertifikat', [SertifikatApiController::class, 'index']);
     Route::get('/sertifikat/{sertifikat}/download', [SertifikatApiController::class, 'download']);
+    
 });
