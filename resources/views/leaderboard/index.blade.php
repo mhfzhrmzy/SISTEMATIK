@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Leaderboard Pembelajaran')
 @section('content')
-<div class="max-w-6xl mx-auto py-2 space-y-6">
+<div class="w-full space-y-6">
 
     <!-- Header Leaderboard -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">

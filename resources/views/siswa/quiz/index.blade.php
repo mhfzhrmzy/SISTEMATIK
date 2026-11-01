@@ -3,7 +3,7 @@
 @section('title', 'Daftar Quiz — ' . $materi->judul_materi)
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="w-full space-y-6">
 
     {{-- Breadcrumb --}}
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-[#6B7280]">

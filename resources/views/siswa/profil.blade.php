@@ -13,10 +13,10 @@
         <p class="text-xs sm:text-sm text-[#6B7280] mt-0.5">Kelola informasi data diri, foto profil, dan kredensial keamanan akun Anda.</p>
     </div>
 
-    <div class="max-w-xl mx-auto space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
 
         {{-- Kartu profil --}}
-        <div class="bg-white rounded-2xl shadow-xs p-6 text-center space-y-4">
+        <div class="lg:col-span-4 bg-white rounded-2xl shadow-xs p-6 text-center space-y-4 h-fit">
             @if ($siswa->foto_profile)
                 <img src="{{ asset('storage/' . $siswa->foto_profile) }}" alt="{{ $siswa->nama_lengkap }}"
                      class="w-24 h-24 mx-auto rounded-full object-cover shadow-xs border-2 border-white">
@@ -72,7 +72,7 @@
         </div>
 
         {{-- Data pokok --}}
-        <div class="bg-white rounded-2xl shadow-xs p-6 sm:p-7 space-y-4">
+        <div class="lg:col-span-8 bg-white rounded-2xl shadow-xs p-6 sm:p-7 space-y-4">
             <h3 class="font-bold text-base text-[#1F2937]">Informasi Akademik</h3>
 
             @foreach ([

@@ -14,7 +14,7 @@
     $dash = round($circumference * $persen / 100, 2);
 @endphp
 
-<div class="max-w-md mx-auto py-4 space-y-4">
+<div class="w-full max-w-3xl mx-auto py-4 space-y-4">
 
     {{-- Emoticon Perayaan --}}
     <div class="text-center text-3xl select-none" aria-hidden="true">

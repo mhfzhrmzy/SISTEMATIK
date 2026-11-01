@@ -31,7 +31,7 @@
     </div>
 
     {{-- Grid Kartu Sertifikat --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse ($sertifikat as $item)
             <div class="bg-white p-5 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
                 <div>

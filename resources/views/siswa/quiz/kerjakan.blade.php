@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Kerjakan Quiz — ' . ($quiz->materi->judul_materi ?? 'Quiz'))
 @section('content')
-<div class="max-w-3xl mx-auto py-2 space-y-6">
+<div class="w-full space-y-6">
 
     {{-- Header Quiz (Clean & Minimalis) --}}
     <div class="bg-white rounded-2xl shadow-xs p-6 sm:p-7">

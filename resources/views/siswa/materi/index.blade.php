@@ -128,7 +128,7 @@
             <p class="text-sm text-[#6B7280]">Guru belum menambahkan materi untuk kelas dan jurusan Anda.</p>
         </div>
     @else
-        <div id="materiGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div id="materiGrid" class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6">
             @foreach ($materis as $materi)
                 <div class="materi-card bg-white rounded-2xl p-6 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between"
                      data-status="{{ $materi->statusKey }}">

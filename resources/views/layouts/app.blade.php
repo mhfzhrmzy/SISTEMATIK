@@ -15,7 +15,7 @@
     @else
         @if (!request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register'))
         <header class="sticky top-0 z-50 bg-white shadow-[0_2px_8px_rgba(123,16,56,0.10)]">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-[70px] flex items-center justify-between">
+            <div class="w-full px-4 sm:px-6 lg:px-8 h-16 sm:h-[70px] flex items-center justify-between">
                 <!-- Brand -->
                 @if (auth('siswa')->check())
                     <a href="{{ route('portal.materi.index') }}" class="font-bold text-lg sm:text-xl text-[#7B1038] tracking-tight hover:opacity-90 transition">
@@ -197,7 +197,7 @@
         @if (request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register'))
             @yield('content')
         @else
-            <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+            <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
                 @if (session('success'))
                     <div class="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm flex items-center gap-2">
                         <span>{{ session('success') }}</span>
@@ -215,9 +215,15 @@
                     </div>
                 @endif
 
-                <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-[#E5CDD5]/60 p-6 sm:p-8">
-                    @yield('content')
-                </div>
+                @if (auth('siswa')->check() || request()->routeIs('portal.*', 'siswa.*', 'leaderboard.*'))
+                    <div class="w-full">
+                        @yield('content')
+                    </div>
+                @else
+                    <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-[#E5CDD5]/60 p-6 sm:p-8">
+                        @yield('content')
+                    </div>
+                @endif
             </main>
         @endif
     @endif
