@@ -122,7 +122,7 @@
                 </h3>
                 <p class="text-xs sm:text-sm text-[#6B7280]">
                     @if ($materiSiswaRecord && $materiSiswaRecord->is_selesai)
-                        Modul telah ditandai selesai{{ $materiSiswaRecord->selesai_at ? ' pada ' . $materiSiswaRecord->selesai_at->translatedFormat('d F Y H:i') : '' }}. Status kemajuan belajar Anda pada modul ini sudah tercatat 100%.
+                        Modul telah ditandai selesai{{ $materiSiswaRecord->selesai_at ? ' pada ' . $materiSiswaRecord->selesai_at->translatedFormat('d F Y H:i') : '' }}. Status kemajuan membaca bahan ajar telah tercatat selesai.
                     @else
                         Tandai selesai setelah Anda memahami modul untuk memperbarui kemajuan belajar dan membuka evaluasi akhir.
                     @endif

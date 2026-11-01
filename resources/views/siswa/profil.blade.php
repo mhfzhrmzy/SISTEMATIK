@@ -64,10 +64,6 @@
                     <span>Bergabung Sejak</span>
                     <span class="font-semibold text-[#1F2937]">{{ $siswa->created_at->translatedFormat('F Y') }}</span>
                 </div>
-                <div class="flex justify-between items-center text-[#6B7280]">
-                    <span>Status Akun</span>
-                    <span class="bg-[#E8F8F0] text-[#1F9254] font-semibold rounded-full px-2.5 py-0.5">Siswa Aktif</span>
-                </div>
             </div>
         </div>
 

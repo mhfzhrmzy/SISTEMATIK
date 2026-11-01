@@ -197,7 +197,7 @@
         @if (request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register'))
             @yield('content')
         @else
-            <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            <main class="w-full px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
                 @if (session('success'))
                     <div class="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm flex items-center gap-2">
                         <span>{{ session('success') }}</span>

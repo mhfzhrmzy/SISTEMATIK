@@ -55,43 +55,31 @@ class MateriSiswaController extends Controller
             $isMateriSelesai = $materiSiswaRecord ? (bool) $materiSiswaRecord->is_selesai : false;
 
             // Hitung persentase kemajuan belajar berdasarkan kuis & penyelesaian materi
-            if ($hasPretest && $hasPosttest) {
-                if ($pretestDone && $isMateriSelesai && $posttestDone) {
-                    $progress = 100;
-                } elseif ($pretestDone && $isMateriSelesai) {
-                    $progress = 70;
-                } elseif ($pretestDone) {
-                    $progress = $isDibuka ? 45 : 35;
-                } else {
-                    $progress = 0;
-                }
-            } elseif ($hasPretest && ! $hasPosttest) {
-                if ($pretestDone && $isMateriSelesai) {
-                    $progress = 100;
-                } elseif ($pretestDone) {
-                    $progress = $isDibuka ? 60 : 50;
-                } else {
-                    $progress = 0;
-                }
-            } elseif (! $hasPretest && $hasPosttest) {
-                if ($isMateriSelesai && $posttestDone) {
-                    $progress = 100;
-                } elseif ($posttestDone) {
-                    $progress = 75;
-                } elseif ($isMateriSelesai) {
-                    $progress = 50;
-                } else {
-                    $progress = $isDibuka ? 25 : 0;
-                }
+            $totalComponents = 1; // Bahan Ajar selalu ada
+            if ($hasPretest) {
+                $totalComponents++;
+            }
+            if ($hasPosttest) {
+                $totalComponents++;
+            }
+
+            $completedComponents = 0;
+            if ($hasPretest && $pretestAttempt !== null) {
+                $completedComponents++;
+            }
+            if ($isMateriSelesai) {
+                $completedComponents++;
+            }
+            if ($hasPosttest && $posttestAttempt !== null) {
+                $completedComponents++;
+            }
+
+            if ($completedComponents === 0) {
+                $progress = 0;
+            } elseif ($completedComponents === $totalComponents) {
+                $progress = 100;
             } else {
-                // Materi pembelajaran murni (tanpa kuis)
-                if ($isMateriSelesai) {
-                    $progress = 100;
-                } elseif ($isDibuka) {
-                    $progress = 50;
-                } else {
-                    $progress = 0;
-                }
+                $progress = (int) round(($completedComponents / $totalComponents) * 100);
             }
 
             if ($progress === 100) {
@@ -105,10 +93,18 @@ class MateriSiswaController extends Controller
                 $statusBadgeClass = 'bg-[#E8F8F0] text-[#1F9254]';
                 $statusDotClass = 'bg-[#1F9254]';
             } else {
-                $statusKey = 'belum-dimulai';
-                $statusLabel = 'Belum Dimulai';
-                $statusBadgeClass = 'bg-gray-100 text-[#6B7280]';
-                $statusDotClass = 'bg-gray-400';
+                if (! $hasPretest && ! $hasPosttest) {
+                    // Guru mengupload materi saja -> hilangkan indikator belum dimulai
+                    $statusKey = 'semua';
+                    $statusLabel = null;
+                    $statusBadgeClass = null;
+                    $statusDotClass = null;
+                } else {
+                    $statusKey = 'belum-dimulai';
+                    $statusLabel = 'Belum Dimulai';
+                    $statusBadgeClass = 'bg-gray-100 text-[#6B7280]';
+                    $statusDotClass = 'bg-gray-400';
+                }
             }
 
             $materi->kode_modul = ($siswa->kelas ?? '10').$jurusanClean.'-'.sprintf('%02d', $index + 1);
