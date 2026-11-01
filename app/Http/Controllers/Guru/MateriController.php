@@ -37,7 +37,9 @@ class MateriController extends Controller
                 'string',
                 'max:255',
                 'regex:/^[a-zA-Z0-9 ]+$/',
-                'unique:materi,judul_materi',
+                Rule::unique('materi', 'judul_materi')
+                    ->where('kelas', $request->input('kelas'))
+                    ->where('jurusan', $request->input('jurusan')),
             ],
             'nip' => 'nullable|exists:admin_guru,nip',
             'kelas' => 'required|in:10 1,10 2,11 1,11 2,12 1,12 2',
@@ -47,7 +49,7 @@ class MateriController extends Controller
         ], [
             'judul_materi.required' => 'Judul materi wajib diisi.',
             'judul_materi.regex' => 'Judul materi hanya boleh berisi huruf dan angka.',
-            'judul_materi.unique' => 'Judul materi sudah ada, tidak boleh sama dengan judul bahan ajar lainnya.',
+            'judul_materi.unique' => 'Judul materi sudah ada untuk kelas dan jurusan yang sama.',
             'kelas.required' => 'Kelas wajib dipilih.',
             'jurusan.required' => 'Jurusan wajib dipilih.',
             'upload_file.required' => 'File modul materi wajib diupload.',
@@ -107,7 +109,10 @@ class MateriController extends Controller
                 'string',
                 'max:255',
                 'regex:/^[a-zA-Z0-9 ]+$/',
-                Rule::unique('materi', 'judul_materi')->ignore($materi->id_materi, 'id_materi'),
+                Rule::unique('materi', 'judul_materi')
+                    ->ignore($materi->id_materi, 'id_materi')
+                    ->where('kelas', $request->input('kelas'))
+                    ->where('jurusan', $request->input('jurusan')),
             ],
             'nip' => 'nullable|exists:admin_guru,nip',
             'kelas' => 'required|in:10 1,10 2,11 1,11 2,12 1,12 2',
@@ -117,7 +122,7 @@ class MateriController extends Controller
         ], [
             'judul_materi.required' => 'Judul materi wajib diisi.',
             'judul_materi.regex' => 'Judul materi hanya boleh berisi huruf dan angka.',
-            'judul_materi.unique' => 'Judul materi sudah ada, tidak boleh sama dengan judul bahan ajar lainnya.',
+            'judul_materi.unique' => 'Judul materi sudah ada untuk kelas dan jurusan yang sama.',
             'kelas.required' => 'Kelas wajib dipilih.',
             'jurusan.required' => 'Jurusan wajib dipilih.',
         ]);
