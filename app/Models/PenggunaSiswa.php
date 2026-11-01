@@ -8,7 +8,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class PenggunaSiswa extends Authenticatable
 {
-    use Notifiable, HasApiTokens;
+    use HasApiTokens, Notifiable;
 
     protected $table = 'pengguna_siswa';
 
@@ -19,7 +19,7 @@ class PenggunaSiswa extends Authenticatable
     protected $keyType = 'string';
 
     protected $fillable = [
-        'nisn', 'nama_lengkap', 'kelas', 'jurusan', 'password', 'poin', 'foto_profile',
+        'nisn', 'nama_lengkap', 'kelas', 'tahun', 'jurusan', 'password', 'poin', 'foto_profile',
     ];
 
     protected $hidden = ['password', 'remember_token'];

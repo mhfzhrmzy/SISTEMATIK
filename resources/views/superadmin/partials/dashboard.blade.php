@@ -143,7 +143,7 @@
                                 <td class="px-3 py-2">
                                     <div class="flex items-center justify-end gap-2">
                                         <button type="button"
-                                                onclick="openEditSiswaModal('{{ $siswa->nisn }}', '{{ addslashes($siswa->nama_lengkap) }}', '{{ $siswa->kelas }}', '{{ addslashes($siswa->jurusan) }}')"
+                                                onclick="openEditSiswaModal('{{ $siswa->nisn }}', '{{ addslashes($siswa->nama_lengkap) }}', '{{ $siswa->kelas }}', '{{ $siswa->tahun }}', '{{ addslashes($siswa->jurusan) }}')"
                                                 class="text-amber-600 font-medium hover:underline cursor-pointer">Edit</button>
                                         <form action="{{ route('siswa.destroy', $siswa) }}" method="POST" onsubmit="return confirm('Hapus akun siswa ini?')">
                                             @csrf @method('DELETE')
