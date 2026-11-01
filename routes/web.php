@@ -140,6 +140,7 @@ Route::middleware('role:siswa')->group(function () {
         Route::get('/materi', [MateriSiswaController::class, 'index'])->name('materi.index');
         Route::get('/materi/{materi}', [MateriSiswaController::class, 'show'])->name('materi.show');
         Route::get('/materi/{materi}/file', [MateriSiswaController::class, 'serveFile'])->name('materi.file');
+        Route::post('/materi/{materi}/selesai', [MateriSiswaController::class, 'tandaiSelesai'])->name('materi.selesai');
 
         Route::get('/materi/{materi}/quiz', [QuizSiswaController::class, 'index'])->name('quiz.index');
         Route::get('/quiz/{quiz}', [QuizSiswaController::class, 'kerjakan'])->name('quiz.kerjakan');

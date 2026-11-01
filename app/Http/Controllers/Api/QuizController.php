@@ -232,6 +232,9 @@ class QuizController extends Controller
             ['total_poin' => $totalPoin]
         );
 
+        $totalAkumulasi = (int) Leaderboard::where('nisn', $siswa->nisn)->sum('total_poin');
+        \App\Models\PenggunaSiswa::where('nisn', $siswa->nisn)->update(['poin' => $totalAkumulasi]);
+
         $sessionKey = 'quiz_shuffle_'.$quiz->id_quiz.'_'.$siswa->nisn;
         session()->forget($sessionKey);
 

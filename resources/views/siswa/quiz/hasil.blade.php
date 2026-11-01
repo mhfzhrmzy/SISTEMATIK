@@ -1,107 +1,110 @@
 @extends('layouts.app')
-@section('title', 'Hasil Quiz — ' . ($quiz->materi->judul_materi ?? 'Quiz'))
+@section('title', 'Hasil Evaluasi — ' . ($quiz->materi->judul_materi ?? 'Quiz'))
 @section('content')
 
 @php
     $persen = $total > 0 ? round(($benar / $total) * 100) : 0;
     $grade = match(true) {
-        $persen >= 90 => ['label' => 'Sempurna!',    'color' => 'text-emerald-600', 'bg' => 'bg-emerald-50',  'border' => 'border-emerald-200'],
-        $persen >= 75 => ['label' => 'Bagus!',        'color' => 'text-blue-600',    'bg' => 'bg-blue-50',     'border' => 'border-blue-200'],
-        $persen >= 60 => ['label' => 'Cukup Baik',   'color' => 'text-amber-600',   'bg' => 'bg-amber-50',    'border' => 'border-amber-200'],
-        default       => ['label' => 'Perlu Belajar', 'color' => 'text-red-600',     'bg' => 'bg-red-50',      'border' => 'border-red-200'],
+        $persen >= 90 => ['label' => 'Sempurna!',    'color' => 'text-[#1F9254]', 'bg' => 'bg-[#E8F8F0]'],
+        $persen >= 75 => ['label' => 'Bagus Sekali!', 'color' => 'text-[#1F9254]', 'bg' => 'bg-[#E8F8F0]'],
+        $persen >= 60 => ['label' => 'Cukup Baik',   'color' => 'text-amber-700', 'bg' => 'bg-amber-50'],
+        default       => ['label' => 'Perlu Belajar Lebih Giat', 'color' => 'text-rose-700', 'bg' => 'bg-rose-50'],
     };
     $circumference = 2 * 3.14159 * 45;
     $dash = round($circumference * $persen / 100, 2);
 @endphp
 
-<div class="max-w-md mx-auto py-4">
+<div class="max-w-md mx-auto py-4 space-y-4">
 
-    {{-- Celebration banner --}}
-    <div class="text-center mb-2 text-3xl select-none" aria-hidden="true">
+    {{-- Emoticon Perayaan --}}
+    <div class="text-center text-3xl select-none" aria-hidden="true">
         @if ($persen >= 75) 🎉🎊🏆 @elseif ($persen >= 60) 👍✨ @else 💪📚 @endif
     </div>
 
-    {{-- Main result card --}}
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-md overflow-hidden">
+    {{-- Main Result Card (Clean & Minimalis) --}}
+    <div class="bg-white rounded-2xl shadow-xs overflow-hidden">
 
-        {{-- Gradient header --}}
-        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 px-6 pt-8 pb-10 text-center text-white">
-            <p class="text-blue-200 text-xs font-semibold uppercase tracking-widest mb-1">{{ ucfirst($quiz->tipe_test) }}</p>
-            <h1 class="text-xl font-bold mb-0.5">{{ $quiz->materi->judul_materi ?? 'Quiz' }}</h1>
-            <p class="text-blue-300 text-xs">Hasil Pengerjaan Kamu</p>
+        {{-- Maroon Accent Header --}}
+        <div class="bg-[#7B1038] px-6 pt-7 pb-9 text-center text-white">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white mb-2">
+                HASIL {{ strtoupper($quiz->tipe_test) }}
+            </span>
+            <h1 class="text-lg sm:text-xl font-bold leading-snug">{{ $quiz->materi->judul_materi ?? 'Quiz' }}</h1>
+            <p class="text-white/80 text-xs mt-1">Evaluasi Pengerjaan Selesai</p>
         </div>
 
-        {{-- Score ring (pulls up from overlap) --}}
-        <div class="-mt-8 flex justify-center mb-4">
-            <div class="relative w-28 h-28 bg-white rounded-full shadow-lg border-4 border-white flex items-center justify-center">
+        {{-- Score Ring (Pulls up from header) --}}
+        <div class="-mt-8 flex justify-center mb-3">
+            <div class="relative w-28 h-28 bg-white rounded-full shadow-md p-1.5 flex items-center justify-center">
                 <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#F3F4F6" stroke-width="8"/>
                     <circle cx="50" cy="50" r="45" fill="none"
-                            stroke="{{ $persen >= 75 ? '#10b981' : ($persen >= 60 ? '#f59e0b' : '#ef4444') }}"
+                            stroke="{{ $persen >= 75 ? '#1F9254' : ($persen >= 60 ? '#D97706' : '#E11D48') }}"
                             stroke-width="8"
                             stroke-linecap="round"
                             stroke-dasharray="{{ $dash }} {{ $circumference }}"
                             style="transition: stroke-dasharray 1s ease;"/>
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                    <span class="text-2xl font-black text-gray-800">{{ $persen }}%</span>
-                    <span class="text-xs text-gray-400 font-medium">Skor</span>
+                    <span class="text-2xl font-black text-[#1F2937]">{{ $persen }}%</span>
+                    <span class="text-[10px] text-[#6B7280] font-semibold uppercase tracking-wider">Skor</span>
                 </div>
             </div>
         </div>
 
-        <div class="px-6 pb-6 text-center">
+        <div class="px-6 pb-6 text-center space-y-5">
 
             {{-- Grade badge --}}
-            <div class="inline-flex items-center gap-1.5 {{ $grade['bg'] }} {{ $grade['border'] }} border {{ $grade['color'] }} text-sm font-bold px-4 py-1.5 rounded-full mb-5">
-                {{ $grade['label'] }}
+            <div>
+                <span class="inline-flex items-center gap-1.5 {{ $grade['bg'] }} {{ $grade['color'] }} text-xs font-bold px-4 py-1.5 rounded-full">
+                    {{ $grade['label'] }}
+                </span>
             </div>
 
-            {{-- Stats row --}}
-            <div class="grid grid-cols-3 gap-3 mb-6">
-                <div class="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-                    <div class="text-2xl font-black text-green-600">{{ $benar }}</div>
-                    <div class="text-xs text-green-700 font-medium mt-0.5">Benar</div>
+            {{-- Stats Grid (Benar, Salah, Total) --}}
+            <div class="grid grid-cols-3 gap-2.5">
+                <div class="bg-[#E8F8F0] rounded-xl p-3 text-center">
+                    <div class="text-xl font-black text-[#1F9254]">{{ $benar }}</div>
+                    <div class="text-[11px] text-[#1F9254] font-medium mt-0.5">Benar</div>
                 </div>
-                <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
-                    <div class="text-2xl font-black text-red-500">{{ $total - $benar }}</div>
-                    <div class="text-xs text-red-700 font-medium mt-0.5">Salah</div>
+                <div class="bg-rose-50 rounded-xl p-3 text-center">
+                    <div class="text-xl font-black text-rose-600">{{ $total - $benar }}</div>
+                    <div class="text-[11px] text-rose-700 font-medium mt-0.5">Salah</div>
                 </div>
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
-                    <div class="text-2xl font-black text-blue-600">{{ $total }}</div>
-                    <div class="text-xs text-blue-700 font-medium mt-0.5">Total</div>
+                <div class="bg-gray-50 rounded-xl p-3 text-center">
+                    <div class="text-xl font-black text-[#1F2937]">{{ $total }}</div>
+                    <div class="text-[11px] text-[#6B7280] font-medium mt-0.5">Total Soal</div>
                 </div>
             </div>
 
-            {{-- Total points --}}
-            <div class="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl p-4 mb-6">
-                <div class="text-xs text-indigo-600 font-bold uppercase tracking-wider mb-1">Total Poin Diperoleh</div>
-                <div class="text-4xl font-black text-indigo-700">
+            {{-- Total Points Card --}}
+            <div class="bg-[#7B1038]/5 rounded-xl p-4 text-center">
+                <div class="text-[10px] font-bold text-[#7B1038] uppercase tracking-wider mb-1">Total Poin Masuk Leaderboard</div>
+                <div class="text-3xl font-black text-[#7B1038]">
                     {{ $totalPoin }}
-                    <span class="text-base font-semibold text-gray-400">Poin</span>
+                    <span class="text-sm font-semibold text-[#6B7280]">Poin</span>
                 </div>
             </div>
 
-            {{-- Action buttons --}}
-            <div class="flex flex-col gap-2.5">
+            {{-- Action Buttons --}}
+            <div class="space-y-2 pt-1">
                 <a href="{{ route('leaderboard.index') }}"
-                   class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500
-                          hover:from-amber-600 hover:to-orange-600 text-white font-bold py-3 rounded-xl shadow
-                          transition-all duration-150">
-                    🏆 Lihat Leaderboard
+                   class="w-full flex items-center justify-center gap-2 bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-semibold py-3 rounded-xl shadow-xs transition duration-150 text-sm">
+                    🏆 Lihat Peringkat Leaderboard
                 </a>
                 <a href="{{ route('portal.quiz.index', $quiz->materi) }}"
-                   class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700
-                          text-white font-semibold py-2.5 rounded-xl transition duration-150">
-                    📋 Daftar Quiz Lainnya
+                   class="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-[#5E0C2B] font-semibold py-2.5 rounded-xl transition duration-150 text-xs sm:text-sm">
+                    📋 Kembali ke Daftar Quiz
                 </a>
                 <a href="{{ route('portal.materi.show', $quiz->materi) }}"
-                   class="w-full flex items-center justify-center gap-2 border border-gray-300 hover:bg-gray-50
-                          text-gray-600 font-medium py-2.5 rounded-xl transition duration-150">
-                    ← Kembali ke Materi
+                   class="inline-block text-xs font-semibold text-[#6B7280] hover:text-[#7B1038] transition pt-1">
+                    ← Buka Modul Bahan Ajar
                 </a>
             </div>
+
         </div>
+
     </div>
+
 </div>
 @endsection

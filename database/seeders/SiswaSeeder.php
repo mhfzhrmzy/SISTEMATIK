@@ -17,7 +17,7 @@ class SiswaSeeder extends Seeder
                 'kelas' => '10',
                 'jurusan' => 'Teknik Komputer & Jaringan',
                 'password' => Hash::make('password123'),
-                'poin' => 100,
+                'poin' => 0,
             ],
             [
                 'nisn' => '0051234571',
@@ -25,7 +25,7 @@ class SiswaSeeder extends Seeder
                 'kelas' => '10',
                 'jurusan' => 'Teknik Komputer & Jaringan',
                 'password' => Hash::make('password123'),
-                'poin' => 100,
+                'poin' => 0,
             ],
             [
                 'nisn' => '0051234562',
@@ -33,7 +33,7 @@ class SiswaSeeder extends Seeder
                 'kelas' => '11',
                 'jurusan' => 'Desain Komunikasi Visual',
                 'password' => Hash::make('password123'),
-                'poin' => 150,
+                'poin' => 0,
             ],
             [
                 'nisn' => '0051234563',
@@ -41,7 +41,7 @@ class SiswaSeeder extends Seeder
                 'kelas' => '12',
                 'jurusan' => 'Teknik Pemesinan',
                 'password' => Hash::make('password123'),
-                'poin' => 80,
+                'poin' => 0,
             ],
             [
                 'nisn' => '0051234564',
@@ -49,7 +49,7 @@ class SiswaSeeder extends Seeder
                 'kelas' => '10',
                 'jurusan' => 'Teknik Audio Video',
                 'password' => Hash::make('password123'),
-                'poin' => 120,
+                'poin' => 0,
             ],
             [
                 'nisn' => '0051234565',
@@ -57,7 +57,7 @@ class SiswaSeeder extends Seeder
                 'kelas' => '11',
                 'jurusan' => 'Teknik Kendaraan Ringan',
                 'password' => Hash::make('password123'),
-                'poin' => 90,
+                'poin' => 0,
             ],
         ];
 

@@ -21,4 +21,9 @@ class Materi extends Model
     {
         return $this->hasMany(Quiz::class, 'id_materi', 'id_materi');
     }
+
+    public function materiSiswa()
+    {
+        return $this->hasMany(MateriSiswa::class, 'id_materi', 'id_materi');
+    }
 }
