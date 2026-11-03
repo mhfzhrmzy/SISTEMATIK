@@ -65,7 +65,9 @@
             </div>
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Tahun</label>
-                <input type="text" id="edit-siswa-tahun" name="tahun" maxlength="4" inputmode="numeric" pattern="[0-9]*" required placeholder="Contoh: 2026" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition">
+                <input type="text" id="edit-siswa-tahun-display" value="" readonly
+                       class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-500 cursor-not-allowed">
+                <input type="hidden" id="edit-siswa-tahun" name="tahun" value="">
             </div>
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Jurusan</label>
@@ -217,6 +219,7 @@
         document.getElementById('edit-siswa-nama').value = nama;
         document.getElementById('edit-siswa-kelas').value = kelas;
         document.getElementById('edit-siswa-tahun').value = tahun;
+        document.getElementById('edit-siswa-tahun-display').value = tahun;
         document.getElementById('edit-siswa-jurusan').value = jurusan;
         document.getElementById('edit-siswa-modal').classList.remove('hidden');
     }
