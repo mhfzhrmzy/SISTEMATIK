@@ -42,13 +42,11 @@
 
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Tahun Ajaran <span class="text-red-500">*</span></label>
-                    <input type="text"
+                    <input type="number"
                            name="tahun"
                            id="tahun"
-                           value="{{ old('tahun') }}"
-                           placeholder="Contoh: 2025"
-                           minlength="4"
-                           maxlength="4"
+                           value="{{ old('tahun', date('Y')) }}"
+                           min="2020"
                            class="w-full border rounded px-3 py-2 text-gray-700 {{ $errors->has('tahun') ? 'border-red-400 bg-red-50' : 'border-gray-300' }}"
                            required>
                     @error('tahun')
