@@ -36,15 +36,17 @@ class LeaderboardController extends Controller
             $siswa = auth('siswa')->user();
             $kelas = $siswa->kelas;
             $jurusan = $siswa->jurusan;
-            // Siswa HANYA menampilkan post-test di kelas & jurusannya sendiri
+            $tahun = $siswa->tahun;
+            // Siswa HANYA menampilkan post-test di kelas, jurusan & tahun masuknya sendiri
             $filterTest = 'posttest';
 
-            // Materi yang dapat dipilih siswa hanya yang sesuai kelas & jurusannya
+            // Materi yang dapat dipilih siswa hanya yang sesuai kelas, jurusan & tahun masuknya
             $daftarMateri = Materi::with(['quiz' => function ($q) {
                 $q->where('tipe_test', 'posttest');
             }])
                 ->where('kelas', $kelas)
                 ->where('jurusan', $jurusan)
+                ->where('tahun', $tahun)
                 ->orderBy('judul_materi', 'asc')
                 ->get();
         } else {
@@ -162,6 +164,11 @@ class LeaderboardController extends Controller
                         $q->where('jurusan', $jurusan);
                     }
                 });
+            }
+
+            // Siswa: hanya tampilkan leaderboard dari materi tahun masuknya sendiri
+            if ($isSiswa) {
+                $query->whereHas('quiz.materi', fn ($q) => $q->where('tahun', $tahun));
             }
 
             if ($filterTest) {

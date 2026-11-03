@@ -14,12 +14,14 @@ class LeaderboardController extends Controller
         $siswa = $request->user();
         $kelas = $siswa->kelas;
         $jurusan = $siswa->jurusan;
+        $tahun = $siswa->tahun;
 
         $leaderboards = Leaderboard::with('pengguna')
             ->whereHas('pengguna', function ($query) use ($kelas, $jurusan) {
                 $query->where('kelas', $kelas)
                     ->where('jurusan', $jurusan);
             })
+            ->whereHas('quiz.materi', fn ($q) => $q->where('tahun', $tahun))
             ->selectRaw('nisn, SUM(total_poin) as total_poin, COUNT(id_quiz) as total_kuis, MAX(updated_at) as updated_at')
             ->groupBy('nisn')
             ->orderByDesc('total_poin')
