@@ -12,10 +12,13 @@ use App\Http\Controllers\Siswa\MateriSiswaController;
 use App\Http\Controllers\Siswa\ProfilSiswaController;
 use App\Http\Controllers\Siswa\QuizSiswaController;
 use App\Http\Controllers\Siswa\SertifikatSiswaController;
-use App\Http\Controllers\TtsController;
 use App\Http\Controllers\Superadmin\GuruManajemenController;
+use App\Http\Controllers\Superadmin\MateriManajemenController;
+use App\Http\Controllers\Superadmin\QuizManajemenController;
 use App\Http\Controllers\Superadmin\SiswaManajemenController;
+use App\Http\Controllers\Superadmin\SoalManajemenController;
 use App\Http\Controllers\Superadmin\SuperadminController;
+use App\Http\Controllers\TtsController;
 use Illuminate\Support\Facades\Route;
 
 // ─── Halaman Utama ────────────────────────────────────────────────────────────
@@ -125,6 +128,37 @@ Route::middleware('role:superadmin')->group(function () {
         Route::put('/siswa/{siswa}', 'update')->name('siswa.update');
         Route::delete('/siswa/{siswa}', 'destroy')->name('siswa.destroy');
     });
+
+    // Manajemen Bahan Ajar oleh Superadmin
+    Route::controller(MateriManajemenController::class)->prefix('superadmin')->name('superadmin.')->group(function () {
+        Route::get('/materi', 'index')->name('materi.index');
+        Route::post('/materi', 'store')->name('materi.store');
+        Route::get('/materi/{materi}', 'show')->name('materi.show');
+        Route::get('/materi/{materi}/edit', 'edit')->name('materi.edit');
+        Route::put('/materi/{materi}', 'update')->name('materi.update');
+        Route::delete('/materi/{materi}', 'destroy')->name('materi.destroy');
+    });
+
+    // Manajemen Quiz & Soal oleh Superadmin
+    Route::prefix('superadmin')->name('superadmin.')->group(function () {
+        Route::controller(QuizManajemenController::class)->group(function () {
+            Route::get('/quiz', 'index')->name('quiz.index');
+            Route::post('/quiz', 'store')->name('quiz.store');
+            Route::patch('/quiz/{quiz}/jadwal', 'updateJadwal')->name('quiz.jadwal');
+            Route::delete('/quiz/{quiz}', 'destroy')->name('quiz.destroy');
+        });
+
+        Route::controller(SoalManajemenController::class)->group(function () {
+            Route::get('/quiz/{quiz}/soal', 'index')->name('soal.index');
+            Route::post('/quiz/{quiz}/soal', 'store')->name('soal.store');
+            Route::patch('/quiz/{quiz}/toggle-shuffle', 'toggleShuffle')->name('quiz.toggle-shuffle');
+            Route::post('/quiz/{quiz}/soal/import', 'importCsv')->name('soal.import');
+            Route::get('/soal/template', 'downloadTemplate')->name('soal.template');
+            Route::get('/soal/{soal}/edit', 'edit')->name('soal.edit');
+            Route::put('/soal/{soal}', 'update')->name('soal.update');
+            Route::delete('/soal/{soal}', 'destroy')->name('soal.destroy');
+        });
+    });
 });
 
 // ─── Area Siswa ───────────────────────────────────────────────────────────────
@@ -157,5 +191,5 @@ Route::middleware('role:siswa')->group(function () {
     });
 
     // TTS
-    Route::get('/test-audio', [App\Http\Controllers\TtsController::class, 'testTts']);
+    Route::get('/test-audio', [TtsController::class, 'testTts']);
 });
