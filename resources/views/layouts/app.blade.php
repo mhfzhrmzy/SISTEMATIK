@@ -13,16 +13,13 @@
     @if (request()->routeIs('superadmin.*'))
         @yield('content')
     @else
-        @if (!request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register'))
+        {{-- Navbar atas: tidak dipakai untuk guru (guru pakai sidebar) --}}
+        @if (!request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register') && !auth('admin')->check())
         <header class="sticky top-0 z-50 bg-white shadow-[0_2px_8px_rgba(123,16,56,0.10)]">
             <div class="w-full px-4 sm:px-6 lg:px-8 h-16 sm:h-[70px] flex items-center justify-between">
                 <!-- Brand -->
                 @if (auth('siswa')->check())
                     <a href="{{ route('portal.materi.index') }}" class="font-bold text-lg sm:text-xl text-[#7B1038] tracking-tight hover:opacity-90 transition">
-                        Sistem Pembelajaran
-                    </a>
-                @elseif (auth('admin')->check())
-                    <a href="{{ route('materi.index') }}" class="font-bold text-lg sm:text-xl text-[#7B1038] tracking-tight hover:opacity-90 transition">
                         Sistem Pembelajaran
                     </a>
                 @else
@@ -33,45 +30,7 @@
 
                 <!-- Desktop Menu -->
                 <nav class="hidden md:flex items-center gap-2 lg:gap-3 text-[13px] lg:text-[14px] font-medium text-[#5E0C2B]">
-                    @if (auth('admin')->check())
-                        @php $currentAdmin = auth('admin')->user(); @endphp
-                        <a href="{{ route('materi.index') }}"
-                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('materi.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
-                            Bahan Ajar
-                        </a>
-                        <a href="{{ route('admin.quiz.index') }}"
-                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('admin.quiz.*') || request()->routeIs('admin.soal.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
-                            Kelola Quiz
-                        </a>
-                        <a href="{{ route('sertifikat.index') }}"
-                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('sertifikat.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
-                            Sertifikat
-                        </a>
-                        <a href="{{ route('leaderboard.index') }}"
-                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('leaderboard.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
-                            Leaderboard
-                        </a>
-
-                        @if ($currentAdmin->role === 'superadmin')
-                            <a href="{{ route('superadmin.index') }}"
-                               class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('superadmin.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
-                                Superadmin
-                            </a>
-                        @endif
-
-                        <span class="w-px h-5 bg-[#E5CDD5] inline-block mx-1" aria-hidden="true"></span>
-                        <a href="{{ route('admin.profil') }}"
-                           class="px-3.5 py-1.5 rounded-full transition-all duration-150 {{ request()->routeIs('admin.profil*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
-                            {{ $currentAdmin->nama_lengkap }}
-                        </a>
-                        <form action="{{ route('admin.logout') }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="text-[#7B1038] hover:bg-[#7B1038]/10 hover:text-[#5E0C2B] px-3.5 py-1.5 rounded-full text-sm font-semibold transition-colors duration-150">
-                                Logout
-                            </button>
-                        </form>
-
-                    @elseif (auth('siswa')->check())
+                    @if (auth('siswa')->check())
                         <a href="{{ route('portal.materi.index') }}"
                            class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
                             Portal Siswa
@@ -124,42 +83,7 @@
 
             <!-- Mobile Menu Dropdown -->
             <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-[#E5CDD5] shadow-lg px-4 py-3 space-y-1.5">
-                @if (auth('admin')->check())
-                    @php $currentAdmin = auth('admin')->user(); @endphp
-                    <a href="{{ route('materi.index') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('materi.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
-                        Bahan Ajar
-                    </a>
-                    <a href="{{ route('admin.quiz.index') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('admin.quiz.*') || request()->routeIs('admin.soal.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
-                        Kelola Quiz
-                    </a>
-                    <a href="{{ route('sertifikat.index') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('sertifikat.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
-                        Sertifikat
-                    </a>
-                    <a href="{{ route('leaderboard.index') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('leaderboard.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
-                        Leaderboard
-                    </a>
-                    @if ($currentAdmin->role === 'superadmin')
-                        <a href="{{ route('superadmin.index') }}"
-                           class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('superadmin.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
-                            Superadmin
-                        </a>
-                    @endif
-                    <div class="h-px bg-[#E5CDD5] my-2"></div>
-                    <a href="{{ route('admin.profil') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('admin.profil*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
-                        {{ $currentAdmin->nama_lengkap }}
-                    </a>
-                    <form action="{{ route('admin.logout') }}" method="POST" class="pt-1">
-                        @csrf
-                        <button type="submit" class="w-full flex items-center justify-center min-h-[44px] px-4 py-2.5 bg-gray-100 text-[#7B1038] hover:bg-[#7B1038] hover:text-white rounded-xl text-sm font-semibold transition">
-                            Logout
-                        </button>
-                    </form>
-                @elseif (auth('siswa')->check())
+                @if (auth('siswa')->check())
                     <a href="{{ route('portal.materi.index') }}"
                        class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
                         Portal Siswa
@@ -194,10 +118,15 @@
         </header>
         @endif
 
+        {{-- Konten --}}
         @if (request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register'))
             @yield('content')
         @else
-            <main class="w-full px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
+            @if (auth('admin')->check())
+                @include('layouts.partials.sidebar-admin')
+            @endif
+
+            <main class="w-full px-4 sm:px-6 lg:px-8 py-5 sm:py-6 {{ auth('admin')->check() ? 'lg:ml-64 lg:w-[calc(100%-16rem)]' : '' }}">
                 @if (session('success'))
                     <div class="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm flex items-center gap-2">
                         <span>{{ session('success') }}</span>
@@ -215,7 +144,7 @@
                     </div>
                 @endif
 
-                @if (auth('siswa')->check() || request()->routeIs('portal.*', 'siswa.*', 'leaderboard.*'))
+                @if (auth('siswa')->check() || request()->routeIs('portal.*', 'siswa.*', 'leaderboard.*', 'admin.profil*'))
                     <div class="w-full">
                         @yield('content')
                     </div>
