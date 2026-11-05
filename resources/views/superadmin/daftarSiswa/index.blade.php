@@ -52,7 +52,7 @@
                 <label class="mb-1 block text-xs font-bold text-slate-700">Kelas</label>
                 <select name="kelas" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition bg-white">
                     <option value="" disabled {{ old('kelas') ? '' : 'selected' }}>-- Pilih Kelas --</option>
-                    @foreach (['10 1', '10 2', '11 1', '11 2', '12 1', '12 2'] as $k)
+                    @foreach (['10 1', '10 2'] as $k)
                         <option value="{{ $k }}" {{ old('kelas') === $k ? 'selected' : '' }}>Kelas {{ $k }}</option>
                     @endforeach
                 </select>

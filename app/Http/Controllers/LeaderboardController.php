@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class LeaderboardController extends Controller
 {
-    public const DAFTAR_KELAS = ['10 1', '10 2', '11 1', '11 2', '12 1', '12 2'];
+    public const DAFTAR_KELAS = ['10 1', '10 2'];
 
     public const DAFTAR_JURUSAN = [
         'Teknik Alat Berat',

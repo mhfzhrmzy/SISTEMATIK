@@ -118,7 +118,7 @@
                                 required
                                 class="w-full rounded-xl border {{ $errors->has('kelas') ? 'border-rose-400 bg-rose-50' : 'border-slate-300 bg-white' }} px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition">
                             <option value="" disabled {{ old('kelas') ? '' : 'selected' }}>Pilih Kelas</option>
-                            @foreach(['10 1', '10 2', '11 1', '11 2', '12 1', '12 2'] as $k)
+                            @foreach(['10 1', '10 2'] as $k)
                                 <option value="{{ $k }}" {{ old('kelas') == $k ? 'selected' : '' }}>
                                     Kelas {{ str_replace(' ', '.', $k) }}
                                 </option>

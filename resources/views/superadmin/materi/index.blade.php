@@ -99,7 +99,7 @@
                             <label class="block text-slate-700 text-xs font-bold mb-1.5">Kelas <span class="text-red-500">*</span></label>
                             <select name="kelas" id="kelas" class="w-full border rounded-xl px-3 py-2 text-sm text-slate-700 {{ $errors->has('kelas') ? 'border-red-400 bg-red-50' : 'border-slate-300' }}" required>
                                 <option value="">-- Pilih Kelas --</option>
-                                @foreach(['10 1', '10 2', '11 1', '11 2', '12 1', '12 2'] as $k)
+                                @foreach(['10 1', '10 2'] as $k)
                                     <option value="{{ $k }}" {{ old('kelas') == $k ? 'selected' : '' }}>
                                         Kelas {{ str_replace(' ', '.', $k) }}
                                     </option>

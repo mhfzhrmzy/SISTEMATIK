@@ -73,7 +73,7 @@
                     <select id="filterKelas"
                             class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition">
                         <option value="">— Semua Kelas —</option>
-                        @foreach(['10 1', '10 2', '11 1', '11 2', '12 1', '12 2'] as $k)
+                        @foreach(['10 1', '10 2'] as $k)
                             <option value="{{ $k }}">Kelas {{ str_replace(' ', '.', $k) }}</option>
                         @endforeach
                     </select>

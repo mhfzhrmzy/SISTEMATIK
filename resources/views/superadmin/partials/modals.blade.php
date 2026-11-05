@@ -57,16 +57,13 @@
                 <select id="edit-siswa-kelas" name="kelas" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition bg-white">
                     <option value="10 1">Kelas 10 1</option>
                     <option value="10 2">Kelas 10 2</option>
-                    <option value="11 1">Kelas 11 1</option>
-                    <option value="11 2">Kelas 11 2</option>
-                    <option value="12 1">Kelas 12 1</option>
-                    <option value="12 2">Kelas 12 2</option>
                 </select>
             </div>
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Tahun</label>
-                <input type="number" id="edit-siswa-tahun" name="tahun" min="2020" required
-                       class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition">
+                <input type="text" id="edit-siswa-tahun-display" value="" readonly
+                       class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-500 cursor-not-allowed">
+                <input type="hidden" id="edit-siswa-tahun" name="tahun" value="">
             </div>
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Jurusan</label>
@@ -218,6 +215,7 @@
         document.getElementById('edit-siswa-nama').value = nama;
         document.getElementById('edit-siswa-kelas').value = kelas;
         document.getElementById('edit-siswa-tahun').value = tahun;
+        document.getElementById('edit-siswa-tahun-display').value = tahun;
         document.getElementById('edit-siswa-jurusan').value = jurusan;
         document.getElementById('edit-siswa-modal').classList.remove('hidden');
     }

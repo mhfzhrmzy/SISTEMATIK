@@ -38,7 +38,7 @@
                     <label for="filterKelas" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Filter Kelas</label>
                     <select id="filterKelas" class="w-full px-3.5 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                         <option value="">— Semua Kelas —</option>
-                        @foreach(['10', '11', '12'] as $k)
+                        @foreach(['10 1', '10 2'] as $k)
                             <option value="{{ $k }}">Kelas {{ $k }}</option>
                         @endforeach
                     </select>

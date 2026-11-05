@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class SiswaManajemenController extends Controller
 {
     /** Daftar kelas yang tersedia di SMK. */
-    private const DAFTAR_KELAS = ['10 1', '10 2', '11 1', '11 2', '12 1', '12 2'];
+    private const DAFTAR_KELAS = ['10 1', '10 2'];
 
     /** Daftar jurusan yang tersedia di SMK. */
     private const DAFTAR_JURUSAN = [
@@ -233,7 +233,7 @@ class SiswaManajemenController extends Controller
             $handle = fopen('php://output', 'w');
             fputcsv($handle, ['nisn', 'nama_lengkap', 'kelas', 'tahun', 'jurusan', 'password']);
             fputcsv($handle, ['0051234567', 'Ahmad Subagyo', '10 1', '2026', 'Teknik Komputer & Jaringan', 'password123']);
-            fputcsv($handle, ['0051234568', 'Budi Utomo', '11 2', '2026', 'Desain Komunikasi Visual', 'password123']);
+            fputcsv($handle, ['0051234568', 'Budi Utomo', '10 2', '2026', 'Desain Komunikasi Visual', 'password123']);
             fclose($handle);
         }, 200, $headers);
     }
