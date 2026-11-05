@@ -60,6 +60,18 @@ class QuizSiswaController extends Controller
             }
         }
 
+        // Blokir pengerjaan ulang posttest jika sudah pernah dikerjakan
+        if ($quiz->tipe_test === 'posttest') {
+            $sudahDikerjakan = Leaderboard::where('id_quiz', $quiz->id_quiz)
+                ->where('nisn', auth('siswa')->id())
+                ->exists();
+
+            if ($sudahDikerjakan) {
+                return redirect()->route('portal.quiz.index', $quiz->materi)
+                    ->withErrors(['jadwal' => 'Anda sudah mengerjakan post-test ini dan tidak dapat mengerjakannya kembali.']);
+            }
+        }
+
         $soals = $quiz->soal;
 
         if ($quiz->is_shuffle && $soals->isNotEmpty()) {

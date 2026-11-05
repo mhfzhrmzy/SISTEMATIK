@@ -215,10 +215,16 @@
                                         🔒 Belum Dimulai
                                     </span>
                                 @elseif($statusJadwal === 'berlangsung')
-                                    <a href="{{ route('portal.quiz.kerjakan', $quiz) }}"
-                                       class="inline-flex items-center gap-1.5 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
-                                        ▶ Mulai Post-Test
-                                    </a>
+                                    @if($attempted)
+                                        <span class="inline-flex items-center gap-1.5 bg-[#E8F8F0] text-[#1F9254] text-xs font-semibold px-4 py-2.5 rounded-xl">
+                                            ✓ Sudah Dikerjakan
+                                        </span>
+                                    @else
+                                        <a href="{{ route('portal.quiz.kerjakan', $quiz) }}"
+                                           class="inline-flex items-center gap-1.5 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
+                                            ▶ Mulai Post-Test
+                                        </a>
+                                    @endif
                                 @elseif($statusJadwal === 'selesai')
                                     @if($attempted)
                                         <span class="inline-flex items-center gap-1.5 bg-[#E8F8F0] text-[#1F9254] text-xs font-semibold px-4 py-2.5 rounded-xl">
