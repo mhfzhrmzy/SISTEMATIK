@@ -54,11 +54,6 @@
                 <p class="text-xs text-[#6B7280] font-mono mt-0.5">NISN: {{ $siswa->nisn }}</p>
             </div>
 
-            <div class="bg-[#7B1038]/5 rounded-xl p-4 text-center">
-                <p class="text-[10px] font-bold text-[#7B1038] uppercase tracking-wider mb-0.5">Total Akumulasi Poin</p>
-                <p class="text-2xl font-black text-[#7B1038]">{{ $siswa->poin }} <span class="text-xs font-semibold text-[#6B7280]">Poin</span></p>
-            </div>
-
             <div class="pt-2 border-t border-gray-100 space-y-2 text-xs">
                 <div class="flex justify-between items-center text-[#6B7280]">
                     <span>Bergabung Sejak</span>
