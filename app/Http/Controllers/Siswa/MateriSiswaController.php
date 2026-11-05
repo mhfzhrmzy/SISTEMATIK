@@ -83,14 +83,6 @@ class MateriSiswaController extends Controller
                 $progress = (int) round(($completedComponents / $totalComponents) * 100);
             }
 
-            if ($progress === 100) {
-                $statusKey = 'selesai';
-            } elseif ($progress > 0) {
-                $statusKey = 'sedang-berjalan';
-            } else {
-                $statusKey = (! $hasPretest && ! $hasPosttest) ? 'semua' : 'belum-dimulai';
-            }
-
             $materi->kode_modul = str_replace(' ', '', $siswa->kelas ?? '10').$jurusanClean.'-'.sprintf('%02d', $index + 1);
             $materi->pretest = $pretest;
             $materi->posttest = $posttest;
@@ -103,22 +95,9 @@ class MateriSiswaController extends Controller
             $materi->isDibuka = $isDibuka;
             $materi->isMateriSelesai = $isMateriSelesai;
             $materi->progress = $progress;
-            $materi->statusKey = $statusKey;
         }
 
-        $countSemua = $materis->count();
-        $countSedangBerjalan = $materis->where('statusKey', 'sedang-berjalan')->count();
-        $countSelesai = $materis->where('statusKey', 'selesai')->count();
-        $countBelumDimulai = $materis->where('statusKey', 'belum-dimulai')->count();
-
-        return view('siswa.materi.index', compact(
-            'siswa',
-            'materis',
-            'countSemua',
-            'countSedangBerjalan',
-            'countSelesai',
-            'countBelumDimulai'
-        ));
+        return view('siswa.materi.index', compact('siswa', 'materis'));
     }
 
     /**
