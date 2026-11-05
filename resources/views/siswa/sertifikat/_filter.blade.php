@@ -22,7 +22,7 @@
 
         {{-- Panel filter (tersembunyi sampai tombol diklik) --}}
         <form id="formFilter" method="GET" action="{{ route('siswa.sertifikat.index') }}"
-              class="hidden absolute right-0 mt-2 z-30 w-[92vw] max-w-xl bg-white border border-gray-200 rounded-xl shadow-xl p-4">
+            class="hidden absolute right-0 mt-2 z-30 w-[92vw] max-w-xl bg-white border border-gray-200 rounded-xl shadow-xl p-4">
 
             <div class="flex items-center justify-between mb-3">
                 <p class="text-sm font-semibold text-gray-800">Filter tanggal terbit</p>
@@ -34,12 +34,12 @@
                 <div>
                     <label for="fltDari" class="block text-xs font-medium text-gray-500 mb-1">Dari tanggal</label>
                     <input type="date" id="fltDari" name="dari" value="{{ $dari?->toDateString() }}"
-                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
                     <label for="fltSampai" class="block text-xs font-medium text-gray-500 mb-1">Sampai tanggal</label>
                     <input type="date" id="fltSampai" name="sampai" value="{{ $sampai?->toDateString() }}"
-                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
             </div>
 
@@ -67,7 +67,7 @@
                 </select>
                 <select id="fltTahun" class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Pilih tahun</option>
-                    @for ($t = $tahunIni; $t >= $tahunIni - 6; $t--)
+                    @for ($t = $tahunIni; $t >= $tahunIni - 5; $t--)
                         <option value="{{ $t }}">{{ $t }}</option>
                     @endfor
                 </select>
@@ -76,7 +76,7 @@
             {{-- Tombol aksi --}}
             <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-end gap-2">
                 <a href="{{ route('siswa.sertifikat.index') }}"
-                   class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition">
+                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition">
                     Reset
                 </a>
                 <button type="submit"
@@ -97,7 +97,7 @@
             </svg>
             {{ $fmt($dari) ?? 'Awal' }} &ndash; {{ $fmt($sampai) ?? 'Sekarang' }}
             <a href="{{ route('siswa.sertifikat.index') }}" title="Hapus filter"
-               class="w-5 h-5 inline-flex items-center justify-center rounded-full hover:bg-blue-100">&times;</a>
+            class="w-5 h-5 inline-flex items-center justify-center rounded-full hover:bg-blue-100">&times;</a>
         </span>
         <span class="text-xs text-gray-500">{{ $sertifikat->count() }} sertifikat ditemukan</span>
     </div>
