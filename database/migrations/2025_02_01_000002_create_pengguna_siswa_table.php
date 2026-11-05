@@ -25,7 +25,7 @@ return new class extends Migration
                 'Desain Permodelan & Informasi Bangunan',
                 'Desain Komunikasi Visual',
             ]);
-            $table->enum('kelas', ['10 1', '10 2', '11 1', '11 2', '12 1', '12 2']);
+            $table->enum('kelas', ['10 1', '10 2']);
             $table->string('tahun', 4);
             $table->string('password');
             $table->string('foto_profile')->nullable();
