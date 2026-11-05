@@ -118,12 +118,6 @@
                                         <span>🎯 ±{{ round(100 / $quiz->soal->count(), 2) }} Poin/Soal</span>
                                     @endif
                                 </div>
-
-                                @if ($attempted)
-                                    <div class="inline-flex items-center gap-1.5 bg-[#E8F8F0] text-[#1F9254] text-xs font-bold px-3 py-1.5 rounded-xl">
-                                        🏆 Skor Anda: {{ $poin }} / 100 Poin
-                                    </div>
-                                @endif
                             </div>
 
                             <div class="shrink-0 self-start sm:self-center">
@@ -211,12 +205,6 @@
                                         <span>🎯 ±{{ round(100 / $quiz->soal->count(), 2) }} Poin/Soal</span>
                                     @endif
                                 </div>
-
-                                @if ($attempted)
-                                    <div class="inline-flex items-center gap-1.5 bg-[#E8F8F0] text-[#1F9254] text-xs font-bold px-3 py-1.5 rounded-xl">
-                                        🏆 Skor Anda: {{ $poin }} / 100 Poin
-                                    </div>
-                                @endif
                             </div>
 
                             <div class="shrink-0 self-start sm:self-center">

@@ -127,10 +127,10 @@
                                title="Lihat riwayat Pre-Test">
                                 <span class="text-white font-bold text-xs flex items-center justify-center gap-1">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                    {{ $materi->pretestAttempt->total_poin ?? '100' }}/100
+                                    Selesai
                                 </span>
                                 <span class="font-bold text-xs text-white mt-0.5">Pre-Test</span>
-                                <span class="text-[10px] text-white/80">Sudah Selesai</span>
+                                <span class="text-[10px] text-white/80">Sudah Dikerjakan</span>
                             </a>
                         @elseif ($materi->hasPretest)
                             {{-- Pre-Test Belum Dikerjakan -> MAROON SAMAR --}}
@@ -199,10 +199,10 @@
                                title="Lihat riwayat Post-Test">
                                 <span class="text-white font-bold text-xs flex items-center justify-center gap-1">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                    {{ $materi->posttestAttempt->total_poin ?? '100' }}/100
+                                    Selesai
                                 </span>
                                 <span class="font-bold text-xs text-white mt-0.5">Post-Test</span>
-                                <span class="text-[10px] text-white/80">Sudah Selesai</span>
+                                <span class="text-[10px] text-white/80">Sudah Dikerjakan</span>
                             </a>
                         @elseif ($materi->hasPosttest)
                             {{-- Post-Test Belum Dikerjakan (Siap Diuji) -> MAROON SAMAR --}}

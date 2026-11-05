@@ -59,8 +59,9 @@
             </div>
             <div>
                 <label class="mb-1 block text-xs font-bold text-slate-700">Tahun</label>
-                <input type="number" name="tahun" value="{{ old('tahun', date('Y')) }}" min="2020" required
-                       class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition">
+                <input type="text" value="{{ date('Y') }}" readonly
+                       class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-500 cursor-not-allowed">
+                <input type="hidden" name="tahun" value="{{ date('Y') }}">
             </div>
             <div>
                 <label class="mb-1 block text-xs font-bold text-slate-700">Jurusan</label>
