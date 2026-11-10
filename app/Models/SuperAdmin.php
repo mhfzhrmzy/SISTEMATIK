@@ -8,7 +8,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class SuperAdmin extends Authenticatable
 {
-    use Notifiable, HasApiTokens;
+    use HasApiTokens, Notifiable;
 
     protected $table = 'super_admin';
 
@@ -30,5 +30,25 @@ class SuperAdmin extends Authenticatable
             'nip' => 'string',
             'password' => 'hashed',
         ];
+    }
+
+    public function guruDibuat()
+    {
+        return $this->hasMany(AdminGuru::class, 'dibuat_oleh', 'nip');
+    }
+
+    public function siswaDibuat()
+    {
+        return $this->hasMany(PenggunaSiswa::class, 'dibuat_oleh', 'nip');
+    }
+
+    public function materiDikelola()
+    {
+        return $this->hasMany(Materi::class, 'nip_superadmin', 'nip');
+    }
+
+    public function soalDikelola()
+    {
+        return $this->hasMany(Soal::class, 'nip_superadmin', 'nip');
     }
 }

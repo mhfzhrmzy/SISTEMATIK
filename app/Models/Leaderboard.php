@@ -10,7 +10,7 @@ class Leaderboard extends Model
 
     protected $primaryKey = 'id_leaderboard';
 
-    protected $fillable = ['id_quiz', 'nisn', 'total_poin', 'peringkat'];
+    protected $fillable = ['id_quiz', 'nisn', 'total_poin'];
 
     public function quiz()
     {

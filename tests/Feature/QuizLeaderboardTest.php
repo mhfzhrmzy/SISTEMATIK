@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AdminGuru;
+use App\Models\Kelas;
 use App\Models\Leaderboard;
 use App\Models\Materi;
 use App\Models\PenggunaSiswa;
@@ -114,12 +115,13 @@ class QuizLeaderboardTest extends TestCase
 
     public function test_leaderboard_page_renders_successfully(): void
     {
+        $kelas = Kelas::findOrCreateByNama('Teknik Komputer & Jaringan', 10, 1, '2026');
+
         $siswa = PenggunaSiswa::create([
             'nisn' => '0059999999',
             'nama_lengkap' => 'Siswa Pintar',
             'email' => 'pintar@sekolah.sch.id',
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelas->id_kelas,
             'password' => 'password123',
         ]);
 
@@ -138,21 +140,22 @@ class QuizLeaderboardTest extends TestCase
             'role' => 'guru',
         ]);
 
+        $kelasTKJ = Kelas::findOrCreateByNama('Teknik Komputer & Jaringan', 10, 1, '2026');
+        $kelasMesin = Kelas::findOrCreateByNama('Teknik Pemesinan', 10, 2, '2026');
+
         $siswaA = PenggunaSiswa::create([
             'nisn' => '0051111111',
             'nama_lengkap' => 'Siswa Kelas 10 TKJ',
             'email' => 'siswaA@sekolah.sch.id',
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelasTKJ->id_kelas,
             'password' => 'password123',
         ]);
 
         $siswaB = PenggunaSiswa::create([
             'nisn' => '0052222222',
-            'nama_lengkap' => 'Siswa Kelas 11 Mesin',
+            'nama_lengkap' => 'Siswa Kelas 10 Mesin',
             'email' => 'siswaB@sekolah.sch.id',
-            'kelas' => '11',
-            'jurusan' => 'Teknik Pemesinan',
+            'id_kelas' => $kelasMesin->id_kelas,
             'password' => 'password123',
         ]);
 
@@ -160,13 +163,11 @@ class QuizLeaderboardTest extends TestCase
             'judul_materi' => 'Jaringan Komputer Dasar',
             'isi_materi' => 'Isi materi',
             'nip' => $admin->nip,
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelasTKJ->id_kelas,
         ]);
 
         $quiz = Quiz::create([
             'id_materi' => $materi->id_materi,
-            'nip' => $admin->nip,
             'tipe_test' => 'posttest',
             'poin' => 10,
             'timer' => 30,
@@ -185,17 +186,17 @@ class QuizLeaderboardTest extends TestCase
             'total_poin' => 60,
         ]);
 
-        // Filter kelas 10 & TKJ
+        // Filter kelas 10 1 & TKJ
         $response = $this->actingAs($admin, 'admin')->get(route('leaderboard.index', [
-            'kelas' => '10',
+            'kelas' => '10 1',
             'jurusan' => 'Teknik Komputer & Jaringan',
         ]));
 
         $response->assertStatus(200);
         $response->assertSee('Siswa Kelas 10 TKJ');
-        $response->assertDontSee('Siswa Kelas 11 Mesin');
+        $response->assertDontSee('Siswa Kelas 10 Mesin');
         $response->assertSee('Teknik Komputer & Jaringan');
-        $response->assertSee('Kelas 10');
+        $response->assertSee('Kelas 10 1');
     }
 
     public function test_guru_can_view_leaderboard_permateri_with_pretest_and_posttest(): void
@@ -208,12 +209,13 @@ class QuizLeaderboardTest extends TestCase
             'role' => 'guru',
         ]);
 
+        $kelas = Kelas::findOrCreateByNama('Teknik Komputer & Jaringan', 10, 1, '2026');
+
         $siswa = PenggunaSiswa::create([
             'nisn' => '0053333333',
             'nama_lengkap' => 'Siswa Penguji',
             'email' => 'penguji@sekolah.sch.id',
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelas->id_kelas,
             'password' => 'password123',
         ]);
 
@@ -221,13 +223,11 @@ class QuizLeaderboardTest extends TestCase
             'judul_materi' => 'Sistem Operasi',
             'isi_materi' => 'Konten OS',
             'nip' => $admin->nip,
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelas->id_kelas,
         ]);
 
         $quizPre = Quiz::create([
             'id_materi' => $materi->id_materi,
-            'nip' => $admin->nip,
             'tipe_test' => 'pretest',
             'poin' => 10,
             'timer' => 30,
@@ -236,7 +236,6 @@ class QuizLeaderboardTest extends TestCase
 
         $quizPost = Quiz::create([
             'id_materi' => $materi->id_materi,
-            'nip' => $admin->nip,
             'tipe_test' => 'posttest',
             'poin' => 10,
             'timer' => 30,
@@ -307,21 +306,22 @@ class QuizLeaderboardTest extends TestCase
             'role' => 'guru',
         ]);
 
+        $kelasTKJ = Kelas::findOrCreateByNama('Teknik Komputer & Jaringan', 10, 1, '2026');
+        $kelasMesin = Kelas::findOrCreateByNama('Teknik Pemesinan', 10, 2, '2026');
+
         $siswaTKJ = PenggunaSiswa::create([
             'nisn' => '0054444441',
             'nama_lengkap' => 'Siswa Kelas 10 TKJ Satu',
             'email' => 'tkj1@sekolah.sch.id',
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelasTKJ->id_kelas,
             'password' => 'password123',
         ]);
 
         $siswaMesin = PenggunaSiswa::create([
             'nisn' => '0054444442',
-            'nama_lengkap' => 'Siswa Kelas 11 Mesin Dua',
+            'nama_lengkap' => 'Siswa Kelas 10 Mesin Dua',
             'email' => 'mesin2@sekolah.sch.id',
-            'kelas' => '11',
-            'jurusan' => 'Teknik Pemesinan',
+            'id_kelas' => $kelasMesin->id_kelas,
             'password' => 'password123',
         ]);
 
@@ -329,21 +329,18 @@ class QuizLeaderboardTest extends TestCase
             'judul_materi' => 'Jaringan Komputer Siswa',
             'isi_materi' => 'Konten Jarkom',
             'nip' => $admin->nip,
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelasTKJ->id_kelas,
         ]);
 
         $materiMesin = Materi::create([
             'judul_materi' => 'Teknik Bubut Siswa',
             'isi_materi' => 'Konten Bubut',
             'nip' => $admin->nip,
-            'kelas' => '11',
-            'jurusan' => 'Teknik Pemesinan',
+            'id_kelas' => $kelasMesin->id_kelas,
         ]);
 
         $quizTKJPre = Quiz::create([
             'id_materi' => $materiTKJ->id_materi,
-            'nip' => $admin->nip,
             'tipe_test' => 'pretest',
             'poin' => 10,
             'timer' => 30,
@@ -352,7 +349,6 @@ class QuizLeaderboardTest extends TestCase
 
         $quizTKJPost = Quiz::create([
             'id_materi' => $materiTKJ->id_materi,
-            'nip' => $admin->nip,
             'tipe_test' => 'posttest',
             'poin' => 10,
             'timer' => 30,
@@ -361,7 +357,6 @@ class QuizLeaderboardTest extends TestCase
 
         $quizMesinPost = Quiz::create([
             'id_materi' => $materiMesin->id_materi,
-            'nip' => $admin->nip,
             'tipe_test' => 'posttest',
             'poin' => 10,
             'timer' => 30,
@@ -396,7 +391,7 @@ class QuizLeaderboardTest extends TestCase
         $response->assertSee('Siswa Kelas 10 TKJ Satu');
         $response->assertSee('0054444441');
         // Tidak boleh melihat siswa dari kelas/jurusan lain
-        $response->assertDontSee('Siswa Kelas 11 Mesin Dua');
+        $response->assertDontSee('Siswa Kelas 10 Mesin Dua');
         // Tidak boleh melihat nilai pre-test (40)
         $response->assertDontSee('Pre-Test');
         $response->assertSee('Post-Test');
@@ -404,12 +399,14 @@ class QuizLeaderboardTest extends TestCase
 
     public function test_siswa_cannot_tamper_kelas_or_jurusan_via_query_params(): void
     {
+        $kelasTKJ = Kelas::findOrCreateByNama('Teknik Komputer & Jaringan', 10, 1, '2026');
+        $kelasMesin = Kelas::findOrCreateByNama('Teknik Pemesinan', 10, 2, '2026');
+
         $siswaTKJ = PenggunaSiswa::create([
             'nisn' => '0055555551',
             'nama_lengkap' => 'Siswa Anti Tamper',
             'email' => 'tamper@sekolah.sch.id',
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelasTKJ->id_kelas,
             'password' => 'password123',
         ]);
 
@@ -417,21 +414,20 @@ class QuizLeaderboardTest extends TestCase
             'nisn' => '0055555552',
             'nama_lengkap' => 'Siswa Mesin Tersembunyi',
             'email' => 'sembunyi@sekolah.sch.id',
-            'kelas' => '11',
-            'jurusan' => 'Teknik Pemesinan',
+            'id_kelas' => $kelasMesin->id_kelas,
             'password' => 'password123',
         ]);
 
-        // Siswa TKJ mencoba mengintip Kelas 11 Mesin via URL parameter
+        // Siswa TKJ mencoba mengintip Kelas 10 2 Mesin via URL parameter
         $response = $this->actingAs($siswaTKJ, 'siswa')->get(route('leaderboard.index', [
-            'kelas' => '11',
+            'kelas' => '10 2',
             'jurusan' => 'Teknik Pemesinan',
             'tipe_test' => 'pretest',
         ]));
 
         $response->assertStatus(200);
-        // Tetap terkunci ke kelas siswa tersebut (10 TKJ)
+        // Tetap terkunci ke kelas siswa tersebut (10 1 TKJ)
         $response->assertDontSee('Siswa Mesin Tersembunyi');
-        $response->assertSee('Kelas 10 • Teknik Komputer & Jaringan');
+        $response->assertSee('Kelas 10 1 • Teknik Komputer & Jaringan');
     }
 }

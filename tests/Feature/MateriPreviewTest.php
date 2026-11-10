@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AdminGuru;
+use App\Models\Kelas;
 use App\Models\Materi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -29,14 +30,15 @@ class MateriPreviewTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
+        $kelas = Kelas::findOrCreateByNama('Teknik Komputer & Jaringan', 10, 1, (string) date('Y'));
+
         $file = UploadedFile::fake()->create('modul_test.pdf', 100, 'application/pdf');
         $filePath = $file->store('materi', 'public');
 
         $this->materi = Materi::create([
             'judul_materi' => 'Materi Pemrograman Web',
             'nip' => $this->guru->nip,
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelas->id_kelas,
             'isi_materi' => 'Isi deskripsi materi web',
             'upload_file' => $filePath,
         ]);
@@ -48,8 +50,8 @@ class MateriPreviewTest extends TestCase
             ->get(route('materi.edit', $this->materi));
 
         $response->assertStatus(200);
-        $response->assertSee('Edit Data Materi');
-        $response->assertSee('Lihat File Modul');
+        $response->assertSee('Edit Bahan Ajar');
+        $response->assertSee('Buka File');
     }
 
     public function test_guru_can_view_direct_materi_file(): void

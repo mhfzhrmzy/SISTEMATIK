@@ -12,9 +12,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login/siswa', [AuthController::class, 'loginSiswa']);
 Route::post('/login/guru', [AuthController::class, 'loginGuru']);
 
-// TTS Public 
+// TTS Public
 Route::post('/tts', [ApiTtsController::class, 'synthesize']);
-
 
 // === SISWA (token auth) ===
 Route::middleware('auth:sanctum')->prefix('siswa')->group(function () {
@@ -40,5 +39,5 @@ Route::middleware('auth:sanctum')->prefix('siswa')->group(function () {
     // Sertifikat
     Route::get('/sertifikat', [SertifikatApiController::class, 'index']);
     Route::get('/sertifikat/{sertifikat}/download', [SertifikatApiController::class, 'download']);
-    
+
 });

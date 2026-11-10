@@ -10,10 +10,12 @@ class SuperAdminSeeder extends Seeder
 {
     public function run(): void
     {
-        SuperAdmin::create([
-            'nip' => '123456789012345678',
-            'nama_lengkap' => 'SuperAdministrator',
-            'password' => Hash::make('password123'),
-        ]);
+        SuperAdmin::firstOrCreate(
+            ['nip' => '123456789012345678'],
+            [
+                'nama_lengkap' => 'SuperAdministrator',
+                'password' => Hash::make('password123'),
+            ]
+        );
     }
 }

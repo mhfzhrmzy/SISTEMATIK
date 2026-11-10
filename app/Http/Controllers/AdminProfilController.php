@@ -13,6 +13,7 @@ class AdminProfilController extends Controller
     {
         /** @var AdminGuru $admin */
         $admin = auth('admin')->user();
+
         return view('admin.profil', compact('admin'));
     }
 
@@ -33,7 +34,7 @@ class AdminProfilController extends Controller
         return back()->with('success', 'Foto profil berhasil diperbarui.');
     }
 
-        public function hapusFoto()
+    public function hapusFoto()
     {
         /** @var AdminGuru $admin */
         $admin = auth('admin')->user();
@@ -58,7 +59,7 @@ class AdminProfilController extends Controller
         /** @var AdminGuru $admin */
         $admin = auth('admin')->user();
 
-        if (!Hash::check($request->password_lama, $admin->password)) {
+        if (! Hash::check($request->password_lama, $admin->password)) {
             return back()->withErrors(['password_lama' => 'Password lama tidak sesuai.']);
         }
 

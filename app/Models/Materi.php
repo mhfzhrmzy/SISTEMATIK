@@ -10,11 +10,21 @@ class Materi extends Model
 
     protected $primaryKey = 'id_materi';
 
-    protected $fillable = ['nip', 'kelas', 'tahun', 'jurusan', 'judul_materi', 'isi_materi', 'upload_file'];
+    protected $fillable = ['nip', 'nip_superadmin', 'id_kelas', 'judul_materi', 'isi_materi', 'upload_file'];
 
     public function adminGuru()
     {
         return $this->belongsTo(AdminGuru::class, 'nip', 'nip');
+    }
+
+    public function superAdmin()
+    {
+        return $this->belongsTo(SuperAdmin::class, 'nip_superadmin', 'nip');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'id_kelas', 'id_kelas');
     }
 
     public function quiz()
@@ -25,5 +35,23 @@ class Materi extends Model
     public function materiSiswa()
     {
         return $this->hasMany(MateriSiswa::class, 'id_materi', 'id_materi');
+    }
+
+    public function getJurusanAttribute(): ?string
+    {
+        if ($this->relationLoaded('kelas')) {
+            return $this->kelas?->jurusan?->nama_jurusan;
+        }
+
+        return $this->kelas()->with('jurusan')->first()?->jurusan?->nama_jurusan;
+    }
+
+    public function getTahunAttribute(): ?string
+    {
+        if ($this->relationLoaded('kelas')) {
+            return $this->kelas?->tahun;
+        }
+
+        return $this->kelas?->tahun;
     }
 }

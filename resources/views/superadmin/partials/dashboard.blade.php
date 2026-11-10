@@ -110,7 +110,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-3 py-6 text-center text-slate-400 font-medium">Belum ada akun guru.</td>
+                                <td colspan="3" class="px-3 py-6 text-center text-slate-400 font-medium">Belum ada akun guru.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -161,7 +161,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-3 py-6 text-center text-slate-400 font-medium">Belum ada akun siswa.</td>
+                                <td colspan="3" class="px-3 py-6 text-center text-slate-400 font-medium">Belum ada akun siswa.</td>
                             </tr>
                         @endforelse
                     </tbody>

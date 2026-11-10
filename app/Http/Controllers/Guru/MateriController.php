@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminGuru;
+use App\Models\Kelas;
 use App\Models\Materi;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +21,7 @@ class MateriController extends Controller
      */
     public function index(): View
     {
-        $materis = Materi::with('adminGuru')->latest()->get();
+        $materis = Materi::with(['adminGuru', 'kelas.jurusan'])->latest()->get();
         $admins = AdminGuru::orderBy('nama_lengkap', 'asc')->get();
 
         return view('guru.materi.index', compact('materis', 'admins'));
@@ -32,16 +33,6 @@ class MateriController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'judul_materi' => [
-                'required',
-                'string',
-                'max:255',
-                'regex:/^[a-zA-Z0-9 ]+$/',
-                Rule::unique('materi', 'judul_materi')
-                    ->where('kelas', $request->input('kelas'))
-                    ->where('jurusan', $request->input('jurusan'))
-                    ->where('tahun', $request->input('tahun')),
-            ],
             'nip' => 'nullable|exists:admin_guru,nip',
             'kelas' => 'required|in:10 1,10 2,11 1,11 2,12 1,12 2',
             'tahun' => 'required|digits:4|integer|min:2020|max:2099',
@@ -49,9 +40,6 @@ class MateriController extends Controller
             'isi_materi' => 'nullable|string',
             'upload_file' => 'required|mimes:pdf,pptx,ppt,doc,docx|max:25600',
         ], [
-            'judul_materi.required' => 'Judul materi wajib diisi.',
-            'judul_materi.regex' => 'Judul materi hanya boleh berisi huruf dan angka.',
-            'judul_materi.unique' => 'Judul materi sudah ada untuk kelas dan jurusan yang sama.',
             'kelas.required' => 'Kelas wajib dipilih.',
             'jurusan.required' => 'Jurusan wajib dipilih.',
             'upload_file.required' => 'File modul materi wajib diupload.',
@@ -64,6 +52,25 @@ class MateriController extends Controller
             'tahun.max' => 'Tahun maksimal 2099.',
         ]);
 
+        $parts = explode(' ', $request->input('kelas'));
+        $tingkat = (int) ($parts[0] ?? 10);
+        $rombel = (int) ($parts[1] ?? 1);
+        $kelasModel = Kelas::findOrCreateByNama($request->input('jurusan'), $tingkat, $rombel, (string) $request->input('tahun'));
+
+        $request->validate([
+            'judul_materi' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z0-9 ]+$/',
+                Rule::unique('materi', 'judul_materi')->where('id_kelas', $kelasModel?->id_kelas),
+            ],
+        ], [
+            'judul_materi.required' => 'Judul materi wajib diisi.',
+            'judul_materi.regex' => 'Judul materi hanya boleh berisi huruf dan angka.',
+            'judul_materi.unique' => 'Judul materi sudah ada untuk kelas dan jurusan yang sama.',
+        ]);
+
         $filePath = null;
         if ($request->hasFile('upload_file')) {
             $filePath = $request->file('upload_file')->store('materi', 'public');
@@ -74,9 +81,7 @@ class MateriController extends Controller
         Materi::create([
             'judul_materi' => $request->judul_materi,
             'nip' => $nip,
-            'kelas' => $request->kelas,
-            'tahun' => $request->tahun,
-            'jurusan' => $request->jurusan,
+            'id_kelas' => $kelasModel?->id_kelas,
             'isi_materi' => $request->isi_materi ?? '',
             'upload_file' => $filePath,
         ]);
@@ -101,6 +106,7 @@ class MateriController extends Controller
      */
     public function edit(Materi $materi): View
     {
+        $materi->load(['kelas.jurusan', 'adminGuru']);
         $admins = AdminGuru::orderBy('nama_lengkap', 'asc')->get();
 
         return view('guru.materi.edit', compact('materi', 'admins'));
@@ -112,17 +118,6 @@ class MateriController extends Controller
     public function update(Request $request, Materi $materi): RedirectResponse
     {
         $request->validate([
-            'judul_materi' => [
-                'required',
-                'string',
-                'max:255',
-                'regex:/^[a-zA-Z0-9 ]+$/',
-                Rule::unique('materi', 'judul_materi')
-                    ->ignore($materi->id_materi, 'id_materi')
-                    ->where('kelas', $request->input('kelas'))
-                    ->where('jurusan', $request->input('jurusan'))
-                    ->where('tahun', $request->input('tahun')),
-            ],
             'nip' => 'nullable|exists:admin_guru,nip',
             'kelas' => 'required|in:10 1,10 2,11 1,11 2,12 1,12 2',
             'tahun' => 'required|digits:4|integer|min:2020|max:2099',
@@ -130,9 +125,6 @@ class MateriController extends Controller
             'isi_materi' => 'nullable|string',
             'upload_file' => 'nullable|mimes:pdf,pptx,ppt,doc,docx|max:25600',
         ], [
-            'judul_materi.required' => 'Judul materi wajib diisi.',
-            'judul_materi.regex' => 'Judul materi hanya boleh berisi huruf dan angka.',
-            'judul_materi.unique' => 'Judul materi sudah ada untuk kelas dan jurusan yang sama.',
             'kelas.required' => 'Kelas wajib dipilih.',
             'jurusan.required' => 'Jurusan wajib dipilih.',
             'tahun.required' => 'Tahun wajib diisi.',
@@ -142,12 +134,31 @@ class MateriController extends Controller
             'tahun.max' => 'Tahun maksimal 2099.',
         ]);
 
+        $parts = explode(' ', $request->input('kelas'));
+        $tingkat = (int) ($parts[0] ?? 10);
+        $rombel = (int) ($parts[1] ?? 1);
+        $kelasModel = Kelas::findOrCreateByNama($request->input('jurusan'), $tingkat, $rombel, (string) $request->input('tahun'));
+
+        $request->validate([
+            'judul_materi' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z0-9 ]+$/',
+                Rule::unique('materi', 'judul_materi')
+                    ->ignore($materi->id_materi, 'id_materi')
+                    ->where('id_kelas', $kelasModel?->id_kelas),
+            ],
+        ], [
+            'judul_materi.required' => 'Judul materi wajib diisi.',
+            'judul_materi.regex' => 'Judul materi hanya boleh berisi huruf dan angka.',
+            'judul_materi.unique' => 'Judul materi sudah ada untuk kelas dan jurusan yang sama.',
+        ]);
+
         $data = [
             'judul_materi' => $request->judul_materi,
             'nip' => $request->input('nip') ?: $materi->nip,
-            'kelas' => $request->kelas,
-            'tahun' => $request->tahun,
-            'jurusan' => $request->jurusan,
+            'id_kelas' => $kelasModel?->id_kelas,
             'isi_materi' => $request->isi_materi ?? '',
         ];
 

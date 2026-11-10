@@ -18,8 +18,8 @@ class QuizController extends Controller
      */
     public function index(): View
     {
-        $quizzes = Quiz::with(['materi', 'adminGuru', 'soal'])->latest()->get();
-        $materis = Materi::orderBy('judul_materi')->get();
+        $quizzes = Quiz::with(['materi.adminGuru', 'materi.kelas.jurusan', 'soal'])->latest()->get();
+        $materis = Materi::with(['adminGuru', 'kelas.jurusan'])->orderBy('judul_materi')->get();
 
         // Kombinasi id_materi => [tipe_test, ...] yang sudah ada (untuk mencegah duplikat)
         $existingCombinations = Quiz::select('id_materi', 'tipe_test')
@@ -73,7 +73,7 @@ class QuizController extends Controller
         }
 
         $validated['poin'] = 100; // Otomatis total 100 poin (poin per soal = 100 / jumlah soal)
-        $validated['nip'] = auth('admin')->id();
+        unset($validated['nip']);
 
         if (! $isPosttest) {
             $validated['tanggal'] = now()->toDateString();

@@ -8,7 +8,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class AdminGuru extends Authenticatable
 {
-    use Notifiable, HasApiTokens;
+    use HasApiTokens, Notifiable;
 
     protected $table = 'admin_guru';
 
@@ -19,7 +19,7 @@ class AdminGuru extends Authenticatable
     protected $keyType = 'string';
 
     protected $fillable = [
-        'nip', 'nama_lengkap', 'password', 'foto_profile',
+        'nip', 'nama_lengkap', 'password', 'foto_profile', 'dibuat_oleh',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -37,8 +37,8 @@ class AdminGuru extends Authenticatable
         return $this->hasMany(Materi::class, 'nip', 'nip');
     }
 
-    public function quiz()
+    public function dibuatOleh()
     {
-        return $this->hasMany(Quiz::class, 'nip', 'nip');
+        return $this->belongsTo(SuperAdmin::class, 'dibuat_oleh', 'nip');
     }
 }

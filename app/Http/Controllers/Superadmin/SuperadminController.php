@@ -34,13 +34,19 @@ class SuperadminController extends Controller
         }
         $gurus = $guruQuery->get();
 
-        $siswaQuery = PenggunaSiswa::orderBy('nama_lengkap');
+        $siswaQuery = PenggunaSiswa::with('kelas.jurusan')->orderBy('nama_lengkap');
         if ($search !== '') {
             $siswaQuery->where(function ($q) use ($search) {
                 $q->where('nisn', 'like', "%{$search}%")
                     ->orWhere('nama_lengkap', 'like', "%{$search}%")
-                    ->orWhere('kelas', 'like', "%{$search}%")
-                    ->orWhere('jurusan', 'like', "%{$search}%");
+                    ->orWhereHas('kelas', function ($kq) use ($search) {
+                        $kq->where('tingkat', 'like', "%{$search}%")
+                            ->orWhere('rombel', 'like', "%{$search}%")
+                            ->orWhere('tahun', 'like', "%{$search}%")
+                            ->orWhereHas('jurusan', function ($jq) use ($search) {
+                                $jq->where('nama_jurusan', 'like', "%{$search}%");
+                            });
+                    });
             });
         }
         $siswas = $siswaQuery->get();

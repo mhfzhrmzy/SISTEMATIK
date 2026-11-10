@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Superadmin;
 use App\Http\Controllers\Controller;
 use App\Models\AdminGuru;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -51,7 +52,7 @@ class GuruManajemenController extends Controller
         }
 
         $validated['password'] = Hash::make($validated['password']);
-        $validated['role'] = 'guru';
+        $validated['dibuat_oleh'] = Auth::guard('superadmin')->id();
 
         AdminGuru::create($validated);
 
@@ -166,7 +167,11 @@ class GuruManajemenController extends Controller
 
                 AdminGuru::updateOrCreate(
                     ['nip' => $nip],
-                    ['nama_lengkap' => $namaLengkap, 'password' => $password]
+                    [
+                        'nama_lengkap' => $namaLengkap,
+                        'password' => $password,
+                        'dibuat_oleh' => Auth::guard('superadmin')->id(),
+                    ]
                 );
 
                 $importedCount++;

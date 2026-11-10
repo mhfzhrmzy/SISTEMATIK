@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kelas;
 use App\Models\PenggunaSiswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -29,7 +31,7 @@ class SiswaManajemenController extends Controller
      */
     public function index()
     {
-        $siswas = PenggunaSiswa::latest()->get();
+        $siswas = PenggunaSiswa::with('kelas.jurusan')->latest()->get();
 
         return view('siswa.index', compact('siswas'));
     }
@@ -39,6 +41,8 @@ class SiswaManajemenController extends Controller
      */
     public function edit(PenggunaSiswa $siswa)
     {
+        $siswa->load('kelas.jurusan');
+
         return view('siswa.edit', compact('siswa'));
     }
 
@@ -64,14 +68,25 @@ class SiswaManajemenController extends Controller
             'foto_profile.max' => 'Ukuran foto profil tidak boleh lebih dari 5 MB.',
         ]);
 
+        $parts = explode(' ', $validated['kelas']);
+        $tingkat = (int) ($parts[0] ?? 10);
+        $rombel = (int) ($parts[1] ?? 1);
+
+        $kelasModel = Kelas::findOrCreateByNama($validated['jurusan'], $tingkat, $rombel, $validated['tahun']);
+
+        $fotoProfilePath = null;
         if ($request->hasFile('foto_profile')) {
-            $validated['foto_profile'] = $request->file('foto_profile')->store('siswa/foto', 'public');
+            $fotoProfilePath = $request->file('foto_profile')->store('siswa/foto', 'public');
         }
 
-        $validated['password'] = Hash::make($validated['password']);
-        $validated['poin'] = 0;
-
-        PenggunaSiswa::create($validated);
+        PenggunaSiswa::create([
+            'nisn' => $validated['nisn'],
+            'nama_lengkap' => $validated['nama_lengkap'],
+            'id_kelas' => $kelasModel->id_kelas,
+            'password' => Hash::make($validated['password']),
+            'foto_profile' => $fotoProfilePath,
+            'dibuat_oleh' => Auth::guard('superadmin')->id(),
+        ]);
 
         $redirectRoute = $request->input('from') === 'superadmin' ? 'superadmin.index' : 'siswa.index';
         $redirectParameters = $request->input('from') === 'superadmin' ? ['menu' => 'siswa'] : [];
@@ -101,20 +116,30 @@ class SiswaManajemenController extends Controller
             'foto_profile.max' => 'Ukuran foto profil tidak boleh lebih dari 5 MB.',
         ]);
 
+        $parts = explode(' ', $validated['kelas']);
+        $tingkat = (int) ($parts[0] ?? 10);
+        $rombel = (int) ($parts[1] ?? 1);
+
+        $kelasModel = Kelas::findOrCreateByNama($validated['jurusan'], $tingkat, $rombel, $validated['tahun']);
+
+        $dataToUpdate = [
+            'nisn' => $validated['nisn'],
+            'nama_lengkap' => $validated['nama_lengkap'],
+            'id_kelas' => $kelasModel->id_kelas,
+        ];
+
         if ($request->hasFile('foto_profile')) {
             if ($siswa->foto_profile) {
                 Storage::disk('public')->delete($siswa->foto_profile);
             }
-            $validated['foto_profile'] = $request->file('foto_profile')->store('siswa/foto', 'public');
-        } else {
-            unset($validated['foto_profile']);
+            $dataToUpdate['foto_profile'] = $request->file('foto_profile')->store('siswa/foto', 'public');
         }
 
-        $validated['password'] = $request->filled('password')
-            ? Hash::make($validated['password'])
-            : $siswa->password;
+        if ($request->filled('password')) {
+            $dataToUpdate['password'] = Hash::make($validated['password']);
+        }
 
-        $siswa->update($validated);
+        $siswa->update($dataToUpdate);
 
         $redirectRoute = $request->input('from') === 'superadmin' ? 'superadmin.index' : 'siswa.index';
         $redirectParameters = $request->input('from') === 'superadmin' ? ['menu' => 'siswa'] : [];
@@ -199,11 +224,22 @@ class SiswaManajemenController extends Controller
                     $jurusan = 'Teknik Komputer & Jaringan';
                 }
 
+                $parts = explode(' ', $kelas);
+                $tingkat = (int) ($parts[0] ?? 10);
+                $rombel = (int) ($parts[1] ?? 1);
+
+                $kelasModel = Kelas::findOrCreateByNama($jurusan, $tingkat, $rombel, $tahun);
+
                 $password = $passwordRaw !== '' ? Hash::make($passwordRaw) : Hash::make('password123');
 
                 PenggunaSiswa::updateOrCreate(
                     ['nisn' => $nisn],
-                    ['nama_lengkap' => $namaLengkap, 'kelas' => $kelas, 'tahun' => $tahun, 'jurusan' => $jurusan, 'password' => $password, 'poin' => 0]
+                    [
+                        'nama_lengkap' => $namaLengkap,
+                        'id_kelas' => $kelasModel->id_kelas,
+                        'password' => $password,
+                        'dibuat_oleh' => Auth::guard('superadmin')->id(),
+                    ]
                 );
 
                 $importedCount++;

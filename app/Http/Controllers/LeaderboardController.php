@@ -34,7 +34,8 @@ class LeaderboardController extends Controller
         // 1. Filter Kelas, Jurusan, dan Tipe Test berdasarkan Aktor (Guru vs Siswa)
         if ($isSiswa) {
             $siswa = auth('siswa')->user();
-            $kelas = $siswa->kelas;
+            $siswa->load('kelas.jurusan');
+            $kelas = (string) $siswa->kelas;
             $jurusan = $siswa->jurusan;
             $tahun = $siswa->tahun;
             // Siswa HANYA menampilkan post-test di kelas, jurusan & tahun masuknya sendiri
@@ -44,9 +45,7 @@ class LeaderboardController extends Controller
             $daftarMateri = Materi::with(['quiz' => function ($q) {
                 $q->where('tipe_test', 'posttest');
             }])
-                ->where('kelas', $kelas)
-                ->where('jurusan', $jurusan)
-                ->where('tahun', $tahun)
+                ->where('id_kelas', $siswa->id_kelas)
                 ->orderBy('judul_materi', 'asc')
                 ->get();
         } else {
@@ -67,19 +66,49 @@ class LeaderboardController extends Controller
             }
 
             // Daftar Materi untuk Guru (disaring berdasarkan kelas dan jurusan jika dipilih)
-            $materiQuery = Materi::with(['quiz']);
+            $materiQuery = Materi::with(['quiz', 'kelas.jurusan']);
             if ($kelas) {
-                $materiQuery->where(function ($q) use ($kelas) {
-                    $q->where('kelas', $kelas)->orWhereNull('kelas');
+                $parts = explode(' ', $kelas);
+                $tingkat = (int) ($parts[0] ?? 0);
+                $rombel = (int) ($parts[1] ?? 0);
+                $materiQuery->where(function ($q) use ($tingkat, $rombel) {
+                    $q->whereHas('kelas', function ($kq) use ($tingkat, $rombel) {
+                        $kq->where('tingkat', $tingkat);
+                        if ($rombel > 0) {
+                            $kq->where('rombel', $rombel);
+                        }
+                    })->orWhereNull('id_kelas');
                 });
             }
             if ($jurusan) {
                 $materiQuery->where(function ($q) use ($jurusan) {
-                    $q->where('jurusan', $jurusan)->orWhereNull('jurusan');
+                    $q->whereHas('kelas.jurusan', function ($kq) use ($jurusan) {
+                        $kq->where('nama_jurusan', $jurusan);
+                    })->orWhereNull('id_kelas');
                 });
             }
             $daftarMateri = $materiQuery->orderBy('judul_materi', 'asc')->get();
         }
+
+        // Helper closure untuk filter pengguna siswa berdasarkan kelas dan jurusan
+        $filterPengguna = function ($q) use ($kelas, $jurusan) {
+            if ($kelas) {
+                $parts = explode(' ', $kelas);
+                $tingkat = (int) ($parts[0] ?? 0);
+                $rombel = (int) ($parts[1] ?? 0);
+                $q->whereHas('kelas', function ($kq) use ($tingkat, $rombel) {
+                    $kq->where('tingkat', $tingkat);
+                    if ($rombel > 0) {
+                        $kq->where('rombel', $rombel);
+                    }
+                });
+            }
+            if ($jurusan) {
+                $q->whereHas('kelas.jurusan', function ($kq) use ($jurusan) {
+                    $kq->where('nama_jurusan', $jurusan);
+                });
+            }
+        };
 
         // 2. Tipe Leaderboard: 'keseluruhan' atau 'permateri'
         $tipeLeaderboard = $request->query('tipe_leaderboard', 'keseluruhan');
@@ -105,18 +134,11 @@ class LeaderboardController extends Controller
             if ($selectedMateri) {
                 if (! $filterTest) {
                     // "Semua (Pre & Post)": akumulasi poin pre-test + post-test per siswa untuk materi ini
-                    $query = Leaderboard::with('pengguna')
+                    $query = Leaderboard::with('pengguna.kelas.jurusan')
                         ->whereHas('quiz', fn ($q) => $q->where('id_materi', $selectedMateri->id_materi));
 
                     if ($kelas || $jurusan) {
-                        $query->whereHas('pengguna', function ($q) use ($kelas, $jurusan) {
-                            if ($kelas) {
-                                $q->where('kelas', $kelas);
-                            }
-                            if ($jurusan) {
-                                $q->where('jurusan', $jurusan);
-                            }
-                        });
+                        $query->whereHas('pengguna', $filterPengguna);
                     }
 
                     $leaderboards = $query
@@ -127,21 +149,14 @@ class LeaderboardController extends Controller
                         ->get();
                 } else {
                     // Tipe test spesifik (pretest / posttest): tampilkan baris per kuis
-                    $query = Leaderboard::with(['quiz.materi', 'pengguna'])
+                    $query = Leaderboard::with(['quiz.materi', 'pengguna.kelas.jurusan'])
                         ->whereHas('quiz', function ($q) use ($selectedMateri, $filterTest) {
                             $q->where('id_materi', $selectedMateri->id_materi);
                             $q->where('tipe_test', $filterTest);
                         });
 
                     if ($kelas || $jurusan) {
-                        $query->whereHas('pengguna', function ($q) use ($kelas, $jurusan) {
-                            if ($kelas) {
-                                $q->where('kelas', $kelas);
-                            }
-                            if ($jurusan) {
-                                $q->where('jurusan', $jurusan);
-                            }
-                        });
+                        $query->whereHas('pengguna', $filterPengguna);
                     }
 
                     $leaderboards = $query->orderBy('total_poin', 'desc')
@@ -153,22 +168,15 @@ class LeaderboardController extends Controller
             }
         } else {
             // Leaderboard keseluruhan: Akumulasi total skor per siswa untuk semua materi
-            $query = Leaderboard::with('pengguna');
+            $query = Leaderboard::with('pengguna.kelas.jurusan');
 
             if ($kelas || $jurusan) {
-                $query->whereHas('pengguna', function ($q) use ($kelas, $jurusan) {
-                    if ($kelas) {
-                        $q->where('kelas', $kelas);
-                    }
-                    if ($jurusan) {
-                        $q->where('jurusan', $jurusan);
-                    }
-                });
+                $query->whereHas('pengguna', $filterPengguna);
             }
 
             // Siswa: hanya tampilkan leaderboard dari materi tahun masuknya sendiri
             if ($isSiswa) {
-                $query->whereHas('quiz.materi', fn ($q) => $q->where('tahun', $tahun));
+                $query->whereHas('quiz.materi.kelas', fn ($q) => $q->where('tahun', $tahun));
             }
 
             if ($filterTest) {

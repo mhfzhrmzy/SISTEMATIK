@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\AdminGuru;
+use App\Models\Jurusan;
+use App\Models\Kelas;
 use App\Models\PenggunaSiswa;
 use App\Models\SuperAdmin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,11 +36,18 @@ class RoleAuthorizationTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
+        $jurusan = Jurusan::create(['nama_jurusan' => 'Teknik Komputer & Jaringan']);
+        $kelas = Kelas::create([
+            'id_jurusan' => $jurusan->id_jurusan,
+            'tingkat' => 10,
+            'rombel' => 1,
+            'tahun' => '2026',
+        ]);
+
         $this->siswa = PenggunaSiswa::create([
             'nisn' => '0012345678',
             'nama_lengkap' => 'Siswa Test',
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelas->id_kelas,
             'password' => bcrypt('password123'),
         ]);
     }

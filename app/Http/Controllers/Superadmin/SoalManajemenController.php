@@ -8,6 +8,7 @@ use App\Models\Soal;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SoalManajemenController extends Controller
@@ -17,7 +18,7 @@ class SoalManajemenController extends Controller
      */
     public function index(Quiz $quiz): View
     {
-        $soals = $quiz->soal()->latest()->get();
+        $soals = $quiz->soal()->with('pilihanJawaban')->latest()->get();
 
         return view('superadmin.soal.index', compact('quiz', 'soals'));
     }
@@ -55,8 +56,14 @@ class SoalManajemenController extends Controller
                 continue;
             }
 
-            $soalData['jawaban_benar'] = strtolower($soalData['jawaban_benar']);
-            $quiz->soal()->create($soalData);
+            $soal = $quiz->soal()->create([
+                'pertanyaan' => $soalData['pertanyaan'],
+                'jawaban_benar' => strtolower($soalData['jawaban_benar']),
+                'nip_superadmin' => Auth::guard('superadmin')->id(),
+            ]);
+
+            $soal->syncPilihan($soalData);
+
             $existingPertanyaans[] = $normalizedPertanyaan;
             $added++;
         }
@@ -127,13 +134,17 @@ class SoalManajemenController extends Controller
                     $jawabanBenar = 'a';
                 }
 
-                $quiz->soal()->create([
+                $soal = $quiz->soal()->create([
                     'pertanyaan' => $pertanyaan,
-                    'pilihan_a' => $pilihanA,
-                    'pilihan_b' => $pilihanB,
-                    'pilihan_c' => $pilihanC,
-                    'pilihan_d' => $pilihanD,
                     'jawaban_benar' => $jawabanBenar,
+                    'nip_superadmin' => Auth::guard('superadmin')->id(),
+                ]);
+
+                $soal->syncPilihan([
+                    'a' => $pilihanA,
+                    'b' => $pilihanB,
+                    'c' => $pilihanC,
+                    'd' => $pilihanD,
                 ]);
 
                 $importedCount++;
@@ -171,6 +182,8 @@ class SoalManajemenController extends Controller
      */
     public function edit(Soal $soal): View
     {
+        $soal->load(['quiz.materi', 'pilihanJawaban']);
+
         return view('superadmin.soal.edit', compact('soal'));
     }
 
@@ -188,9 +201,13 @@ class SoalManajemenController extends Controller
             'jawaban_benar' => ['required', 'in:a,b,c,d,A,B,C,D'],
         ]);
 
-        $validated['jawaban_benar'] = strtolower($validated['jawaban_benar']);
+        $soal->update([
+            'pertanyaan' => $validated['pertanyaan'],
+            'jawaban_benar' => strtolower($validated['jawaban_benar']),
+            'nip_superadmin' => Auth::guard('superadmin')->id() ?? $soal->nip_superadmin,
+        ]);
 
-        $soal->update($validated);
+        $soal->syncPilihan($validated);
 
         return redirect()->route('superadmin.soal.index', $soal->id_quiz)->with('success', 'Soal berhasil diperbarui.');
     }

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AdminGuru;
+use App\Models\Kelas;
 use App\Models\Leaderboard;
 use App\Models\Materi;
 use App\Models\PenggunaSiswa;
@@ -29,17 +30,15 @@ class JadwalPostTestTest extends TestCase
         $this->guru = AdminGuru::create([
             'nip' => '198501012010011099',
             'nama_lengkap' => 'Guru Jadwal Test',
-            'email' => 'gurujadwal@sekolah.sch.id',
             'password' => 'password123',
-            'role' => 'guru',
         ]);
+
+        $kelas = Kelas::findOrCreateByNama('Teknik Komputer & Jaringan', 10, 1, '2026');
 
         $this->siswa = PenggunaSiswa::create([
             'nisn' => '0060000001',
             'nama_lengkap' => 'Siswa Jadwal Test',
-            'email' => 'siswajadwal@sekolah.sch.id',
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelas->id_kelas,
             'password' => 'password123',
         ]);
 
@@ -47,8 +46,7 @@ class JadwalPostTestTest extends TestCase
             'judul_materi' => 'Jaringan Jadwal Test',
             'isi_materi' => 'Konten jadwal test',
             'nip' => $this->guru->nip,
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelas->id_kelas,
         ]);
     }
 
@@ -64,14 +62,16 @@ class JadwalPostTestTest extends TestCase
     private function buatSoal(Quiz $quiz, int $jumlah = 10): void
     {
         for ($i = 1; $i <= $jumlah; $i++) {
-            Soal::create([
+            $soal = Soal::create([
                 'id_quiz' => $quiz->id_quiz,
                 'pertanyaan' => "Pertanyaan $i",
+                'jawaban_benar' => 'a',
+            ]);
+            $soal->syncPilihan([
                 'pilihan_a' => 'A',
                 'pilihan_b' => 'B',
                 'pilihan_c' => 'C',
                 'pilihan_d' => 'D',
-                'jawaban_benar' => 'a',
             ]);
         }
     }
@@ -480,7 +480,7 @@ class JadwalPostTestTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Jam Mulai Post-Test');
-        $response->assertSee('Estimasi Ditutup');
+        $response->assertSee('Estimasi Post-Test Ditutup');
         $response->assertSee('input-jam-mulai', false);
         $response->assertSee('input-estimasi-tutup', false);
     }

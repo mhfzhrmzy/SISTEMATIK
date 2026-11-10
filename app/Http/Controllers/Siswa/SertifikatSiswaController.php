@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\Sertifikat;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
 
 class SertifikatSiswaController extends Controller
 {
@@ -16,10 +16,10 @@ class SertifikatSiswaController extends Controller
         return Auth::guard('siswa')->user()->nisn ?? Auth::user()->nisn;
     }
 
-        public function index(Request $request)
+    public function index(Request $request)
     {
-        $nisn   = $this->currentNisn();
-        $dari   = $this->parseTanggal($request->query('dari'));
+        $nisn = $this->currentNisn();
+        $dari = $this->parseTanggal($request->query('dari'));
         $sampai = $this->parseTanggal($request->query('sampai'));
 
         // Kalau tertukar, tukar balik
@@ -42,7 +42,7 @@ class SertifikatSiswaController extends Controller
 
     private function parseTanggal(?string $value): ?Carbon
     {
-        if (!$value) {
+        if (! $value) {
             return null;
         }
 

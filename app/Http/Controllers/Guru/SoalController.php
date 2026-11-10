@@ -17,7 +17,7 @@ class SoalController extends Controller
      */
     public function index(Quiz $quiz): View
     {
-        $soals = $quiz->soal()->latest()->get();
+        $soals = $quiz->soal()->with('pilihanJawaban')->latest()->get();
 
         return view('guru.soal.index', compact('quiz', 'soals'));
     }
@@ -55,8 +55,13 @@ class SoalController extends Controller
                 continue;
             }
 
-            $soalData['jawaban_benar'] = strtolower($soalData['jawaban_benar']);
-            $quiz->soal()->create($soalData);
+            $soal = $quiz->soal()->create([
+                'pertanyaan' => $soalData['pertanyaan'],
+                'jawaban_benar' => strtolower($soalData['jawaban_benar']),
+            ]);
+
+            $soal->syncPilihan($soalData);
+
             $existingPertanyaans[] = $normalizedPertanyaan;
             $added++;
         }
@@ -127,13 +132,16 @@ class SoalController extends Controller
                     $jawabanBenar = 'a';
                 }
 
-                $quiz->soal()->create([
+                $soal = $quiz->soal()->create([
                     'pertanyaan' => $pertanyaan,
+                    'jawaban_benar' => $jawabanBenar,
+                ]);
+
+                $soal->syncPilihan([
                     'pilihan_a' => $pilihanA,
                     'pilihan_b' => $pilihanB,
                     'pilihan_c' => $pilihanC,
                     'pilihan_d' => $pilihanD,
-                    'jawaban_benar' => $jawabanBenar,
                 ]);
 
                 $importedCount++;
@@ -171,6 +179,8 @@ class SoalController extends Controller
      */
     public function edit(Soal $soal): View
     {
+        $soal->load(['quiz.materi', 'pilihanJawaban']);
+
         return view('guru.soal.edit', compact('soal'));
     }
 
@@ -190,7 +200,12 @@ class SoalController extends Controller
 
         $validated['jawaban_benar'] = strtolower($validated['jawaban_benar']);
 
-        $soal->update($validated);
+        $soal->update([
+            'pertanyaan' => $validated['pertanyaan'],
+            'jawaban_benar' => $validated['jawaban_benar'],
+        ]);
+
+        $soal->syncPilihan($validated);
 
         return redirect()->route('admin.soal.index', $soal->id_quiz)->with('success', 'Soal berhasil diperbarui.');
     }

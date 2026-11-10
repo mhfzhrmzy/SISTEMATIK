@@ -11,8 +11,8 @@ class Sertifikat extends Model
     protected $primaryKey = 'id_sertifikat';
 
     protected $fillable = [
-        'nisn', 'nip', 'id_materi',
-        'judul_sertifikat', 'kategori', 'penerbit', 'deskripsi',
+        'nisn', 'id_materi',
+        'judul_sertifikat', 'id_kategori', 'penerbit', 'deskripsi',
         'jam_pelatihan', 'event_kompetisi',
         'file_sertifikat', 'file_hash', 'badge_url',
         'tipe_sertifikat', 'terverifikasi', 'tanggal_terbit',
@@ -33,8 +33,8 @@ class Sertifikat extends Model
         return $this->belongsTo(Materi::class, 'id_materi', 'id_materi');
     }
 
-    public function guru()
+    public function kategori()
     {
-        return $this->belongsTo(AdminGuru::class, 'nip', 'nip');
+        return $this->belongsTo(KategoriSertifikat::class, 'id_kategori', 'id_kategori');
     }
 }

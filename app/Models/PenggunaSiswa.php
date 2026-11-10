@@ -19,7 +19,7 @@ class PenggunaSiswa extends Authenticatable
     protected $keyType = 'string';
 
     protected $fillable = [
-        'nisn', 'nama_lengkap', 'kelas', 'tahun', 'jurusan', 'password', 'poin', 'foto_profile',
+        'nisn', 'nama_lengkap', 'id_kelas', 'password', 'foto_profile', 'dibuat_oleh',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -32,6 +32,16 @@ class PenggunaSiswa extends Authenticatable
         ];
     }
 
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'id_kelas', 'id_kelas');
+    }
+
+    public function dibuatOleh()
+    {
+        return $this->belongsTo(SuperAdmin::class, 'dibuat_oleh', 'nip');
+    }
+
     public function leaderboard()
     {
         return $this->hasMany(Leaderboard::class, 'nisn', 'nisn');
@@ -42,11 +52,34 @@ class PenggunaSiswa extends Authenticatable
         return $this->hasMany(MateriSiswa::class, 'nisn', 'nisn');
     }
 
+    public function sertifikat()
+    {
+        return $this->hasMany(Sertifikat::class, 'nisn', 'nisn');
+    }
+
+    public function getJurusanAttribute(): ?string
+    {
+        if ($this->relationLoaded('kelas')) {
+            return $this->kelas?->jurusan?->nama_jurusan;
+        }
+
+        return $this->kelas()->with('jurusan')->first()?->jurusan?->nama_jurusan;
+    }
+
+    public function getTahunAttribute(): ?string
+    {
+        if ($this->relationLoaded('kelas')) {
+            return $this->kelas?->tahun;
+        }
+
+        return $this->kelas?->tahun;
+    }
+
     /**
      * Poin terhitung otomatis dari akumulasi kuis (pre-test & post-test) yang sudah diselesaikan siswa di leaderboard.
      * Jika siswa belum mengerjakan kuis, poin bernilai 0.
      */
-    public function getPoinAttribute($value): int
+    public function getPoinAttribute(): int
     {
         if ($this->relationLoaded('leaderboard')) {
             return (int) $this->leaderboard->sum('total_poin');

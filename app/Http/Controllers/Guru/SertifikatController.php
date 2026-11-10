@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\PenggunaSiswa;
 use App\Models\Sertifikat;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -17,7 +16,7 @@ class SertifikatController extends Controller
      */
     public function index()
     {
-        $sertifikat = Sertifikat::with(['siswa', 'materi', 'guru'])
+        $sertifikat = Sertifikat::with(['siswa.kelas.jurusan', 'materi', 'kategori'])
             ->latest()
             ->get();
 
@@ -30,17 +29,34 @@ class SertifikatController extends Controller
      */
     public function getSiswaByFilter(Request $request)
     {
-        $query = PenggunaSiswa::orderBy('nama_lengkap');
+        $query = PenggunaSiswa::with('kelas.jurusan')->orderBy('nama_lengkap');
 
         if ($request->filled('kelas')) {
-            $query->where('kelas', $request->kelas);
+            $parts = explode(' ', $request->kelas);
+            $tingkat = (int) ($parts[0] ?? 0);
+            $rombel = (int) ($parts[1] ?? 0);
+            $query->whereHas('kelas', function ($q) use ($tingkat, $rombel) {
+                $q->where('tingkat', $tingkat);
+                if ($rombel > 0) {
+                    $q->where('rombel', $rombel);
+                }
+            });
         }
 
         if ($request->filled('jurusan')) {
-            $query->where('jurusan', $request->jurusan);
+            $query->whereHas('kelas.jurusan', function ($q) use ($request) {
+                $q->where('nama_jurusan', $request->jurusan);
+            });
         }
 
-        $siswa = $query->get(['nisn', 'nama_lengkap', 'kelas', 'jurusan']);
+        $siswa = $query->get(['nisn', 'nama_lengkap', 'id_kelas'])->map(function ($s) {
+            return [
+                'nisn' => $s->nisn,
+                'nama_lengkap' => $s->nama_lengkap,
+                'kelas' => (string) $s->kelas,
+                'jurusan' => (string) ($s->jurusan ?? ''),
+            ];
+        });
 
         return response()->json($siswa);
     }
@@ -59,9 +75,10 @@ class SertifikatController extends Controller
             'student_ids.min' => 'Pilih minimal satu siswa terlebih dahulu.',
         ]);
 
-        $siswaTerpilih = PenggunaSiswa::whereIn('nisn', $request->student_ids)
+        $siswaTerpilih = PenggunaSiswa::with('kelas.jurusan')
+            ->whereIn('nisn', $request->student_ids)
             ->orderBy('nama_lengkap')
-            ->get(['nisn', 'nama_lengkap', 'kelas', 'jurusan']);
+            ->get();
 
         session(['sertifikat_target_ids' => $siswaTerpilih->pluck('nisn')->toArray()]);
 
@@ -90,7 +107,6 @@ class SertifikatController extends Controller
 
         $fileSertifikat = $request->file('file_sertifikat');
         $hashFilePertama = hash_file('sha256', $fileSertifikat->getRealPath());
-        $nipGuru = Auth::guard('admin')->user()->nip ?? null;
         $tanggalTerbit = now();
         $namaPenerbit = $validated['penerbit'] ?? 'SMKN 2 Jember';
 
@@ -112,15 +128,14 @@ class SertifikatController extends Controller
 
             Sertifikat::create([
                 'nisn' => $nisn,
-                'nip' => $nipGuru,
-                'id_materi' => null,
+                'id_materi' => $validated['id_materi'] ?? null,
                 'judul_sertifikat' => $validated['judul_sertifikat'],
                 'penerbit' => $namaPenerbit,
                 'tanggal_terbit' => $tanggalTerbit,
                 'deskripsi' => $validated['deskripsi'] ?? null,
                 'file_sertifikat' => $pathFile,
                 'file_hash' => $hashFile,
-                'tipe_sertifikat' => 'materi',
+                'tipe_sertifikat' => ! empty($validated['id_materi']) ? 'materi' : 'mandiri',
             ]);
 
             $jumlahBerhasil++;

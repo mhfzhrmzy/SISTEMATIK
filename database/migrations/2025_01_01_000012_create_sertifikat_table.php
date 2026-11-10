@@ -10,27 +10,26 @@ return new class extends Migration
     {
         Schema::create('sertifikat', function (Blueprint $table) {
             $table->id('id_sertifikat');
-
-            // Relasi ke pengguna_siswa (nisn bertipe string)
             $table->string('nisn', 10);
-            $table->foreign('nisn')->references('nisn')->on('pengguna_siswa')->onDelete('cascade');
-
-            // Relasi opsional jika diterbitkan guru (nip & id_materi)
-            $table->string('nip', 18)->nullable();
-            $table->foreign('nip')->references('nip')->on('admin_guru')->onDelete('set null');
-
             $table->unsignedBigInteger('id_materi')->nullable();
-            $table->foreign('id_materi')->references('id_materi')->on('materi')->onDelete('set null');
-
-            // Data Sertifikat
             $table->string('judul_sertifikat');
+            $table->unsignedInteger('id_kategori')->nullable();
             $table->string('penerbit')->nullable();
             $table->date('tanggal_terbit')->nullable();
             $table->text('deskripsi')->nullable();
+            $table->unsignedInteger('jam_pelatihan')->nullable();
+            $table->string('event_kompetisi')->nullable();
             $table->string('file_sertifikat');
+            $table->string('file_hash', 64)->nullable()->unique();
+            $table->string('badge_url')->nullable();
+            $table->boolean('terverifikasi')->default(false);
             $table->enum('tipe_sertifikat', ['mandiri', 'materi'])->default('mandiri');
-
             $table->timestamps();
+
+            $table->foreign('nisn')->references('nisn')->on('pengguna_siswa')->onDelete('cascade');
+            $table->foreign('id_materi')->references('id_materi')->on('materi')->onDelete('set null');
+            $table->foreign('id_kategori')->references('id_kategori')->on('kategori_sertifikat')->onDelete('set null');
+            $table->index(['nisn', 'tanggal_terbit'], 'idx_sertifikat_nisn_terbit');
         });
     }
 

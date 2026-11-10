@@ -3,7 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\AdminGuru;
+use App\Models\Jurusan;
+use App\Models\Kelas;
 use App\Models\PenggunaSiswa;
+use App\Models\SuperAdmin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -79,16 +82,38 @@ class AuthTest extends TestCase
         $response->assertSee('Login');
     }
 
+    public function test_superadmin_can_login(): void
+    {
+        $superadmin = SuperAdmin::create([
+            'nip' => '123456789012345678',
+            'nama_lengkap' => 'Super Administrator',
+            'password' => Hash::make('password123'),
+        ]);
+
+        $response = $this->post('/login/guru', [
+            'nip' => '123456789012345678',
+            'password' => 'password123',
+        ]);
+
+        $this->assertAuthenticatedAs($superadmin->fresh(), 'superadmin');
+        $response->assertRedirect('/superadmin');
+    }
+
     public function test_siswa_can_login(): void
     {
+        $jurusan = Jurusan::create(['nama_jurusan' => 'Teknik Komputer & Jaringan']);
+        $kelas = Kelas::create([
+            'id_jurusan' => $jurusan->id_jurusan,
+            'tingkat' => 10,
+            'rombel' => 1,
+            'tahun' => '2026',
+        ]);
+
         $siswa = PenggunaSiswa::create([
             'nisn' => '0051234568',
             'nama_lengkap' => 'Siswa Eka',
-            'email' => 'eka@sekolah.sch.id',
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelas->id_kelas,
             'password' => Hash::make('password123'),
-            'poin' => 0,
         ]);
 
         $response = $this->post('/login/siswa', [
@@ -102,14 +127,19 @@ class AuthTest extends TestCase
 
     public function test_siswa_can_logout(): void
     {
+        $jurusan = Jurusan::create(['nama_jurusan' => 'Teknik Audio Video']);
+        $kelas = Kelas::create([
+            'id_jurusan' => $jurusan->id_jurusan,
+            'tingkat' => 10,
+            'rombel' => 1,
+            'tahun' => '2026',
+        ]);
+
         $siswa = PenggunaSiswa::create([
             'nisn' => '0051234569',
             'nama_lengkap' => 'Siswa Fajar',
-            'email' => 'fajar@sekolah.sch.id',
-            'kelas' => '10',
-            'jurusan' => 'Teknik Komputer & Jaringan',
+            'id_kelas' => $kelas->id_kelas,
             'password' => Hash::make('password123'),
-            'poin' => 0,
         ]);
 
         $this->actingAs($siswa, 'siswa');

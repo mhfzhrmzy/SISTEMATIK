@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Leaderboard;
 use App\Models\Materi;
+use App\Models\PenggunaSiswa;
 use App\Models\Quiz;
 use App\Models\Soal;
 use Illuminate\Http\JsonResponse;
@@ -233,7 +234,7 @@ class QuizController extends Controller
         );
 
         $totalAkumulasi = (int) Leaderboard::where('nisn', $siswa->nisn)->sum('total_poin');
-        \App\Models\PenggunaSiswa::where('nisn', $siswa->nisn)->update(['poin' => $totalAkumulasi]);
+        PenggunaSiswa::where('nisn', $siswa->nisn)->update(['poin' => $totalAkumulasi]);
 
         $sessionKey = 'quiz_shuffle_'.$quiz->id_quiz.'_'.$siswa->nisn;
         session()->forget($sessionKey);

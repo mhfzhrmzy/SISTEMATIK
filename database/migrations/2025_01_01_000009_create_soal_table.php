@@ -10,16 +10,14 @@ return new class extends Migration
     {
         Schema::create('soal', function (Blueprint $table) {
             $table->id('id_soal');
-            $table->unsignedBigInteger('id_quiz'); // FK -> quiz.id_quiz
+            $table->unsignedBigInteger('id_quiz');
+            $table->string('nip_superadmin', 18)->nullable();
             $table->text('pertanyaan');
-            $table->string('pilihan_a', 500);
-            $table->string('pilihan_b', 500);
-            $table->string('pilihan_c', 500);
-            $table->string('pilihan_d', 500);
             $table->enum('jawaban_benar', ['a', 'b', 'c', 'd']);
             $table->timestamps();
 
             $table->foreign('id_quiz')->references('id_quiz')->on('quiz')->onDelete('cascade');
+            $table->foreign('nip_superadmin')->references('nip')->on('super_admin')->onDelete('set null');
         });
     }
 

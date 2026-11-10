@@ -19,7 +19,7 @@ class QuizManajemenController extends Controller
      */
     public function index(): View
     {
-        $quizzes = Quiz::with(['materi.adminGuru', 'adminGuru', 'soal'])->latest()->get();
+        $quizzes = Quiz::with(['materi.adminGuru', 'soal'])->latest()->get();
         $materis = Materi::with('adminGuru')->orderBy('judul_materi')->get();
         $admins = AdminGuru::orderBy('nama_lengkap', 'asc')->get();
 
@@ -83,6 +83,7 @@ class QuizManajemenController extends Controller
         }
 
         $validated['poin'] = 100; // Otomatis total 100 poin (poin per soal = 100 / jumlah soal)
+        unset($validated['nip']);
 
         if (! $isPosttest) {
             $validated['tanggal'] = now()->toDateString();

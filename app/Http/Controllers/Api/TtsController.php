@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -48,7 +47,7 @@ class TtsController extends Controller
                         'stability' => 0.45,
                         'similarity_boost' => 0.8,
                         'style' => 0.0,
-                        'use_speaker_boost' => true
+                        'use_speaker_boost' => true,
                     ],
                 ]);
 
@@ -60,7 +59,7 @@ class TtsController extends Controller
             }
 
             // Pastikan direktori subfolder 'tts' dibuat otomatis jika belum ada
-            if (!Storage::disk('public')->exists('tts')) {
+            if (! Storage::disk('public')->exists('tts')) {
                 Storage::disk('public')->makeDirectory('tts');
             }
 

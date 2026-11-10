@@ -11,7 +11,7 @@ class Quiz extends Model
 
     protected $primaryKey = 'id_quiz';
 
-    protected $fillable = ['nip', 'id_materi', 'tipe_test', 'poin', 'timer', 'tanggal', 'jam_mulai', 'is_shuffle'];
+    protected $fillable = ['id_materi', 'tipe_test', 'poin', 'timer', 'tanggal', 'jam_mulai', 'is_shuffle'];
 
     protected $casts = [
         'tanggal' => 'date',
@@ -81,11 +81,6 @@ class Quiz extends Model
         return 'selesai';
     }
 
-    public function adminGuru()
-    {
-        return $this->belongsTo(AdminGuru::class, 'nip', 'nip');
-    }
-
     public function materi()
     {
         return $this->belongsTo(Materi::class, 'id_materi', 'id_materi');
@@ -99,5 +94,10 @@ class Quiz extends Model
     public function leaderboard()
     {
         return $this->hasMany(Leaderboard::class, 'id_quiz', 'id_quiz');
+    }
+
+    public function getAdminGuruAttribute(): ?AdminGuru
+    {
+        return $this->materi?->adminGuru;
     }
 }

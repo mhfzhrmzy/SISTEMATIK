@@ -8,15 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('soal', function (Blueprint $table) {
-            $table->unsignedInteger('timer_per_soal')->default(60)->after('jawaban_benar');
+        Schema::create('kategori_sertifikat', function (Blueprint $table) {
+            $table->increments('id_kategori');
+            $table->string('nama_kategori', 100)->unique('kategori_sertifikat_nama_unique');
         });
     }
 
     public function down(): void
     {
-        Schema::table('soal', function (Blueprint $table) {
-            $table->dropColumn('timer_per_soal');
-        });
+        Schema::dropIfExists('kategori_sertifikat');
     }
 };
