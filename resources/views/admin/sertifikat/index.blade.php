@@ -37,7 +37,7 @@
                 <div>
                     <label for="filterKelas" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Filter Kelas</label>
                     <select id="filterKelas" class="w-full px-3.5 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                        <option value="">— Semua Kelas —</option>
+                        <option value="">Semua Kelas</option>
                         @foreach(['10 1', '10 2'] as $k)
                             <option value="{{ $k }}">Kelas {{ $k }}</option>
                         @endforeach
@@ -46,7 +46,7 @@
                 <div>
                     <label for="filterJurusan" class="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Filter Jurusan</label>
                     <select id="filterJurusan" class="w-full px-3.5 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                        <option value="">— Semua Jurusan —</option>
+                        <option value="">Semua Jurusan</option>
                         @foreach([
                             'Teknik Alat Berat',
                             'Teknik Kendaraan Ringan',
@@ -77,12 +77,12 @@
                     <div class="flex items-center gap-2">
                         <button type="button" id="btnCentangSemua"
                             class="px-3 py-1 text-xs font-semibold rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed">
-                            ☑ Centang Semua
+                            ☑ Pilih semua
                         </button>
                         <button type="button" id="btnHapusCentang"
                             class="px-3 py-1 text-xs font-semibold rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-300 transition disabled:opacity-40 disabled:cursor-not-allowed"
                             disabled>
-                            ☐ Hapus Centang
+                            ☐ Hapus semua
                         </button>
                     </div>
                 </div>

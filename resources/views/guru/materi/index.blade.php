@@ -8,19 +8,11 @@
     {{-- Header Halaman --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#7B1038]/10 text-[#7B1038]">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                </span>
-                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Kelola Bahan Ajar</h1>
-            </div>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1">Kelola Bahan Ajar</h1>
             <p class="text-xs sm:text-sm text-slate-500">Unggah modul pembelajaran baru dan kelola daftar materi berdasarkan kelas, jurusan, serta tahun ajaran.</p>
         </div>
         <div class="flex items-center gap-2 self-start sm:self-auto">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#7B1038]/10 text-[#7B1038] border border-[#7B1038]/20 shadow-2xs">
-                <span class="w-2 h-2 rounded-full bg-[#7B1038]"></span>
+            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/90 shadow-2xs">
                 {{ count($materis ?? []) }} Modul Terdaftar
             </span>
         </div>
@@ -66,14 +58,9 @@
 
         {{-- KOLOM KIRI: FORM TAMBAH BAHAN AJAR --}}
         <div class="lg:col-span-4 bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
-            <div class="flex items-center gap-2 border-b border-slate-200/70 pb-3 mb-4">
-                <div class="w-7 h-7 rounded-lg bg-[#7B1038] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
-                    +
-                </div>
-                <div>
-                    <h2 class="text-sm font-bold text-slate-900">Tambah Bahan Ajar Baru</h2>
-                    <p class="text-[11px] text-slate-500">Lengkapi formulir modul materi pelajaran</p>
-                </div>
+            <div class="border-b border-slate-200/70 pb-3 mb-4">
+                <h2 class="text-sm font-bold text-slate-900">Tambah Bahan Ajar Baru</h2>
+                <p class="text-[11px] text-slate-500 mt-0.5">Lengkapi formulir modul materi pelajaran</p>
             </div>
 
             <form action="{{ route('materi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3.5">
@@ -139,7 +126,7 @@
                             id="jurusan"
                             required
                             class="w-full rounded-xl border {{ $errors->has('jurusan') ? 'border-rose-400 bg-rose-50' : 'border-slate-300 bg-white' }} px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition">
-                        <option value="" disabled {{ old('jurusan') ? '' : 'selected' }}>-- Pilih Jurusan --</option>
+                        <option value="" disabled {{ old('jurusan') ? '' : 'selected' }}>Pilih Jurusan</option>
                         @foreach([
                             'Teknik Alat Berat',
                             'Teknik Kendaraan Ringan',
@@ -206,7 +193,7 @@
                                name="upload_file"
                                accept=".pdf,.ppt,.pptx,.doc,.docx"
                                required
-                               class="w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#7B1038]/10 file:text-[#7B1038] hover:file:bg-[#7B1038]/20 file:transition file:cursor-pointer border border-slate-300 rounded-xl bg-white p-1.5 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20">
+                               class="w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#7B1038] file:text-white hover:file:bg-[#5E0C2B] file:transition file:cursor-pointer border border-slate-300 rounded-xl bg-white p-1.5 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20">
                     </div>
                     <p class="text-slate-400 text-[10px] mt-1">Format: PDF, PPT, PPTX, DOC, DOCX (Maks. 25 MB)</p>
                     @error('upload_file')
@@ -217,10 +204,7 @@
                 {{-- Tombol Submit --}}
                 <div class="pt-2">
                     <button type="submit"
-                            class="w-full flex items-center justify-center gap-2 bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-bold py-2.5 px-4 rounded-xl shadow-xs hover:shadow transition duration-150 cursor-pointer text-xs">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
-                        </svg>
+                            class="w-full flex items-center justify-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-bold py-2.5 px-4 rounded-xl shadow-xs hover:shadow transition duration-150 cursor-pointer text-xs">
                         Simpan Bahan Ajar
                     </button>
                 </div>
@@ -233,12 +217,7 @@
             {{-- Toolbar Atas: Judul & Input Pencarian --}}
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                    <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                        <svg class="w-4 h-4 text-[#7B1038]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                        </svg>
-                        Daftar Bahan Ajar
-                    </h2>
+                    <h2 class="text-base font-bold text-slate-900 tracking-tight">Daftar Bahan Ajar</h2>
                     <p class="text-xs text-slate-500 mt-0.5">Daftar semua materi pelajaran yang telah diunggah ke sistem.</p>
                 </div>
 
@@ -289,7 +268,7 @@
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <div class="space-y-1">
                                         @if($item->kelas)
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#7B1038]/10 text-[#7B1038] border border-[#7B1038]/20">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#7B1038] text-white shadow-2xs">
                                                 Kelas {{ str_replace(' ', '.', $item->kelas) }}
                                             </span>
                                         @else
@@ -325,10 +304,7 @@
                                     @if($item->upload_file || $item->file)
                                         <a href="{{ route('materi.show', $item) }}"
                                            target="_blank"
-                                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#7B1038]/10 text-[#7B1038] hover:bg-[#7B1038] hover:text-white font-bold text-[11px] transition duration-150 border border-[#7B1038]/20">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
+                                           class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-bold text-[11px] shadow-2xs transition duration-150">
                                             Buka File
                                         </a>
                                     @else
@@ -341,7 +317,7 @@
                                     <div class="inline-flex items-center gap-1.5">
                                         <a href="{{ route('materi.edit', $item) }}"
                                            title="Edit Materi"
-                                           class="p-1.5 rounded-lg text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition duration-150">
+                                           class="p-1.5 rounded-lg text-slate-600 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 border border-slate-200 transition duration-150">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
@@ -355,7 +331,7 @@
                                             @method('DELETE')
                                             <button type="submit"
                                                     title="Hapus Materi"
-                                                    class="p-1.5 rounded-lg text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition duration-150 cursor-pointer">
+                                                    class="p-1.5 rounded-lg text-slate-500 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 border border-slate-200 hover:border-rose-200 transition duration-150 cursor-pointer">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>

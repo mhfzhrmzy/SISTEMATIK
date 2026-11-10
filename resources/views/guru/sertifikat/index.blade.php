@@ -8,20 +8,12 @@
     {{-- Header Halaman --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#7B1038]/10 text-[#7B1038]">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
-                    </svg>
-                </span>
-                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Penerbitan Sertifikat Siswa</h1>
-            </div>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1">Penerbitan Sertifikat Siswa</h1>
             <p class="text-xs sm:text-sm text-slate-500">Filter dan pilih siswa penerima, lalu lanjutkan untuk mengunggah dokumen sertifikat kelulusan / pencapaian.</p>
         </div>
 
         <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#7B1038]/10 text-[#7B1038] border border-[#7B1038]/20 shadow-2xs">
-                <span class="w-2 h-2 rounded-full bg-[#7B1038]"></span>
+            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/90 shadow-2xs">
                 {{ $sertifikat->count() }} Sertifikat Diterbitkan
             </span>
         </div>
@@ -48,14 +40,9 @@
 
     {{-- PANEL 1: PILIH SISWA TARGET PENERIMA SERTIFIKAT --}}
     <div class="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs space-y-4">
-        <div class="flex items-center gap-2 border-b border-slate-200/70 pb-3">
-            <div class="w-7 h-7 rounded-lg bg-[#7B1038] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
-                1
-            </div>
-            <div>
-                <h2 class="text-sm font-bold text-slate-900">Pilih Siswa Target</h2>
-                <p class="text-[11px] text-slate-500">Gunakan filter kelas, jurusan, atau pencarian nama untuk menandai siswa penerima</p>
-            </div>
+        <div class="border-b border-slate-200/70 pb-3">
+            <h2 class="text-sm font-bold text-slate-900">Pilih Siswa Target</h2>
+            <p class="text-[11px] text-slate-500 mt-0.5">Gunakan filter kelas, jurusan, atau pencarian nama untuk menandai siswa penerima</p>
         </div>
 
         @if ($errors->has('student_ids'))
@@ -66,24 +53,51 @@
 
         <div class="space-y-4">
 
-            {{-- Filter Kelas & Jurusan --}}
+            {{-- Filter Kelas & Jurusan (Maroon Custom Dropdowns) --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                    <label for="filterKelas" class="block text-xs font-bold text-slate-700 mb-1">Filter Kelas</label>
-                    <select id="filterKelas"
-                            class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition">
-                        <option value="">— Semua Kelas —</option>
+                {{-- Custom Dropdown Kelas --}}
+                <div class="relative" id="customDropdownKelas">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Filter Kelas</label>
+                    <select id="filterKelas" class="hidden">
+                        <option value="" selected>Semua Kelas</option>
                         @foreach(['10 1', '10 2'] as $k)
                             <option value="{{ $k }}">Kelas {{ str_replace(' ', '.', $k) }}</option>
                         @endforeach
                     </select>
+                    <button type="button"
+                            id="btnDropdownKelas"
+                            class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-800 hover:border-[#7B1038] focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition cursor-pointer text-left">
+                        <span id="labelDropdownKelas" class="truncate">Semua Kelas</span>
+                        <svg id="arrowDropdownKelas" class="custom-select-arrow w-4 h-4 text-slate-400 transition-transform duration-150 shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="menuDropdownKelas"
+                         class="custom-select-menu hidden absolute z-30 mt-1 w-full rounded-xl bg-white border border-slate-200 shadow-xl py-1 max-h-60 overflow-y-auto">
+                        <div class="dropdown-item px-3 py-2 text-xs font-medium text-white bg-[#7B1038] hover:bg-[#7B1038] hover:text-white cursor-pointer transition flex items-center justify-between is-selected"
+                             data-value="">
+                            <span>Semua Kelas</span>
+                            <span class="chk-icon">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                        </div>
+                        @foreach(['10 1', '10 2'] as $k)
+                            <div class="dropdown-item px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 cursor-pointer transition flex items-center justify-between"
+                                 data-value="{{ $k }}">
+                                <span>Kelas {{ str_replace(' ', '.', $k) }}</span>
+                                <span class="chk-icon hidden">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
 
-                <div>
-                    <label for="filterJurusan" class="block text-xs font-bold text-slate-700 mb-1">Filter Jurusan</label>
-                    <select id="filterJurusan"
-                            class="w-full px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition">
-                        <option value="">— Semua Jurusan —</option>
+                {{-- Custom Dropdown Jurusan --}}
+                <div class="relative" id="customDropdownJurusan">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Filter Jurusan</label>
+                    <select id="filterJurusan" class="hidden">
+                        <option value="" selected>Semua Jurusan</option>
                         @foreach([
                             'Teknik Alat Berat',
                             'Teknik Kendaraan Ringan',
@@ -101,6 +115,46 @@
                             <option value="{{ $j }}">{{ $j }}</option>
                         @endforeach
                     </select>
+                    <button type="button"
+                            id="btnDropdownJurusan"
+                            class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-medium text-slate-800 hover:border-[#7B1038] focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition cursor-pointer text-left">
+                        <span id="labelDropdownJurusan" class="truncate">Semua Jurusan</span>
+                        <svg id="arrowDropdownJurusan" class="custom-select-arrow w-4 h-4 text-slate-400 transition-transform duration-150 shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="menuDropdownJurusan"
+                         class="custom-select-menu hidden absolute z-30 mt-1 w-full rounded-xl bg-white border border-slate-200 shadow-xl py-1 max-h-60 overflow-y-auto">
+                        <div class="dropdown-item px-3 py-2 text-xs font-medium text-white bg-[#7B1038] hover:bg-[#7B1038] hover:text-white cursor-pointer transition flex items-center justify-between is-selected"
+                             data-value="">
+                            <span class="truncate">Semua Jurusan</span>
+                            <span class="chk-icon">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                        </div>
+                        @foreach([
+                            'Teknik Alat Berat',
+                            'Teknik Kendaraan Ringan',
+                            'Teknik Sepeda Motor',
+                            'Teknik Pemesinan',
+                            'Teknik Instalasi Listrik',
+                            'Teknik Pembangkit Listrik',
+                            'Teknik Mekatronika',
+                            'Teknik Audio Video',
+                            'Teknik Komputer & Jaringan',
+                            'Teknik Konstruksi & Perumahan',
+                            'Desain Permodelan & Informasi Bangunan',
+                            'Desain Komunikasi Visual',
+                        ] as $j)
+                            <div class="dropdown-item px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 cursor-pointer transition flex items-center justify-between"
+                                 data-value="{{ $j }}">
+                                <span class="truncate">{{ $j }}</span>
+                                <span class="chk-icon hidden">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
 
@@ -115,12 +169,12 @@
                     <div class="flex items-center gap-2">
                         <button type="button" id="btnCentangSemua"
                                 class="px-3 py-1.5 text-xs font-bold rounded-xl bg-white text-slate-700 hover:bg-slate-100 border border-slate-300 transition duration-150 shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
-                            ☑ Centang Semua
+                            ☑ Pilih Semua
                         </button>
                         <button type="button" id="btnHapusCentang"
                                 class="px-3 py-1.5 text-xs font-bold rounded-xl bg-white text-slate-700 hover:bg-slate-100 border border-slate-300 transition duration-150 shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                                 disabled>
-                            ☐ Hapus Centang
+                            ☐ Hapus Semua
                         </button>
                     </div>
                 </div>
@@ -160,7 +214,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
                         Siswa Terpilih:
-                        <span id="badgeJumlah" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-[#7B1038]/10 text-[#7B1038] border border-[#7B1038]/20">0</span>
+                        <span id="badgeJumlah" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">0</span>
                     </span>
                     <span class="text-[11px] text-slate-400">Klik tanda silang untuk membatalkan</span>
                 </div>
@@ -172,7 +226,7 @@
                 @csrf
                 <div id="hiddenInputsContainer"></div>
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-slate-200">
-                    <p class="text-[11px] text-slate-500">Centang siswa yang diinginkan di atas, lalu klik tombol untuk melanjutkan ke form berkas.</p>
+                    <p class="text-[11px] text-slate-500">Pilih siswa yang diinginkan di atas, lalu klik tombol untuk melanjutkan ke form berkas.</p>
                     <button type="submit"
                             id="btnTambahkanSiswa"
                             class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition duration-150 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
@@ -192,13 +246,10 @@
     <div class="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-                <h3 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                    <svg class="w-4 h-4 text-[#7B1038]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                <h3 class="text-base font-bold text-slate-900 tracking-tight">
                     Riwayat Sertifikat yang Diterbitkan
                 </h3>
-                <p class="text-xs text-slate-500 mt-0.5">Daftar sertifikat resmi yang telah diunggah dan didistribusikan kepada siswa.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Daftar sertifikat resmi yang telah diunggah kepada siswa.</p>
             </div>
 
             {{-- Input Pencarian Realtime Riwayat --}}
@@ -309,9 +360,18 @@
     #siswaCheckboxList::-webkit-scrollbar { width: 4px; }
     #siswaCheckboxList::-webkit-scrollbar-track { background: #f8fafc; }
     #siswaCheckboxList::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
-    .siswa-row { transition: background-color .1s; cursor: pointer; user-select: none; }
-    .siswa-row:hover { background-color: rgba(123, 16, 56, 0.03); }
-    .siswa-row.is-checked { background-color: rgba(123, 16, 56, 0.06); }
+
+    /* Custom Dropdown Scrollbar */
+    .custom-select-menu { scrollbar-width: thin; scrollbar-color: #E5CDD5 #ffffff; }
+    .custom-select-menu::-webkit-scrollbar { width: 5px; }
+    .custom-select-menu::-webkit-scrollbar-track { background: #ffffff; }
+    .custom-select-menu::-webkit-scrollbar-thumb { background: #E5CDD5; border-radius: 4px; }
+    .custom-select-menu::-webkit-scrollbar-thumb:hover { background: #7B1038; }
+
+    /* Baris Siswa: abu-abu netral agar tidak terkesan merah pudar / warning */
+    .siswa-row { transition: background-color .12s ease; cursor: pointer; user-select: none; }
+    .siswa-row:hover { background-color: #f8fafc; }
+    .siswa-row.is-checked { background-color: #f1f5f9; }
 </style>
 
 <script>
@@ -447,7 +507,7 @@
         renderList(); syncAll();
     });
 
-    /* ══ BADGE RINGKASAN TERPILIH ══ */
+    /* ══ BADGE RINGKASAN TERPILIH (ABU-ABU NETRAL) ══ */
     function renderBadges() {
         elBadges.innerHTML = '';
         if (!checked.size) { elRingkasan.classList.add('hidden'); return; }
@@ -459,9 +519,9 @@
             const s = allSiswa.find(x => x.nisn === nisn);
             if (!s) return;
             const span = document.createElement('span');
-            span.className = 'inline-flex items-center gap-1.5 pl-2.5 pr-1 py-1 rounded-lg text-xs font-bold bg-[#7B1038]/10 text-[#7B1038] border border-[#7B1038]/20 shadow-2xs';
-            span.innerHTML = `<span>${esc(s.nama_lengkap)}</span><span class="text-[#7B1038]/70 text-[10px]">· ${esc(s.kelas)}</span>
-                <button type="button" class="ml-0.5 w-4 h-4 rounded-md bg-[#7B1038]/20 hover:bg-rose-500 hover:text-white flex items-center justify-center transition cursor-pointer" title="Hapus">
+            span.className = 'inline-flex items-center gap-1.5 pl-2.5 pr-1 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-300 shadow-2xs';
+            span.innerHTML = `<span>${esc(s.nama_lengkap)}</span><span class="text-slate-500 text-[10px]">· ${esc(s.kelas)}</span>
+                <button type="button" class="ml-0.5 w-4 h-4 rounded-md bg-slate-200 hover:bg-slate-300 text-slate-600 hover:text-slate-900 flex items-center justify-center transition cursor-pointer" title="Hapus">
                     <svg class="w-2.5 h-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -492,7 +552,7 @@
 
     /* ══ FORM GUARD ══ */
     elForm.addEventListener('submit', e => {
-        if (!checked.size) { e.preventDefault(); alert('Centang minimal satu siswa terlebih dahulu.'); }
+        if (!checked.size) { e.preventDefault(); alert('Pilih minimal satu siswa terlebih dahulu.'); }
     });
 
     /* ══ EVENTS ══ */
@@ -511,7 +571,103 @@
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    /* ══ CUSTOM DROPDOWN ENGINE (MAROON THEME) ══ */
+    function initCustomDropdown(cfg) {
+        const wrapper = document.getElementById(cfg.wrapperId);
+        if (!wrapper) return;
+
+        const select = document.getElementById(cfg.selectId);
+        const btn    = document.getElementById(cfg.btnId);
+        const label  = document.getElementById(cfg.labelId);
+        const arrow  = document.getElementById(cfg.arrowId);
+        const menu   = document.getElementById(cfg.menuId);
+        if (!select || !btn || !label || !menu) return;
+
+        const items  = menu.querySelectorAll('.dropdown-item');
+
+        function openMenu() {
+            document.querySelectorAll('.custom-select-menu').forEach(m => {
+                if (m !== menu) {
+                    m.classList.add('hidden');
+                    const parent = m.closest('.relative');
+                    if (parent) {
+                        const arr = parent.querySelector('.custom-select-arrow');
+                        if (arr) arr.classList.remove('rotate-180');
+                    }
+                }
+            });
+            menu.classList.remove('hidden');
+            if (arrow) arrow.classList.add('rotate-180');
+        }
+
+        function closeMenu() {
+            menu.classList.add('hidden');
+            if (arrow) arrow.classList.remove('rotate-180');
+        }
+
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (menu.classList.contains('hidden')) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
+        });
+
+        items.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const val = this.dataset.value;
+                const text = this.querySelector('span:first-child').textContent.trim();
+
+                label.textContent = text;
+
+                items.forEach(it => {
+                    const chk = it.querySelector('.chk-icon');
+                    if (it === item) {
+                        it.className = 'dropdown-item px-3 py-2 text-xs font-medium text-white bg-[#7B1038] hover:bg-[#7B1038] hover:text-white cursor-pointer transition flex items-center justify-between is-selected';
+                        if (chk) chk.classList.remove('hidden');
+                    } else {
+                        it.className = 'dropdown-item px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 cursor-pointer transition flex items-center justify-between';
+                        if (chk) chk.classList.add('hidden');
+                    }
+                });
+
+                if (select.value !== val) {
+                    select.value = val;
+                    select.dispatchEvent(new Event('change'));
+                }
+
+                closeMenu();
+            });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!wrapper.contains(e.target)) {
+                closeMenu();
+            }
+        });
+    }
+
     /* ══ INIT ══ */
+    initCustomDropdown({
+        wrapperId: 'customDropdownKelas',
+        selectId:  'filterKelas',
+        btnId:     'btnDropdownKelas',
+        labelId:   'labelDropdownKelas',
+        arrowId:   'arrowDropdownKelas',
+        menuId:    'menuDropdownKelas'
+    });
+
+    initCustomDropdown({
+        wrapperId: 'customDropdownJurusan',
+        selectId:  'filterJurusan',
+        btnId:     'btnDropdownJurusan',
+        labelId:   'labelDropdownJurusan',
+        arrowId:   'arrowDropdownJurusan',
+        menuId:    'menuDropdownJurusan'
+    });
+
     fetchSiswa();
 
     /* ══ SEARCH RIWAYAT REALTIME ══ */

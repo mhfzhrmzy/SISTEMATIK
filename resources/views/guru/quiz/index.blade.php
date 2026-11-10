@@ -8,19 +8,11 @@
     {{-- Header Halaman --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#7B1038]/10 text-[#7B1038]">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                    </svg>
-                </span>
-                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Kelola Quiz Pembelajaran</h1>
-            </div>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1">Kelola Quiz Pembelajaran</h1>
             <p class="text-xs sm:text-sm text-slate-500">Buat dan atur jadwal kuis Pre-Test &amp; Post-Test untuk menguji capaian belajar siswa pada setiap materi.</p>
         </div>
         <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#7B1038]/10 text-[#7B1038] border border-[#7B1038]/20 shadow-2xs">
-                <span class="w-2 h-2 rounded-full bg-[#7B1038]"></span>
+            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/90 shadow-2xs">
                 {{ $quizzes->count() }} Quiz Dibuat
             </span>
         </div>
@@ -47,14 +39,9 @@
 
     {{-- FORM BUAT QUIZ BARU --}}
     <div class="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
-        <div class="flex items-center gap-2 border-b border-slate-200/70 pb-3 mb-4">
-            <div class="w-7 h-7 rounded-lg bg-[#7B1038] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
-                +
-            </div>
-            <div>
-                <h2 class="text-sm font-bold text-slate-900">Buat Quiz Baru</h2>
-                <p class="text-[11px] text-slate-500">Pilih materi dan tentukan jenis kuis (Pre-Test atau Post-Test)</p>
-            </div>
+        <div class="border-b border-slate-200/70 pb-3 mb-4">
+            <h2 class="text-sm font-bold text-slate-900">Buat Quiz Baru</h2>
+            <p class="text-[11px] text-slate-500 mt-0.5">Pilih materi dan tentukan jenis kuis (Pre-Test atau Post-Test)</p>
         </div>
 
         <form action="{{ route('admin.quiz.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4" id="form-create-quiz">
@@ -65,17 +52,52 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1">
                     Pilih Materi <span class="text-rose-500">*</span>
                 </label>
-                <select name="id_materi"
-                        id="select-materi"
-                        required
-                        class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition">
-                    <option value="">-- Pilih Materi --</option>
-                    @foreach ($materis as $m)
-                        <option value="{{ $m->id_materi }}" {{ old('id_materi') == $m->id_materi ? 'selected' : '' }}>
-                            {{ $m->judul_materi }} (Kelas {{ str_replace(' ', '.', $m->kelas) }})
-                        </option>
-                    @endforeach
-                </select>
+                <div class="relative" id="customDropdownMateri">
+                    <select name="id_materi"
+                            id="select-materi"
+                            required
+                            class="hidden">
+                        <option value="">Pilih Materi</option>
+                        @foreach ($materis as $m)
+                            <option value="{{ $m->id_materi }}" {{ old('id_materi') == $m->id_materi ? 'selected' : '' }}>
+                                {{ $m->judul_materi }} (Kelas {{ str_replace(' ', '.', $m->kelas) }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="button"
+                            id="btnDropdownMateri"
+                            class="w-full flex items-center justify-between rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-medium text-slate-800 hover:border-[#7B1038] focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition cursor-pointer text-left">
+                        <span id="labelDropdownMateri" class="truncate">
+                            @php
+                                $selectedMateri = $materis->firstWhere('id_materi', old('id_materi'));
+                            @endphp
+                            {{ $selectedMateri ? $selectedMateri->judul_materi . ' (Kelas ' . str_replace(' ', '.', $selectedMateri->kelas) . ')' : 'Pilih Materi' }}
+                        </span>
+                        <svg id="arrowDropdownMateri" class="custom-select-arrow w-4 h-4 text-slate-400 transition-transform duration-150 shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="menuDropdownMateri"
+                         class="custom-select-menu hidden absolute z-30 mt-1 w-full rounded-xl bg-white border border-slate-200 shadow-xl py-1 max-h-60 overflow-y-auto">
+                        <div class="dropdown-item px-3 py-2 text-xs font-medium {{ old('id_materi') ? 'text-slate-700 hover:bg-slate-100 hover:text-slate-900' : 'text-white bg-[#7B1038] hover:bg-[#7B1038] hover:text-white is-selected' }} cursor-pointer transition flex items-center justify-between"
+                             data-value="">
+                            <span class="truncate">Pilih Materi</span>
+                            <span class="chk-icon {{ old('id_materi') ? 'hidden' : '' }}">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                        </div>
+                        @foreach ($materis as $m)
+                            @php $isSel = old('id_materi') == $m->id_materi; @endphp
+                            <div class="dropdown-item px-3 py-2 text-xs font-medium {{ $isSel ? 'text-white bg-[#7B1038] hover:bg-[#7B1038] hover:text-white is-selected' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900' }} cursor-pointer transition flex items-center justify-between"
+                                 data-value="{{ $m->id_materi }}">
+                                <span class="truncate">{{ $m->judul_materi }} (Kelas {{ str_replace(' ', '.', $m->kelas) }})</span>
+                                <span class="chk-icon {{ $isSel ? '' : 'hidden' }}">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
                 @error('id_materi')
                     <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                 @enderror
@@ -86,13 +108,40 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1">
                     Tipe Test <span class="text-rose-500">*</span>
                 </label>
-                <select name="tipe_test"
-                        id="select-tipe"
-                        required
-                        class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition">
-                    <option value="pretest" id="opt-pretest">Pre-Test</option>
-                    <option value="posttest" id="opt-posttest">Post-Test</option>
-                </select>
+                <div class="relative" id="customDropdownTipe">
+                    <select name="tipe_test"
+                            id="select-tipe"
+                            required
+                            class="hidden">
+                        <option value="pretest" id="opt-pretest" {{ old('tipe_test') == 'posttest' ? '' : 'selected' }}>Pre-Test</option>
+                        <option value="posttest" id="opt-posttest" {{ old('tipe_test') == 'posttest' ? 'selected' : '' }}>Post-Test</option>
+                    </select>
+                    <button type="button"
+                            id="btnDropdownTipe"
+                            class="w-full flex items-center justify-between rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-medium text-slate-800 hover:border-[#7B1038] focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition cursor-pointer text-left">
+                        <span id="labelDropdownTipe" class="truncate">{{ old('tipe_test') == 'posttest' ? 'Post-Test' : 'Pre-Test' }}</span>
+                        <svg id="arrowDropdownTipe" class="custom-select-arrow w-4 h-4 text-slate-400 transition-transform duration-150 shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="menuDropdownTipe"
+                         class="custom-select-menu hidden absolute z-30 mt-1 w-full rounded-xl bg-white border border-slate-200 shadow-xl py-1 max-h-60 overflow-y-auto">
+                        <div class="dropdown-item px-3 py-2 text-xs font-medium {{ old('tipe_test') == 'posttest' ? 'text-slate-700 hover:bg-slate-100 hover:text-slate-900' : 'text-white bg-[#7B1038] hover:bg-[#7B1038] hover:text-white is-selected' }} cursor-pointer transition flex items-center justify-between"
+                             data-value="pretest" id="custom-opt-pretest">
+                            <span class="truncate">Pre-Test</span>
+                            <span class="chk-icon {{ old('tipe_test') == 'posttest' ? 'hidden' : '' }}">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                        </div>
+                        <div class="dropdown-item px-3 py-2 text-xs font-medium {{ old('tipe_test') == 'posttest' ? 'text-white bg-[#7B1038] hover:bg-[#7B1038] hover:text-white is-selected' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900' }} cursor-pointer transition flex items-center justify-between"
+                             data-value="posttest" id="custom-opt-posttest">
+                            <span class="truncate">Post-Test</span>
+                            <span class="chk-icon {{ old('tipe_test') == 'posttest' ? '' : 'hidden' }}">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 @error('tipe_test')
                     <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                 @enderror
@@ -167,7 +216,7 @@
                                 @endfor
                             </select>
                         </div>
-                        <span class="ml-auto text-[10px] font-bold text-[#7B1038] bg-[#7B1038]/10 px-2 py-0.5 rounded-md">WIB</span>
+                        <span class="ml-auto text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">WIB</span>
                         <input type="hidden" name="jam_mulai" id="input-jam-mulai" value="{{ old('jam_mulai', '08:00') }}">
                     </div>
                     <p class="text-[10px] text-slate-400 mt-1">Pilih jam dan menit dimulainya pengerjaan (24 jam)</p>
@@ -221,10 +270,7 @@
         {{-- Toolbar Atas: Judul & Input Pencarian Real-time --}}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-                <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                    <svg class="w-4 h-4 text-[#7B1038]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
+                <h2 class="text-base font-bold text-slate-900 tracking-tight">
                     Daftar Quiz Pembelajaran
                 </h2>
                 <p class="text-xs text-slate-500 mt-0.5">Daftar semua kuis materi yang tersedia beserta jadwal dan jumlah butir soal.</p>
@@ -272,18 +318,8 @@
                             </td>
 
                             {{-- Tipe Test (Pre-Test / Post-Test) --}}
-                            <td class="px-4 py-3.5 whitespace-nowrap">
-                                @if($quiz->tipe_test == 'pretest')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                        Pre-Test
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                        Post-Test
-                                    </span>
-                                @endif
+                            <td class="px-4 py-3.5 whitespace-nowrap text-xs font-bold text-slate-800">
+                                {{ $quiz->tipe_test === 'pretest' ? 'Pre-Test' : 'Post-Test' }}
                             </td>
 
                             {{-- Total Poin & Bobot per Soal --}}
@@ -323,7 +359,7 @@
 
                             {{-- Jumlah Soal --}}
                             <td class="px-4 py-3.5 whitespace-nowrap text-center">
-                                <span class="inline-block px-2.5 py-1 rounded-lg {{ $quiz->soal->count() > 0 ? 'bg-slate-100 text-slate-700 font-bold' : 'bg-rose-50 text-rose-600 font-bold border border-rose-200' }} text-[11px]">
+                                <span class="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold border border-slate-200 text-[11px]">
                                     {{ $quiz->soal->count() }} Soal
                                 </span>
                             </td>
@@ -335,7 +371,7 @@
                                     {{-- Tombol Kelola Soal --}}
                                     <a href="{{ route('admin.soal.index', $quiz) }}"
                                        title="Kelola Butir Soal"
-                                       class="inline-flex items-center gap-1.5 bg-[#7B1038]/10 hover:bg-[#7B1038] text-[#7B1038] hover:text-white font-bold px-3 py-1.5 rounded-xl border border-[#7B1038]/20 text-xs transition duration-150 shadow-2xs">
+                                       class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-[#7B1038] text-slate-700 hover:text-white font-bold px-3 py-1.5 rounded-xl border border-slate-300 hover:border-[#7B1038] text-xs transition duration-150 shadow-2xs">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                         </svg>
@@ -347,7 +383,7 @@
                                         <button type="button"
                                                 onclick="openJadwalModal({{ $quiz->id_quiz }}, '{{ $quiz->tanggal?->format('Y-m-d') }}', '{{ $quiz->jam_mulai }}', {{ $quiz->timer }})"
                                                 title="Ubah Jadwal Post-Test"
-                                                class="inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-2.5 py-1.5 rounded-xl border border-indigo-200 text-xs transition duration-150 shadow-2xs cursor-pointer">
+                                                class="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2.5 py-1.5 rounded-xl border border-slate-300 text-xs transition duration-150 shadow-2xs cursor-pointer">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                             </svg>
@@ -364,7 +400,7 @@
                                         @method('DELETE')
                                         <button type="submit"
                                                 title="Hapus Quiz"
-                                                class="p-1.5 rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition duration-150 cursor-pointer">
+                                                class="p-1.5 rounded-xl text-slate-500 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 transition duration-150 cursor-pointer">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                             </svg>
@@ -403,7 +439,7 @@
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-200">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 class="font-black text-slate-900 text-base flex items-center gap-2">
-                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-50 text-indigo-700">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 text-slate-700">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
@@ -452,7 +488,7 @@
                             @endfor
                         </select>
                     </div>
-                    <span class="ml-auto text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md">WIB</span>
+                    <span class="ml-auto text-[10px] font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">WIB</span>
                     <input type="hidden" name="jam_mulai" id="modal-jam-mulai">
                 </div>
                 <p class="text-[10px] text-slate-400 mt-1">Format 24 jam (WIB)</p>
@@ -494,6 +530,14 @@
     </div>
 </div>
 
+<style>
+    .custom-select-menu { scrollbar-width: thin; scrollbar-color: #E5CDD5 #ffffff; }
+    .custom-select-menu::-webkit-scrollbar { width: 5px; }
+    .custom-select-menu::-webkit-scrollbar-track { background: #ffffff; }
+    .custom-select-menu::-webkit-scrollbar-thumb { background: #E5CDD5; border-radius: 4px; }
+    .custom-select-menu::-webkit-scrollbar-thumb:hover { background: #7B1038; }
+</style>
+
 @push('scripts')
 <script>
     const existing = @json($existingCombinations);
@@ -503,6 +547,103 @@
     const optPosttest = document.getElementById('opt-posttest');
     const tipeInfo = document.getElementById('tipe-info');
     const btnSubmit = document.getElementById('btn-submit');
+
+    /* ══ CUSTOM DROPDOWN ENGINE (MAROON THEME) ══ */
+    function initCustomDropdown(cfg) {
+        const wrapper = document.getElementById(cfg.wrapperId);
+        if (!wrapper) return;
+
+        const select = document.getElementById(cfg.selectId);
+        const btn    = document.getElementById(cfg.btnId);
+        const label  = document.getElementById(cfg.labelId);
+        const arrow  = document.getElementById(cfg.arrowId);
+        const menu   = document.getElementById(cfg.menuId);
+        if (!select || !btn || !label || !menu) return;
+
+        const items  = menu.querySelectorAll('.dropdown-item');
+
+        function openMenu() {
+            document.querySelectorAll('.custom-select-menu').forEach(m => {
+                if (m !== menu) {
+                    m.classList.add('hidden');
+                    const parent = m.closest('.relative');
+                    if (parent) {
+                        const arr = parent.querySelector('.custom-select-arrow');
+                        if (arr) arr.classList.remove('rotate-180');
+                    }
+                }
+            });
+            menu.classList.remove('hidden');
+            if (arrow) arrow.classList.add('rotate-180');
+        }
+
+        function closeMenu() {
+            menu.classList.add('hidden');
+            if (arrow) arrow.classList.remove('rotate-180');
+        }
+
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (menu.classList.contains('hidden')) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
+        });
+
+        items.forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (this.classList.contains('pointer-events-none')) return;
+                e.stopPropagation();
+                const val = this.dataset.value;
+                const text = this.querySelector('span:first-child').textContent.trim();
+
+                label.textContent = text;
+
+                items.forEach(it => {
+                    const chk = it.querySelector('.chk-icon');
+                    if (it === item) {
+                        it.className = 'dropdown-item px-3 py-2 text-xs font-medium text-white bg-[#7B1038] hover:bg-[#7B1038] hover:text-white cursor-pointer transition flex items-center justify-between is-selected';
+                        if (chk) chk.classList.remove('hidden');
+                    } else if (!it.classList.contains('pointer-events-none')) {
+                        it.className = 'dropdown-item px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 cursor-pointer transition flex items-center justify-between';
+                        if (chk) chk.classList.add('hidden');
+                    }
+                });
+
+                if (select.value !== val) {
+                    select.value = val;
+                    select.dispatchEvent(new Event('change'));
+                }
+
+                closeMenu();
+            });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!wrapper.contains(e.target)) {
+                closeMenu();
+            }
+        });
+    }
+
+    initCustomDropdown({
+        wrapperId: 'customDropdownMateri',
+        selectId:  'select-materi',
+        btnId:     'btnDropdownMateri',
+        labelId:   'labelDropdownMateri',
+        arrowId:   'arrowDropdownMateri',
+        menuId:    'menuDropdownMateri'
+    });
+
+    initCustomDropdown({
+        wrapperId: 'customDropdownTipe',
+        selectId:  'select-tipe',
+        btnId:     'btnDropdownTipe',
+        labelId:   'labelDropdownTipe',
+        arrowId:   'arrowDropdownTipe',
+        menuId:    'menuDropdownTipe'
+    });
 
     const inputTanggal = document.getElementById('input-tanggal');
     const inputJamMulai = document.getElementById('input-jam-mulai');
@@ -592,6 +733,48 @@
             selectTipe.value = 'posttest';
         } else if (!pretestUsed) {
             selectTipe.value = 'pretest';
+        }
+
+        // Sync custom dropdown tipe test UI
+        const customOptPretest = document.getElementById('custom-opt-pretest');
+        const customOptPosttest = document.getElementById('custom-opt-posttest');
+        const labelTipe = document.getElementById('labelDropdownTipe');
+
+        if (customOptPretest && customOptPosttest) {
+            if (pretestUsed) {
+                customOptPretest.classList.add('opacity-40', 'pointer-events-none', 'bg-slate-50', 'text-slate-400');
+                customOptPretest.classList.remove('is-selected', 'bg-[#7B1038]', 'text-white');
+                customOptPretest.querySelector('span:first-child').textContent = 'Pre-Test (sudah ada)';
+                const chk = customOptPretest.querySelector('.chk-icon');
+                if (chk) chk.classList.add('hidden');
+            } else {
+                customOptPretest.classList.remove('opacity-40', 'pointer-events-none', 'bg-slate-50', 'text-slate-400');
+                customOptPretest.querySelector('span:first-child').textContent = 'Pre-Test';
+            }
+
+            if (posttestUsed) {
+                customOptPosttest.classList.add('opacity-40', 'pointer-events-none', 'bg-slate-50', 'text-slate-400');
+                customOptPosttest.classList.remove('is-selected', 'bg-[#7B1038]', 'text-white');
+                customOptPosttest.querySelector('span:first-child').textContent = 'Post-Test (sudah ada)';
+                const chk = customOptPosttest.querySelector('.chk-icon');
+                if (chk) chk.classList.add('hidden');
+            } else {
+                customOptPosttest.classList.remove('opacity-40', 'pointer-events-none', 'bg-slate-50', 'text-slate-400');
+                customOptPosttest.querySelector('span:first-child').textContent = 'Post-Test';
+            }
+
+            [customOptPretest, customOptPosttest].forEach(it => {
+                const val = it.dataset.value;
+                const chk = it.querySelector('.chk-icon');
+                if (val === selectTipe.value && !it.classList.contains('pointer-events-none')) {
+                    it.className = 'dropdown-item px-3 py-2 text-xs font-medium text-white bg-[#7B1038] hover:bg-[#7B1038] hover:text-white cursor-pointer transition flex items-center justify-between is-selected';
+                    if (chk) chk.classList.remove('hidden');
+                    if (labelTipe) labelTipe.textContent = it.querySelector('span:first-child').textContent.trim();
+                } else if (!it.classList.contains('pointer-events-none')) {
+                    it.className = 'dropdown-item px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 cursor-pointer transition flex items-center justify-between';
+                    if (chk) chk.classList.add('hidden');
+                }
+            });
         }
 
         const allUsed = pretestUsed && posttestUsed;
