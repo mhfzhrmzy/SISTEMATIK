@@ -88,12 +88,12 @@
                 </div>
 
                 {{-- Pencarian --}}
-                <div class="relative mb-2">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-full flex items-center gap-2 px-3 py-2 mb-2 border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-blue-400 cursor-text" onclick="document.getElementById('searchSiswa').focus()">
+                    <svg class="w-3.5 h-3.5 text-gray-400 shrink-0 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                     <input type="text" id="searchSiswa" placeholder="Cari nama siswa..."
-                        class="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        class="w-full text-sm bg-transparent border-0 p-0 focus:outline-none focus:ring-0 text-gray-800"
                         autocomplete="off">
                 </div>
 

@@ -180,14 +180,14 @@
                 </div>
 
                 {{-- Input Cari Nama Siswa --}}
-                <div class="relative">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-300 bg-white focus-within:ring-2 focus-within:ring-[#7B1038]/20 focus-within:border-[#7B1038] transition cursor-text" onclick="document.getElementById('searchSiswa').focus()">
+                    <svg class="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                     <input type="text"
                            id="searchSiswa"
                            placeholder="Cari nama siswa berdasarkan kata kunci..."
-                           class="w-full pl-9 pr-3.5 py-2 text-xs border border-slate-300 rounded-xl bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition"
+                           class="w-full text-xs bg-transparent border-0 p-0 placeholder-slate-400 focus:outline-none focus:ring-0 text-slate-700"
                            autocomplete="off">
                 </div>
 
@@ -253,14 +253,14 @@
             </div>
 
             {{-- Input Pencarian Realtime Riwayat --}}
-            <div class="relative w-full sm:w-64">
-                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-full sm:w-64 flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-300 bg-white focus-within:ring-2 focus-within:ring-[#7B1038]/20 focus-within:border-[#7B1038] transition cursor-text" onclick="document.getElementById('search-riwayat').focus()">
+                <svg class="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
                 <input type="text"
                        id="search-riwayat"
                        placeholder="Cari siswa atau judul sertifikat..."
-                       class="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-xl border border-slate-300 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 focus:border-[#7B1038] transition">
+                       class="w-full text-xs bg-transparent border-0 p-0 placeholder-slate-400 focus:outline-none focus:ring-0 text-slate-700">
             </div>
         </div>
 
