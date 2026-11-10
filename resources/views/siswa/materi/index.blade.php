@@ -23,35 +23,11 @@
         </p>
     </div>
 
-    {{-- 2. Header Bagian & Filter Tab --}}
-    <div class="space-y-2">
+    {{-- 2. Header Bagian --}}
+    <div>
         <h2 class="text-lg sm:text-xl font-bold text-[#1F2937] tracking-tight leading-tight">
             Bahan Ajar Aktif
         </h2>
-
-        {{-- Segmented Tab Filter --}}
-        <div class="inline-flex p-1 rounded-full bg-gray-100 gap-1 text-xs sm:text-sm font-medium flex-wrap">
-            <button type="button"
-                    onclick="filterMateri('semua', this)"
-                    class="filter-tab-btn active px-3.5 py-1.5 rounded-full transition-all duration-150 bg-[#7B1038] text-white font-semibold shadow-xs">
-                Semua Materi ({{ $countSemua }})
-            </button>
-            <button type="button"
-                    onclick="filterMateri('belum-dimulai', this)"
-                    class="filter-tab-btn px-3.5 py-1.5 rounded-full transition-all duration-150 text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10">
-                Belum Dimulai ({{ $countBelumDimulai }})
-            </button>
-            <button type="button"
-                    onclick="filterMateri('sedang-berjalan', this)"
-                    class="filter-tab-btn px-3.5 py-1.5 rounded-full transition-all duration-150 text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10">
-                Sedang Berjalan ({{ $countSedangBerjalan }})
-            </button>
-            <button type="button"
-                    onclick="filterMateri('selesai', this)"
-                    class="filter-tab-btn px-3.5 py-1.5 rounded-full transition-all duration-150 text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10">
-                Selesai ({{ $countSelesai }})
-            </button>
-        </div>
     </div>
 
     {{-- 3. Daftar Kartu Materi (Grid 2 Kolom Responsif Sesuai Referensi) --}}
@@ -68,8 +44,7 @@
     @else
         <div id="materiGrid" class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6">
             @foreach ($materis as $materi)
-                <div class="materi-card bg-white rounded-2xl p-6 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between"
-                     data-status="{{ $materi->statusKey }}">
+                <div class="materi-card bg-white rounded-2xl p-6 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
 
                     <div>
                         {{-- Baris Atas: Kode Modul --}}
@@ -226,56 +201,7 @@
                 </div>
             @endforeach
         </div>
-
-        {{-- Pesan Ketika Filter Tidak Memiliki Data --}}
-        <div id="emptyFilterMsg" class="hidden bg-white rounded-2xl p-10 text-center shadow-xs">
-            <div class="text-3xl mb-2">📂</div>
-            <h3 class="text-base font-bold text-[#1F2937]">Tidak Ada Materi</h3>
-            <p class="text-xs text-[#6B7280] mt-1">Tidak ditemukan materi dengan kategori status ini.</p>
-        </div>
     @endif
 
 </div>
-
-@push('scripts')
-<script>
-    function filterMateri(status, buttonEl) {
-        // Update styling tombol tab aktif (Active: Maroon #7B1038 & White, Inactive: text-[#5E0C2B] hover:bg-[#7B1038]/10)
-        const activeClasses = ['bg-[#7B1038]', 'text-white', 'font-semibold', 'shadow-xs'];
-        const inactiveClasses = ['text-[#5E0C2B]', 'hover:text-[#7B1038]', 'hover:bg-[#7B1038]/10'];
-
-        document.querySelectorAll('.filter-tab-btn').forEach(btn => {
-            btn.classList.remove('active', ...activeClasses);
-            btn.classList.add(...inactiveClasses);
-        });
-
-        buttonEl.classList.remove(...inactiveClasses);
-        buttonEl.classList.add('active', ...activeClasses);
-
-        // Tampilkan/sembunyikan kartu materi
-        const cards = document.querySelectorAll('.materi-card');
-        let visibleCount = 0;
-
-        cards.forEach(card => {
-            const cardStatus = card.getAttribute('data-status');
-            if (status === 'semua' || cardStatus === status) {
-                card.classList.remove('hidden');
-                visibleCount++;
-            } else {
-                card.classList.add('hidden');
-            }
-        });
-
-        // Tampilkan pesan kosong jika tidak ada yang cocok
-        const emptyMsg = document.getElementById('emptyFilterMsg');
-        if (emptyMsg) {
-            if (visibleCount === 0) {
-                emptyMsg.classList.remove('hidden');
-            } else {
-                emptyMsg.classList.add('hidden');
-            }
-        }
-    }
-</script>
-@endpush
 @endsection
