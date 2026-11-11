@@ -19,10 +19,9 @@ class MateriSiswaController extends Controller
     public function index(): View
     {
         $siswa = auth('siswa')->user();
+        $siswa->load('kelas.jurusan');
         $materis = Materi::with(['adminGuru', 'quiz'])
-            ->where('kelas', $siswa->kelas)
-            ->where('jurusan', $siswa->jurusan)
-            ->where('tahun', $siswa->tahun)
+            ->where('id_kelas', $siswa->id_kelas)
             ->latest()
             ->get();
 
@@ -107,13 +106,13 @@ class MateriSiswaController extends Controller
     {
         $siswa = auth('siswa')->user();
 
-        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan || $materi->tahun !== $siswa->tahun) {
+        if ((int) $materi->id_kelas !== (int) $siswa->id_kelas) {
             return redirect()
                 ->route('portal.materi.index')
                 ->with('error', 'Kamu tidak memiliki akses ke materi ini.');
         }
 
-        $materi->load(['adminGuru', 'quiz.soal']);
+        $materi->load(['adminGuru', 'quiz.soal.pilihanJawaban']);
 
         $pretests = $materi->quiz->where('tipe_test', 'pretest');
         $hasPretests = $pretests->isNotEmpty();
@@ -148,7 +147,7 @@ class MateriSiswaController extends Controller
     {
         $siswa = auth('siswa')->user();
 
-        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan || $materi->tahun !== $siswa->tahun) {
+        if ((int) $materi->id_kelas !== (int) $siswa->id_kelas) {
             return redirect()
                 ->route('portal.materi.index')
                 ->with('error', 'Kamu tidak memiliki akses ke materi ini.');
@@ -191,7 +190,7 @@ class MateriSiswaController extends Controller
     {
         $siswa = auth('siswa')->user();
 
-        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan || $materi->tahun !== $siswa->tahun) {
+        if ((int) $materi->id_kelas !== (int) $siswa->id_kelas) {
             return redirect()
                 ->route('portal.materi.index')
                 ->with('error', 'Kamu tidak memiliki akses ke file materi ini.');

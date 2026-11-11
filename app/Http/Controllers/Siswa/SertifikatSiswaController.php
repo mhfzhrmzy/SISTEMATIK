@@ -30,7 +30,7 @@ class SertifikatSiswaController extends Controller
         $sertifikat = Sertifikat::where('nisn', $nisn)
             ->when($dari, fn ($q) => $q->whereDate('tanggal_terbit', '>=', $dari->toDateString()))
             ->when($sampai, fn ($q) => $q->whereDate('tanggal_terbit', '<=', $sampai->toDateString()))
-            ->with(['materi', 'guru'])
+            ->with(['materi', 'kategori'])
             ->orderByDesc('tanggal_terbit')
             ->latest()
             ->get();
@@ -72,7 +72,6 @@ class SertifikatSiswaController extends Controller
 
         Sertifikat::create([
             'nisn' => $this->currentNisn(),
-            'nip' => null,
             'id_materi' => null,
             'judul_sertifikat' => $validated['judul_sertifikat'],
             'penerbit' => $validated['penerbit'] ?? null,

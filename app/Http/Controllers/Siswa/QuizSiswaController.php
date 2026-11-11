@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Siswa;
 use App\Http\Controllers\Controller;
 use App\Models\Leaderboard;
 use App\Models\Materi;
-use App\Models\PenggunaSiswa;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
 
@@ -41,7 +40,7 @@ class QuizSiswaController extends Controller
      */
     public function kerjakan(Quiz $quiz)
     {
-        $quiz->load('soal', 'materi');
+        $quiz->load('soal.pilihanJawaban', 'materi');
 
         // Penguncian waktu untuk posttest
         if ($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap()) {
@@ -185,11 +184,6 @@ class QuizSiswaController extends Controller
             ['id_quiz' => $quiz->id_quiz, 'nisn' => auth('siswa')->id()],
             ['total_poin' => $totalPoin]
         );
-
-        // Sinkronisasi akumulasi total poin ke data siswa
-        $nisnSiswa = auth('siswa')->id();
-        $totalAkumulasi = (int) Leaderboard::where('nisn', $nisnSiswa)->sum('total_poin');
-        PenggunaSiswa::where('nisn', $nisnSiswa)->update(['poin' => $totalAkumulasi]);
 
         // Hapus session acak setelah kuis berhasil disubmit
         $sessionKey = 'quiz_shuffle_'.$quiz->id_quiz.'_'.auth('siswa')->id();

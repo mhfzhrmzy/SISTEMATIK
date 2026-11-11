@@ -57,6 +57,15 @@ class PenggunaSiswa extends Authenticatable
         return $this->hasMany(Sertifikat::class, 'nisn', 'nisn');
     }
 
+    public function getNamaKelasAttribute(): ?string
+    {
+        if ($this->relationLoaded('kelas')) {
+            return $this->kelas?->nama_kelas;
+        }
+
+        return $this->kelas?->nama_kelas;
+    }
+
     public function getJurusanAttribute(): ?string
     {
         if ($this->relationLoaded('kelas')) {

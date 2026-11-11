@@ -13,6 +13,7 @@ class ProfilSiswaController extends Controller
     public function index()
     {
         $siswa = auth('siswa')->user();
+        $siswa->load('kelas.jurusan');
 
         return view('siswa.profil', compact('siswa'));
     }

@@ -15,20 +15,30 @@ class KelasSeeder extends Seeder
     public function run(): void
     {
         $kelasData = [
-            ['jurusan' => 'Teknik Alat Berat',                      'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Kendaraan Ringan',                 'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Kendaraan Ringan',                 'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Sepeda Motor',                     'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Pemesinan',                        'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Instalasi Listrik',                'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Pembangkit Listrik',               'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Mekatronika',                      'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Audio Video',                      'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Komputer & Jaringan',              'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Komputer & Jaringan',              'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
-            ['jurusan' => 'Teknik Konstruksi & Perumahan',           'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Desain Permodelan & Informasi Bangunan',  'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['jurusan' => 'Desain Komunikasi Visual',                'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Alat Berat',                           'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Alat Berat',                           'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Kendaraan Ringan',                     'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Kendaraan Ringan',                     'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Sepeda Motor',                         'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Sepeda Motor',                         'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Pemesinan',                            'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Pemesinan',                            'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Instalasi Listrik',                    'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Instalasi Listrik',                    'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Pembangkit Listrik',                   'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Pembangkit Listrik',                   'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Mekatronika',                          'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Mekatronika',                          'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Audio Video',                          'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Audio Video',                          'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Komputer & Jaringan',                  'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Komputer & Jaringan',                  'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Konstruksi & Perumahan',               'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Teknik Konstruksi & Perumahan',               'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Desain Permodelan & Informasi Bangunan',      'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Desain Permodelan & Informasi Bangunan',      'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['jurusan' => 'Desain Komunikasi Visual',                    'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
+            ['jurusan' => 'Desain Komunikasi Visual',                    'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
         ];
 
         foreach ($kelasData as $data) {
@@ -36,9 +46,9 @@ class KelasSeeder extends Seeder
 
             Kelas::firstOrCreate([
                 'id_jurusan' => $jurusan->id_jurusan,
-                'tingkat' => $data['tingkat'],
-                'rombel' => $data['rombel'],
-                'tahun' => $data['tahun'],
+                'tingkat'    => $data['tingkat'],
+                'rombel'     => $data['rombel'],
+                'tahun'      => $data['tahun'],
             ]);
         }
     }
