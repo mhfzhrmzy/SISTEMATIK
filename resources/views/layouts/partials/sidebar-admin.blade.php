@@ -42,6 +42,21 @@
         #sidebar-overlay { display: none !important; }
         .sb-mobile-bar, .sb-close { display: none !important; }
     }
+
+    .guru-search-box {
+        width: 100%;
+        height: 2.25rem;
+    }
+    .guru-search-box:focus-within {
+        border-color: #7B1038;
+        box-shadow: 0 0 0 3px rgba(123, 16, 56, 0.14);
+    }
+    @media (min-width: 640px) {
+        .guru-search-box {
+            width: 17.5rem;
+            flex-shrink: 0;
+        }
+    }
 </style>
 
 <div class="sb-mobile-bar">

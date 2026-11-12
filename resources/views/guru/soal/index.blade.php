@@ -152,44 +152,44 @@
     {{-- SECTION 3: DAFTAR SOAL YANG SUDAH ADA --}}
     <div class="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs space-y-4">
 
-        {{-- Toolbar Atas: Judul, Toggle Acak, & Search Input --}}
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-            <div class="flex flex-wrap items-center gap-3">
-                <h3 class="text-base font-bold text-slate-900 tracking-tight">
-                    Daftar Soal yang Sudah Ada ({{ $soals->count() }})
-                </h3>
+        {{-- Toolbar Atas: Judul, lalu Baris Kontrol Sejajar (Toggle Acak Soal & Search Input) --}}
+        <div class="space-y-3">
+            <h3 class="text-base font-bold text-slate-900 tracking-tight">
+                Daftar Soal yang Sudah Ada ({{ $soals->count() }})
+            </h3>
 
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 {{-- Tombol Toggle Shuffle/Acak Soal --}}
-                <form action="{{ route('admin.quiz.toggle-shuffle', $quiz) }}" method="POST" class="inline m-0 p-0">
+                <form action="{{ route('admin.quiz.toggle-shuffle', $quiz) }}" method="POST" class="inline-flex m-0 p-0">
                     @csrf
                     @method('PATCH')
                     @if($quiz->is_shuffle)
                         <button type="submit"
                                 title="Klik untuk menonaktifkan acak soal & jawaban bagi siswa"
-                                class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-2xs transition duration-150 cursor-pointer">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-200 animate-ping"></span>
+                                class="inline-flex items-center gap-2 h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-[13px] font-semibold px-4 rounded-full shadow-2xs transition duration-150 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-emerald-200 animate-ping"></span>
                             <span>Acak Soal: Aktif</span>
                         </button>
                     @else
                         <button type="submit"
                                 title="Klik untuk mengaktifkan acak soal & jawaban bagi siswa"
-                                class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold px-3 py-1.5 rounded-full shadow-2xs transition duration-150 cursor-pointer">
-                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                class="inline-flex items-center gap-2 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-[13px] font-semibold px-4 rounded-full shadow-2xs transition duration-150 cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-slate-400"></span>
                             <span>Acak Soal: Nonaktif</span>
                         </button>
                     @endif
                 </form>
-            </div>
 
-            {{-- Input Pencarian Realtime --}}
-            <div class="w-full sm:w-64 flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-300 bg-white focus-within:ring-2 focus-within:ring-[#7B1038]/20 focus-within:border-[#7B1038] transition cursor-text" onclick="document.getElementById('search-soal').focus()">
-                <svg class="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <input type="text"
-                       id="search-soal"
-                       placeholder="Cari teks pertanyaan / opsi..."
-                       class="w-full text-xs bg-transparent border-0 p-0 placeholder-slate-400 focus:outline-none focus:ring-0 text-slate-700">
+                {{-- Input Pencarian Realtime --}}
+                <div class="guru-search-box flex items-center gap-2 px-3 rounded-xl border border-slate-300 bg-white transition cursor-text" onclick="document.getElementById('search-soal').focus()">
+                    <svg class="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text"
+                           id="search-soal"
+                           placeholder="Cari teks pertanyaan / opsi..."
+                           class="w-full text-[13px] bg-transparent border-0 p-0 placeholder-slate-400 focus:outline-none focus:ring-0 text-slate-700">
+                </div>
             </div>
         </div>
 

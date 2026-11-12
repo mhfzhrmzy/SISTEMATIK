@@ -253,14 +253,14 @@
             </div>
 
             {{-- Input Pencarian Realtime Riwayat --}}
-            <div class="w-full sm:w-64 flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-300 bg-white focus-within:ring-2 focus-within:ring-[#7B1038]/20 focus-within:border-[#7B1038] transition cursor-text" onclick="document.getElementById('search-riwayat').focus()">
+            <div class="guru-search-box flex items-center gap-2 px-3 rounded-xl border border-slate-300 bg-white transition cursor-text" onclick="document.getElementById('search-riwayat').focus()">
                 <svg class="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
                 <input type="text"
                        id="search-riwayat"
                        placeholder="Cari siswa atau judul sertifikat..."
-                       class="w-full text-xs bg-transparent border-0 p-0 placeholder-slate-400 focus:outline-none focus:ring-0 text-slate-700">
+                       class="w-full text-[13px] bg-transparent border-0 p-0 placeholder-slate-400 focus:outline-none focus:ring-0 text-slate-700">
             </div>
         </div>
 
