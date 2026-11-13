@@ -57,20 +57,6 @@ composer setup
 
 ---
 
-## Akun Demo (dari Seeder)
-
-Semua password: **`password123`**
-
-| Peran | Login | Contoh |
-|-------|-------|--------|
-| Superadmin | NIP | `123456789012345678` |
-| Guru | NIP | `198501012010011001` (Budi Santoso), `198803152012022002`, `199005202015031003` |
-| Siswa | NISN | `0051234561` (Andi Pratama), `0051234562` … `0051234565` |
-
-Seeder yang dijalankan `db:seed`:
-`JurusanSeeder`, `KelasSeeder`, `SuperAdminSeeder`, `GuruSeeder`,
-`SiswaSeeder`, `MateriSeeder`, `SoalSeeder` (quiz pretest + 20 soal contoh).
-
 ---
 
 ## Peran & Hak Akses
