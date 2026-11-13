@@ -1,4 +1,4 @@
-# SISTEMATIK — Semester 3
+# SISTEMATIK 
 **Pengembangan Media Pembelajaran Digital Mata Pelajaran TIK Berbasis Website dan Mobile Application untuk Siswa SMKN 2 Jember**
 
 ---
