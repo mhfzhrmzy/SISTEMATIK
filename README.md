@@ -1,4 +1,7 @@
-# Semester 3 Test Database — Sistem Pre-Test & Post-Test Online
+# SISTEMATIK — Semester 3
+**Pengembangan Media Pembelajaran Digital Mata Pelajaran TIK Berbasis Website dan Mobile Application untuk Siswa SMKN 2 Jember**
+
+---
 
 Monorepo proyek sistem pembelajaran online untuk siswa **SMKN 2 Jember**
 (mata pelajaran **TIK** — Teknologi Informasi & Komunikasi): siswa mengerjakan
