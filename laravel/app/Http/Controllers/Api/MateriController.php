@@ -16,10 +16,8 @@ class MateriController extends Controller
     {
         $siswa = $request->user();
 
-        $materis = Materi::with(['adminGuru', 'quiz'])
-            ->where('kelas', $siswa->kelas)
-            ->where('jurusan', $siswa->jurusan)
-            ->where('tahun', $siswa->tahun)
+        $materis = Materi::with(['adminGuru', 'quiz', 'kelas.jurusan'])
+            ->where('id_kelas', $siswa->id_kelas)
             ->latest()
             ->get()
             ->map(function (Materi $materi) use ($siswa) {
@@ -39,7 +37,7 @@ class MateriController extends Controller
                     'id_materi' => $materi->id_materi,
                     'judul_materi' => $materi->judul_materi,
                     'isi_materi' => $materi->isi_materi,
-                    'kelas' => $materi->kelas,
+                    'kelas' => $materi->kelas?->nama_kelas,
                     'jurusan' => $materi->jurusan,
                     'upload_file' => $materi->upload_file
                         ? Storage::disk('public')->url($materi->upload_file)
@@ -63,7 +61,7 @@ class MateriController extends Controller
     {
         $siswa = $request->user();
 
-        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan || $materi->tahun !== $siswa->tahun) {
+        if ((int) $materi->id_kelas !== (int) $siswa->id_kelas) {
             return response()->json([
                 'message' => 'Kamu tidak memiliki akses ke materi ini.',
             ], 403);
@@ -120,7 +118,7 @@ class MateriController extends Controller
     {
         $siswa = $request->user();
 
-        if ($materi->kelas !== $siswa->kelas || $materi->jurusan !== $siswa->jurusan || $materi->tahun !== $siswa->tahun) {
+        if ((int) $materi->id_kelas !== (int) $siswa->id_kelas) {
             return response()->json([
                 'message' => 'Kamu tidak memiliki akses ke file materi ini.',
             ], 403);

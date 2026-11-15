@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Leaderboard;
 use App\Models\Materi;
-use App\Models\PenggunaSiswa;
 use App\Models\Quiz;
 use App\Models\Soal;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +15,12 @@ class QuizController extends Controller
     public function index(Request $request, Materi $materi): JsonResponse
     {
         $siswa = $request->user();
-        $materi->load('adminGuru');
+
+        if ((int) $materi->id_kelas !== (int) $siswa->id_kelas) {
+            return response()->json([
+                'message' => 'Kamu tidak memiliki akses ke materi ini.',
+            ], 403);
+        }
 
         $quizzes = $materi->quiz()->with('soal')->latest()->get();
 
@@ -74,7 +78,7 @@ class QuizController extends Controller
     public function kerjakan(Request $request, Quiz $quiz): JsonResponse
     {
         $siswa = $request->user();
-        $quiz->load('materi');
+        $quiz->load(['materi', 'soal.pilihanJawaban']);
 
         if (! $quiz->materi) {
             return response()->json([
@@ -82,7 +86,7 @@ class QuizController extends Controller
             ], 404);
         }
 
-        if ($quiz->materi->kelas !== $siswa->kelas || $quiz->materi->jurusan !== $siswa->jurusan) {
+        if ((int) $quiz->materi->id_kelas !== (int) $siswa->id_kelas) {
             return response()->json([
                 'message' => 'Kamu tidak memiliki akses ke quiz ini.',
             ], 403);
@@ -103,6 +107,19 @@ class QuizController extends Controller
             if ($now->gt($waktuSelesai)) {
                 return response()->json([
                     'message' => 'Waktu pengerjaan post-test sudah habis.',
+                ], 403);
+            }
+        }
+
+        // Blokir pengerjaan ulang posttest jika sudah pernah dikerjakan
+        if ($quiz->tipe_test === 'posttest') {
+            $sudahDikerjakan = Leaderboard::where('id_quiz', $quiz->id_quiz)
+                ->where('nisn', $siswa->nisn)
+                ->exists();
+
+            if ($sudahDikerjakan) {
+                return response()->json([
+                    'message' => 'Anda sudah mengerjakan post-test ini dan tidak dapat mengerjakannya kembali.',
                 ], 403);
             }
         }
@@ -160,7 +177,7 @@ class QuizController extends Controller
             return [
                 'id_soal' => $soal->id_soal,
                 'pertanyaan' => $soal->pertanyaan,
-                'choices' => [
+                'choices' => $soal->display_choices ?? [
                     'a' => $soal->pilihan_a,
                     'b' => $soal->pilihan_b,
                     'c' => $soal->pilihan_c,
@@ -193,6 +210,19 @@ class QuizController extends Controller
     public function submit(Request $request, Quiz $quiz): JsonResponse
     {
         $siswa = $request->user();
+        $quiz->load('materi');
+
+        if (! $quiz->materi) {
+            return response()->json([
+                'message' => 'Materi tidak ditemukan.',
+            ], 404);
+        }
+
+        if ((int) $quiz->materi->id_kelas !== (int) $siswa->id_kelas) {
+            return response()->json([
+                'message' => 'Kamu tidak memiliki akses ke quiz ini.',
+            ], 403);
+        }
 
         // Penguncian waktu untuk posttest
         if ($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap()) {
@@ -210,6 +240,19 @@ class QuizController extends Controller
             if ($now->gt($batasGrace)) {
                 return response()->json([
                     'message' => 'Waktu pengerjaan sudah habis. Jawaban tidak tersimpan.',
+                ], 403);
+            }
+        }
+
+        // Blokir pengerjaan ulang posttest jika sudah pernah dikerjakan
+        if ($quiz->tipe_test === 'posttest') {
+            $sudahDikerjakan = Leaderboard::where('id_quiz', $quiz->id_quiz)
+                ->where('nisn', $siswa->nisn)
+                ->exists();
+
+            if ($sudahDikerjakan) {
+                return response()->json([
+                    'message' => 'Anda sudah mengerjakan post-test ini dan tidak dapat mengerjakannya kembali.',
                 ], 403);
             }
         }
@@ -232,9 +275,6 @@ class QuizController extends Controller
             ['id_quiz' => $quiz->id_quiz, 'nisn' => $siswa->nisn],
             ['total_poin' => $totalPoin]
         );
-
-        $totalAkumulasi = (int) Leaderboard::where('nisn', $siswa->nisn)->sum('total_poin');
-        PenggunaSiswa::where('nisn', $siswa->nisn)->update(['poin' => $totalAkumulasi]);
 
         $sessionKey = 'quiz_shuffle_'.$quiz->id_quiz.'_'.$siswa->nisn;
         session()->forget($sessionKey);

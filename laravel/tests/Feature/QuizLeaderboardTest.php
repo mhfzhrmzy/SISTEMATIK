@@ -428,6 +428,6 @@ class QuizLeaderboardTest extends TestCase
         $response->assertStatus(200);
         // Tetap terkunci ke kelas siswa tersebut (10 1 TKJ)
         $response->assertDontSee('Siswa Mesin Tersembunyi');
-        $response->assertSee('Kelas 10 1 • Teknik Komputer & Jaringan');
+        $response->assertSee('Kelas 10 1 | Teknik Komputer & Jaringan');
     }
 }

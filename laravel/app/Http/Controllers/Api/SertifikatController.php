@@ -16,14 +16,16 @@ class SertifikatController extends Controller
         $siswa = $request->user();
 
         $sertifikat = Sertifikat::where('nisn', $siswa->nisn)
-            ->with(['materi', 'guru'])
+            ->with(['materi.adminGuru', 'kategori'])
             ->latest()
             ->get()
             ->map(function (Sertifikat $item) {
+                $guru = $item->materi?->adminGuru;
+
                 return [
                     'id_sertifikat' => $item->id_sertifikat,
                     'judul_sertifikat' => $item->judul_sertifikat,
-                    'kategori' => $item->kategori,
+                    'kategori' => $item->kategori?->nama_kategori,
                     'penerbit' => $item->penerbit,
                     'deskripsi' => $item->deskripsi,
                     'tanggal_terbit' => $item->tanggal_terbit,
@@ -35,8 +37,8 @@ class SertifikatController extends Controller
                     'badge_url' => $item->badge_url
                         ? Storage::disk('public')->url($item->badge_url)
                         : null,
-                    'guru' => $item->guru
-                        ? ['nip' => $item->guru->nip, 'nama_lengkap' => $item->guru->nama_lengkap]
+                    'guru' => $guru
+                        ? ['nip' => $guru->nip, 'nama_lengkap' => $guru->nama_lengkap]
                         : null,
                     'materi' => $item->materi
                         ? ['id_materi' => $item->materi->id_materi, 'judul_materi' => $item->materi->judul_materi]

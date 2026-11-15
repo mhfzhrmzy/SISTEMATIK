@@ -12,16 +12,15 @@ class LeaderboardController extends Controller
     public function index(Request $request): JsonResponse
     {
         $siswa = $request->user();
-        $kelas = $siswa->kelas;
-        $jurusan = $siswa->jurusan;
-        $tahun = $siswa->tahun;
+        $siswa->load('kelas.jurusan');
 
         $leaderboards = Leaderboard::with('pengguna')
-            ->whereHas('pengguna', function ($query) use ($kelas, $jurusan) {
-                $query->where('kelas', $kelas)
-                    ->where('jurusan', $jurusan);
+            ->whereHas('pengguna', function ($query) use ($siswa) {
+                $query->where('id_kelas', $siswa->id_kelas);
             })
-            ->whereHas('quiz.materi', fn ($q) => $q->where('tahun', $tahun))
+            ->whereHas('quiz.materi.kelas', function ($query) use ($siswa) {
+                $query->where('tahun', $siswa->tahun);
+            })
             ->selectRaw('nisn, SUM(total_poin) as total_poin, COUNT(id_quiz) as total_kuis, MAX(updated_at) as updated_at')
             ->groupBy('nisn')
             ->orderByDesc('total_poin')
@@ -32,7 +31,7 @@ class LeaderboardController extends Controller
             return [
                 'nisn' => $lb->nisn,
                 'nama_lengkap' => $lb->pengguna->nama_lengkap ?? '',
-                'total_poin' => $lb->total_poin,
+                'total_poin' => (int) $lb->total_poin,
                 'peringkat' => $index + 1,
                 'is_me' => $lb->nisn === $siswa->nisn,
             ];
@@ -40,8 +39,8 @@ class LeaderboardController extends Controller
 
         return response()->json([
             'message' => 'Leaderboard berhasil diambil.',
-            'kelas' => $kelas,
-            'jurusan' => $jurusan,
+            'kelas' => $siswa->kelas?->nama_kelas,
+            'jurusan' => $siswa->jurusan,
             'total_siswa' => $data->count(),
             'data' => $data,
         ]);
