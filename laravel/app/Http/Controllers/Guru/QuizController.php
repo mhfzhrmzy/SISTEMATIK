@@ -81,9 +81,9 @@ class QuizController extends Controller
             unset($validated['jam_mulai']);
         }
 
-        Quiz::create($validated);
+        $quiz = Quiz::create($validated);
 
-        return redirect()->route('admin.quiz.index')->with('success', 'Quiz berhasil dibuat.');
+        return redirect()->route('admin.soal.index', $quiz)->with('success', 'Quiz berhasil dibuat.');
     }
 
     /**

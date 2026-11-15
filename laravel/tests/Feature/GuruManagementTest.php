@@ -144,8 +144,15 @@ class GuruManagementTest extends TestCase
                 'timer' => 30,
             ]);
 
-        $response->assertRedirect(route('admin.quiz.index'));
+        $quiz = Quiz::where('id_materi', $materi->id_materi)
+            ->where('tipe_test', 'pretest')
+            ->firstOrFail();
+
+        $response->assertRedirect(route('admin.soal.index', $quiz));
         $response->assertSessionHas('success');
+        $this->get(route('admin.soal.index', $quiz))
+            ->assertOk()
+            ->assertSee('Tambah Soal Secara Manual');
 
         $this->assertDatabaseHas('quiz', [
             'id_materi' => $materi->id_materi,
@@ -172,7 +179,11 @@ class GuruManagementTest extends TestCase
                 'jam_mulai' => '10:00',
             ]);
 
-        $response->assertRedirect(route('admin.quiz.index'));
+        $quiz = Quiz::where('id_materi', $materi->id_materi)
+            ->where('tipe_test', 'posttest')
+            ->firstOrFail();
+
+        $response->assertRedirect(route('admin.soal.index', $quiz));
         $this->assertDatabaseHas('quiz', [
             'id_materi' => $materi->id_materi,
             'tipe_test' => 'posttest',
