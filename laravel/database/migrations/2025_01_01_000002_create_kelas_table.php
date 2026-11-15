@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('kelas', function (Blueprint $table) {
             $table->id('id_kelas');
             $table->unsignedTinyInteger('id_jurusan');
-            $table->unsignedTinyInteger('tingkat')->comment('10, 11, atau 12');
+            $table->unsignedTinyInteger('tingkat')->comment('10');
             $table->unsignedTinyInteger('rombel')->comment('nomor rombongan belajar: 1, 2, ...');
             $table->string('tahun', 4);
             $table->timestamps();
