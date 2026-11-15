@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
+import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/views/login_view.dart';
 import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
@@ -21,17 +22,21 @@ import 'package:pretest_posttest_app/fitur/sertifikat/views/sertifikat_view.dart
 /// - Sertifikat & Portofolio -> [SertifikatView]
 /// - Keluar Akun -> dialog konfirmasi, lalu kembali ke [LoginView]
 class ProfilView extends StatelessWidget {
-  /// Nama lengkap pengguna. Default = dummy data yang sama dengan Beranda.
-  final String nama;
+  /// Nama lengkap pengguna. Jika kosong, diambil dari sesi login.
+  final String? nama;
 
-  /// Kelas & sekolah pengguna.
-  final String kelas;
+  /// Kelas pengguna. Jika kosong, diambil dari sesi login.
+  final String? kelas;
 
   const ProfilView({
     super.key,
-    this.nama = 'Seto Son Horeg',
-    this.kelas = 'Kelas 10 TKJ - SMKN 2 Jember',
+    this.nama,
+    this.kelas,
   });
+
+  String get _nama => nama ?? SesiPengguna.nama ?? 'Siswa';
+
+  String get _kelas => kelas ?? SesiPengguna.kelas ?? 'Kelas -';
 
   // ── Warna khusus halaman Profil ────────────────────────────────────────
   static const Color _warnaLatarAvatar = Color(0xFFBA7D8E);
@@ -125,8 +130,8 @@ class ProfilView extends StatelessWidget {
           child: Column(
             children: [
               _HeaderProfil(
-                nama: nama,
-                kelas: kelas,
+                nama: _nama,
+                kelas: _kelas,
                 warnaAvatar: _warnaLatarAvatar,
               ),
               Expanded(
@@ -154,7 +159,7 @@ class ProfilView extends StatelessWidget {
                                   saatDiketuk: () => Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (_) => PengaturanAkunView(
-                                        namaAwal: nama,
+                                        namaAwal: _nama,
                                       ),
                                     ),
                                   ),

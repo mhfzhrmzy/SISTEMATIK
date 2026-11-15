@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
+import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/materi/data/data_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
@@ -18,7 +19,17 @@ import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat
 /// - Grid materi yang scrollable
 /// - [NavigasiBawah] fixed di bawah
 class BerandaView extends StatefulWidget {
-  const BerandaView({super.key});
+  /// Nama pengguna yang login. Jika kosong, diambil dari sesi.
+  final String? nama;
+
+  /// Label kelas pengguna yang login. Jika kosong, diambil dari sesi.
+  final String? kelas;
+
+  const BerandaView({
+    super.key,
+    this.nama,
+    this.kelas,
+  });
 
   @override
   State<BerandaView> createState() => _BerandaViewState();
@@ -28,8 +39,10 @@ class _BerandaViewState extends State<BerandaView> {
   int _indeksFooter = 0;
 
   // ── Dummy data profil pengguna (ganti dengan data dari API/auth) ─────────
-  static const _namaPengguna = 'Seto Son Horeg';
-  static const _kelasPengguna = 'Kelas 10 TKJ - SMKN 2 Jember';
+  String get _namaPengguna => widget.nama ?? SesiPengguna.nama ?? 'Siswa';
+
+  String get _kelasPengguna => widget.kelas ?? SesiPengguna.kelas ?? 'Kelas -';
+
   static const _totalMateri = 2;
   static const _totalQuiz = 4;
 
@@ -39,7 +52,7 @@ class _BerandaViewState extends State<BerandaView> {
     setState(() => _indeksFooter = idx);
     final Widget tujuan = idx == 1
         ? const PapanPeringkatView()
-        : const ProfilView(nama: _namaPengguna, kelas: _kelasPengguna);
+        : ProfilView(nama: _namaPengguna, kelas: _kelasPengguna);
 
     await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => tujuan),
@@ -92,7 +105,7 @@ class _BerandaViewState extends State<BerandaView> {
         child: Column(
           children: [
             // ── Header Profil — hp dan status bar dihitung sendiri di dalam widget ──
-            const _HeaderProfil(nama: _namaPengguna, kelas: _kelasPengguna),
+            _HeaderProfil(nama: _namaPengguna, kelas: _kelasPengguna),
 
             // ── Konten Scrollable ─────────────────────────────────────────
             Expanded(

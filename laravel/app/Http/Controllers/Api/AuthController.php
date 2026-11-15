@@ -18,6 +18,10 @@ class AuthController extends Controller
         $validated = $request->validate([
             'nisn' => ['required', 'digits:10'],
             'password' => ['required', 'string'],
+        ], [
+            'nisn.required' => 'NISN wajib diisi.',
+            'nisn.digits' => 'NISN harus terdiri dari 10 digit.',
+            'password.required' => 'Password wajib diisi.',
         ]);
 
         $siswa = PenggunaSiswa::where('nisn', $validated['nisn'])->first();
@@ -33,12 +37,8 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Login berhasil.',
             'token' => $token,
-            'user' => [
-                'nisn' => $siswa->nisn,
-                'nama_lengkap' => $siswa->nama_lengkap,
-                'kelas' => $siswa->kelas,
-                'jurusan' => $siswa->jurusan,
-            ],
+            'role' => 'siswa',
+            'user' => $this->dataPenggunaSiswa($siswa),
         ]);
     }
 
@@ -97,23 +97,33 @@ class AuthController extends Controller
 
     public function profilSiswa(Request $request): JsonResponse
     {
-        $siswa = $request->user();
-
-        $fotoUrl = $siswa->foto_profile
-            ? Storage::disk('public')->url($siswa->foto_profile)
-            : null;
-
         return response()->json([
             'message' => 'Profil siswa berhasil diambil.',
-            'user' => [
-                'nisn' => $siswa->nisn,
-                'nama_lengkap' => $siswa->nama_lengkap,
-                'kelas' => $siswa->kelas,
-                'jurusan' => $siswa->jurusan,
-                'poin' => $siswa->poin,
-                'foto_profile' => $fotoUrl,
-            ],
+            'user' => $this->dataPenggunaSiswa($request->user()),
         ]);
+    }
+
+    /**
+     * Format data siswa agar konsisten dipakai endpoint login dan profil.
+     *
+     * @return array<string, mixed>
+     */
+    private function dataPenggunaSiswa(PenggunaSiswa $siswa): array
+    {
+        $siswa->loadMissing('kelas.jurusan');
+
+        return [
+            'nisn' => $siswa->nisn,
+            'nama_lengkap' => $siswa->nama_lengkap,
+            'id_kelas' => $siswa->id_kelas,
+            'kelas' => $siswa->kelas?->nama_kelas,
+            'jurusan' => $siswa->kelas?->jurusan?->nama_jurusan,
+            'tahun' => $siswa->kelas?->tahun,
+            'poin' => $siswa->poin,
+            'foto_profile' => $siswa->foto_profile
+                ? Storage::disk('public')->url($siswa->foto_profile)
+                : null,
+        ];
     }
 
     public function updateFotoSiswa(Request $request): JsonResponse

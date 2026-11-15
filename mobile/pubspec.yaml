@@ -1,5 +1,5 @@
 name: pretest_posttest_app
-description: "Frontend Flutter Pre-Test & Post-Test Dasar Python (UI only, no backend)."
+description: "Aplikasi Pre-Test & Post-Test Dasar Python untuk siswa."
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.6
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
