@@ -33,7 +33,7 @@
     {{-- 3. Daftar Kartu Materi (Grid 2 Kolom Responsif Sesuai Referensi) --}}
     @if ($materis->isEmpty())
         <div class="bg-white rounded-2xl p-10 sm:p-14 text-center shadow-xs">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#7B1038]/10 flex items-center justify-center text-[#7B1038]">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-[#7B1038]">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
@@ -108,21 +108,21 @@
                                 <span class="text-[10px] text-white/80">Sudah Dikerjakan</span>
                             </a>
                         @elseif ($materi->hasPretest)
-                            {{-- Pre-Test Belum Dikerjakan -> MAROON SAMAR --}}
+                            {{-- Pre-Test Belum Dikerjakan -> BORDER MAROON ELEGAN --}}
                             <a href="{{ route('portal.quiz.kerjakan', $materi->pretest) }}"
-                               class="bg-[#7B1038]/10 hover:bg-[#7B1038]/20 text-[#7B1038] border border-[#7B1038]/25 rounded-xl p-2.5 sm:p-3 text-center transition flex flex-col items-center justify-center group">
-                                <svg class="w-3.5 h-3.5 mb-0.5 text-[#7B1038]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <span class="font-bold text-xs text-[#7B1038] mt-0.5">Pre-Test</span>
-                                <span class="text-[10px] text-[#7B1038]/80 font-medium">Mulai Sekarang</span>
+                               class="bg-white hover:bg-[#7B1038] text-[#7B1038] hover:text-white border-2 border-[#7B1038] rounded-xl p-2.5 sm:p-3 text-center transition flex flex-col items-center justify-center group shadow-2xs">
+                                <svg class="w-3.5 h-3.5 mb-0.5 text-[#7B1038] group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="font-bold text-xs text-[#7B1038] group-hover:text-white mt-0.5 transition">Pre-Test</span>
+                                <span class="text-[10px] text-slate-500 group-hover:text-white/90 font-medium transition">Mulai Sekarang</span>
                             </a>
                         @else
-                            {{-- Tidak ada Pre-Test (Bebas Akses) -> MAROON SAMAR --}}
-                            <div class="bg-[#7B1038]/5 border border-[#7B1038]/15 rounded-xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center text-[#7B1038]/70">
-                                <span class="font-bold text-xs flex items-center justify-center gap-1 text-[#7B1038]/70">
+                            {{-- Tidak ada Pre-Test (Bebas Akses) -> NETRAL --}}
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-center text-slate-500">
+                                <span class="font-bold text-xs flex items-center justify-center gap-1 text-slate-500">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                 </span>
-                                <span class="font-bold text-xs text-[#7B1038]/90 mt-0.5">Pre-Test</span>
-                                <span class="text-[10px] text-[#7B1038]/60">Bebas Akses</span>
+                                <span class="font-bold text-xs text-slate-700 mt-0.5">Pre-Test</span>
+                                <span class="text-[10px] text-slate-400">Bebas Akses</span>
                             </div>
                         @endif
 
@@ -180,12 +180,12 @@
                                 <span class="text-[10px] text-white/80">Sudah Dikerjakan</span>
                             </a>
                         @elseif ($materi->hasPosttest)
-                            {{-- Post-Test Belum Dikerjakan (Siap Diuji) -> MAROON SAMAR --}}
+                            {{-- Post-Test Belum Dikerjakan (Siap Diuji) -> BORDER MAROON ELEGAN --}}
                             <a href="{{ route('portal.quiz.index', $materi) }}"
-                               class="bg-[#7B1038]/10 hover:bg-[#7B1038]/20 text-[#7B1038] border border-[#7B1038]/25 rounded-xl p-2.5 sm:p-3 text-center transition flex flex-col items-center justify-center group">
-                                <svg class="w-3.5 h-3.5 mb-0.5 text-[#7B1038]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <span class="font-bold text-xs text-[#7B1038] mt-0.5">Post-Test</span>
-                                <span class="text-[10px] text-[#7B1038]/80 font-medium">Siap Diuji</span>
+                               class="bg-white hover:bg-[#7B1038] text-[#7B1038] hover:text-white border-2 border-[#7B1038] rounded-xl p-2.5 sm:p-3 text-center transition flex flex-col items-center justify-center group shadow-2xs">
+                                <svg class="w-3.5 h-3.5 mb-0.5 text-[#7B1038] group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="font-bold text-xs text-[#7B1038] group-hover:text-white mt-0.5 transition">Post-Test</span>
+                                <span class="text-[10px] text-slate-500 group-hover:text-white/90 font-medium transition">Siap Diuji</span>
                             </a>
                         @else
                             {{-- Belum ada Post-Test -> ABU-ABU --}}

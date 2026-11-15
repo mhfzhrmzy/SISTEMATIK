@@ -16,7 +16,7 @@
 
     <div class="bg-white rounded-2xl shadow-xs overflow-hidden p-6 sm:p-8">
         <div class="border-b border-gray-100 pb-5 mb-6">
-            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038]/10 text-[#7B1038] mb-1">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038] text-white mb-1 shadow-2xs">
                 UNGGAH PORTOFOLIO
             </span>
             <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937]">Upload Sertifikat Pribadi</h1>
@@ -98,17 +98,34 @@
 
             {{-- File Input --}}
             <div class="space-y-1.5">
-                <label for="file_sertifikat" class="block text-xs font-semibold text-[#6B7280]">
+                <label class="block text-xs font-semibold text-[#6B7280]">
                     Berkas Sertifikat (PDF / JPG / PNG, Max 2MB) <span class="text-rose-500">*</span>
                 </label>
-                <input 
-                    type="file" 
-                    name="file_sertifikat" 
-                    id="file_sertifikat" 
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    class="w-full text-xs text-[#6B7280] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#7B1038]/10 file:text-[#7B1038] hover:file:bg-[#7B1038]/20 bg-gray-50 rounded-xl p-2 cursor-pointer shadow-xs transition"
-                    required
-                >
+                <div class="relative">
+                    <label for="file_sertifikat" class="flex items-center gap-3 w-full p-2 bg-gray-50 hover:bg-gray-100/70 border border-gray-200 rounded-xl cursor-pointer hover:border-[#7B1038] transition group shadow-xs">
+                        <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#7B1038] group-hover:bg-[#5E0C2B] text-white text-xs font-bold rounded-lg transition duration-150 shadow-xs shrink-0 select-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                            Pilih File
+                        </span>
+                        <span id="file-chosen-text" class="text-xs text-[#6B7280] truncate font-medium flex-1">
+                            Belum ada berkas dipilih
+                        </span>
+                        <span class="text-[11px] font-semibold text-[#7B1038] bg-slate-100 group-hover:bg-slate-200 px-2.5 py-1 rounded-md shrink-0 hidden sm:inline-block border border-slate-200 transition">
+                            Telusuri
+                        </span>
+                    </label>
+                    <input 
+                        type="file" 
+                        name="file_sertifikat" 
+                        id="file_sertifikat" 
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        class="sr-only"
+                        onchange="const f = this.files[0]; const t = document.getElementById('file-chosen-text'); if(f) { t.innerHTML = '<span class=\'text-emerald-700 font-bold\'>✓ ' + f.name + '</span> <span class=\'text-slate-400 font-normal\'>(' + (f.size/1024/1024).toFixed(2) + ' MB)</span>'; } else { t.textContent = 'Belum ada berkas dipilih'; }"
+                        required
+                    >
+                </div>
             </div>
 
             {{-- Tombol Aksi --}}

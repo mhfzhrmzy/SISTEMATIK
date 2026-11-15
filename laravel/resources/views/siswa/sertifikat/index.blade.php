@@ -7,7 +7,7 @@
 
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
         <div>
-            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038]/10 text-[#7B1038] mb-1">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038] text-white mb-1 shadow-2xs">
                 PRESTASI BELAJAR
             </span>
             <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937]">Daftar Sertifikat &amp; Portofolio</h1>
@@ -36,7 +36,7 @@
             <div class="bg-white p-5 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between gap-2 mb-3">
-                        <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold {{ $item->tipe_sertifikat === 'materi' ? 'bg-[#7B1038]/10 text-[#7B1038]' : 'bg-[#E8F8F0] text-[#1F9254]' }}">
+                        <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold {{ $item->tipe_sertifikat === 'materi' ? 'bg-[#7B1038] text-white shadow-2xs' : 'bg-[#E8F8F0] text-[#1F9254]' }}">
                             {{ $item->tipe_sertifikat === 'materi' ? 'Kelulusan Modul' : 'Mandiri' }}
                         </span>
                         <span class="text-xs text-[#6B7280]">{{ $item->tanggal_terbit ?? '-' }}</span>

@@ -302,11 +302,33 @@
                                 {{-- File Modul --}}
                                 <td class="px-4 py-3 text-center whitespace-nowrap">
                                     @if($item->upload_file || $item->file)
-                                        <a href="{{ route('materi.show', $item) }}"
-                                           target="_blank"
-                                           class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-bold text-[11px] shadow-2xs transition duration-150">
-                                            Buka File
-                                        </a>
+                                        @php
+                                            $guruFileUrl = route('materi.show', $item);
+                                            $guruFitUrl = $guruFileUrl . '#page=1&view=Fit&navpanes=0';
+                                            $isItemPdf = str_ends_with(strtolower($item->upload_file ?? ''), '.pdf');
+                                        @endphp
+                                        @if($isItemPdf)
+                                            <div class="inline-flex items-center gap-1.5">
+                                                <button type="button"
+                                                        onclick="openMateriPreview('{{ $guruFitUrl }}', '{{ $guruFileUrl }}', @js($item->judul_materi ?? $item->judul))"
+                                                        class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-bold text-[11px] shadow-2xs transition duration-150 cursor-pointer"
+                                                        title="Buka pratinjau pas 1 halaman">
+                                                    Pratinjau
+                                                </button>
+                                                <a href="{{ $guruFitUrl }}"
+                                                   target="_blank"
+                                                   class="p-1 rounded-lg text-slate-500 hover:text-[#7B1038] hover:bg-slate-100 transition duration-150"
+                                                   title="Buka di tab baru (Pas 1 Halaman)">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                </a>
+                                            </div>
+                                        @else
+                                            <a href="{{ $guruFileUrl }}"
+                                               target="_blank"
+                                               class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-bold text-[11px] shadow-2xs transition duration-150">
+                                                Unduh
+                                            </a>
+                                        @endif
                                     @else
                                         <span class="text-slate-400 italic text-[11px]">Kosong</span>
                                     @endif
@@ -366,9 +388,142 @@
     </div>
 </div>
 
-{{-- Script Pencarian Realtime --}}
+{{-- Modal Pratinjau PDF Materi Guru --}}
+<div id="materi-preview-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
+    <div id="materi-modal-card" class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-6xl h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+        {{-- Header Bar --}}
+        <div class="bg-slate-800 text-slate-200 px-4 py-3 flex items-center justify-between flex-wrap gap-2 text-xs border-b border-slate-700 select-none">
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-[#7B1038] text-white text-[10px] font-bold uppercase tracking-wide">
+                    PRATINJAU GURU
+                </span>
+                <span id="modal-materi-title" class="font-bold text-slate-100 truncate max-w-[220px] sm:max-w-md">
+                    Pratinjau Modul
+                </span>
+            </div>
+
+            {{-- Mode & Action Controls --}}
+            <div class="flex items-center gap-1.5 flex-wrap">
+                <button type="button"
+                        id="modal-btn-fit"
+                        onclick="switchModalPdfMode('fit')"
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#7B1038] text-white transition shadow-2xs">
+                    <span>1 Halaman Pas</span>
+                </button>
+                <button type="button"
+                        id="modal-btn-width"
+                        onclick="switchModalPdfMode('width')"
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-300 transition">
+                    <span>Pas Lebar</span>
+                </button>
+                <span class="w-px h-4 bg-slate-700 mx-1"></span>
+                <button type="button"
+                        onclick="toggleModalFullscreen()"
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200 transition"
+                        title="Layar Penuh">
+                    <span id="modal-text-fs">⛶ Layar Penuh</span>
+                </button>
+                <a id="modal-tab-link" href="#" target="_blank"
+                   class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200 transition"
+                   title="Buka di Tab Baru">
+                    <span>↗ Tab Baru</span>
+                </a>
+                <button type="button"
+                        onclick="closeMateriPreview()"
+                        class="p-1 rounded-lg bg-slate-700 hover:bg-rose-600 text-slate-300 hover:text-white transition ml-1 cursor-pointer"
+                        title="Tutup (Esc)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+
+        {{-- Iframe --}}
+        <div class="relative w-full flex-1 bg-slate-900">
+            <iframe id="modal-pdf-iframe"
+                    src="about:blank"
+                    class="w-full h-full border-0 block"
+                    allow="fullscreen"
+                    title="Pratinjau Modul">
+            </iframe>
+        </div>
+    </div>
+</div>
+
+{{-- Script Pencarian Realtime & Preview --}}
 @push('scripts')
 <script>
+    let currentModalBaseUrl = '';
+
+    function openMateriPreview(fitUrl, rawUrl, title) {
+        currentModalBaseUrl = rawUrl;
+        document.getElementById('modal-materi-title').innerText = title;
+        document.getElementById('modal-tab-link').href = fitUrl;
+        document.getElementById('modal-pdf-iframe').src = fitUrl;
+        document.getElementById('materi-preview-modal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        switchModalPdfMode('fit');
+    }
+
+    function closeMateriPreview() {
+        const modal = document.getElementById('materi-preview-modal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        document.getElementById('modal-pdf-iframe').src = 'about:blank';
+        document.body.classList.remove('overflow-hidden');
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        }
+    }
+
+    function switchModalPdfMode(mode) {
+        const iframe = document.getElementById('modal-pdf-iframe');
+        const btnFit = document.getElementById('modal-btn-fit');
+        const btnWidth = document.getElementById('modal-btn-width');
+        if (!iframe || !currentModalBaseUrl) return;
+
+        if (mode === 'fit') {
+            iframe.src = currentModalBaseUrl + '#page=1&view=Fit&navpanes=0';
+            btnFit?.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+            btnFit?.classList.add('bg-[#7B1038]', 'text-white', 'shadow-2xs');
+            btnWidth?.classList.remove('bg-[#7B1038]', 'text-white', 'shadow-2xs');
+            btnWidth?.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+        } else {
+            iframe.src = currentModalBaseUrl + '#page=1&view=FitH&navpanes=0';
+            btnWidth?.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+            btnWidth?.classList.add('bg-[#7B1038]', 'text-white', 'shadow-2xs');
+            btnFit?.classList.remove('bg-[#7B1038]', 'text-white', 'shadow-2xs');
+            btnFit?.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+        }
+    }
+
+    function toggleModalFullscreen() {
+        const card = document.getElementById('materi-modal-card');
+        if (!card) return;
+        if (!document.fullscreenElement) {
+            if (card.requestFullscreen) card.requestFullscreen();
+            else if (card.webkitRequestFullscreen) card.webkitRequestFullscreen();
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('materi-preview-modal');
+            if (modal && !modal.classList.contains('hidden') && !document.fullscreenElement) {
+                closeMateriPreview();
+            }
+        }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        const isFs = !!document.fullscreenElement;
+        const textFs = document.getElementById('modal-text-fs');
+        if (textFs) {
+            textFs.innerText = isFs ? '✖ Keluar' : '⛶ Layar Penuh';
+        }
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('search-materi');
         const tableBody = document.querySelector('#table-materi tbody');

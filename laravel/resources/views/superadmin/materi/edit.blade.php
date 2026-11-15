@@ -145,8 +145,8 @@
                         @if($materi->upload_file)
                             <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 flex items-center justify-between flex-wrap gap-2">
                                 <span>File Terpasang: <strong class="text-slate-800">{{ basename($materi->upload_file) }}</strong></span>
-                                <a href="{{ route('superadmin.materi.show', $materi) }}" target="_blank" class="text-[#6D1837] hover:underline font-bold">
-                                    📄 Lihat File
+                                <a href="{{ route('superadmin.materi.show', $materi) }}#page=1&view=Fit&navpanes=0" target="_blank" class="text-[#6D1837] hover:underline font-bold" title="Buka file dengan tampilan pas 1 halaman">
+                                    📄 Lihat File (Pas 1 Halaman) ↗
                                 </a>
                             </div>
                             <p class="text-[11px] text-slate-400 mt-1">* Kosongkan jika tidak ingin mengganti file yang ada.</p>

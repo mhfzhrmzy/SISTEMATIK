@@ -17,7 +17,7 @@
     {{-- Header Banner Materi (Maroon & Putih, Clean, Minimalis) --}}
     <div class="bg-white rounded-2xl p-6 sm:p-7 shadow-xs border-l-4 border-[#7B1038] flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div class="space-y-1.5">
-            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038]/10 text-[#7B1038]">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038] text-white shadow-2xs">
                 MODUL EVALUASI
             </span>
             <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937] leading-tight">
@@ -34,8 +34,8 @@
                 <span class="text-[10px] text-[#6B7280] uppercase tracking-wider block font-semibold">Tersedia</span>
                 <span class="text-base font-bold text-[#1F2937]">{{ $quizzes->count() }} Quiz</span>
             </div>
-            <div class="bg-[#7B1038]/10 rounded-xl px-4 py-2.5 text-center">
-                <span class="text-[10px] text-[#7B1038] uppercase tracking-wider block font-semibold">Selesai</span>
+            <div class="bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-center">
+                <span class="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Selesai</span>
                 <span class="text-base font-bold text-[#7B1038]">{{ $attemptedIds->count() }} Dikerjakan</span>
             </div>
         </div>
@@ -77,7 +77,7 @@
                         <span class="text-base">🧪</span>
                         <h2 class="text-sm font-bold uppercase tracking-wider text-[#5E0C2B]">Pre-Test</h2>
                     </div>
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#7B1038]/10 text-[#7B1038]">
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#7B1038] text-white shadow-2xs">
                         {{ $pretests->count() }} Pre-Test
                     </span>
                 </div>
@@ -91,7 +91,7 @@
                         <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div class="space-y-2 flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#7B1038]/10 text-[#7B1038]">Pre-Test</span>
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#7B1038] text-white shadow-2xs">Pre-Test</span>
                                     @if ($attempted)
                                         <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#E8F8F0] text-[#1F9254]">
                                             ✓ Sudah Dikerjakan
@@ -125,7 +125,7 @@
                                     <span class="text-xs text-gray-400 italic">Soal belum siap</span>
                                 @else
                                     <a href="{{ route('portal.quiz.kerjakan', $quiz) }}"
-                                       class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-xs {{ $attempted ? 'bg-gray-100 hover:bg-[#7B1038]/10 text-[#7B1038]' : 'bg-[#7B1038] hover:bg-[#5E0C2B] text-white' }}">
+                                       class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-xs {{ $attempted ? 'bg-slate-100 hover:bg-[#7B1038] hover:text-white text-[#7B1038] border border-slate-200' : 'bg-[#7B1038] hover:bg-[#5E0C2B] text-white' }}">
                                         {{ $attempted ? '🔄 Kerjakan Ulang' : '▶ Mulai Pre-Test' }}
                                     </a>
                                 @endif
@@ -144,7 +144,7 @@
                         <span class="text-base">🎓</span>
                         <h2 class="text-sm font-bold uppercase tracking-wider text-[#5E0C2B]">Post-Test</h2>
                     </div>
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#7B1038]/10 text-[#7B1038]">
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#7B1038] text-white shadow-2xs">
                         {{ $posttests->count() }} Post-Test
                     </span>
                 </div>
@@ -159,7 +159,7 @@
                         <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div class="space-y-2 flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#7B1038]/10 text-[#7B1038]">Post-Test</span>
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#7B1038] text-white shadow-2xs">Post-Test</span>
                                     @if($statusJadwal === 'terjadwal')
                                         <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-[#6B7280]">
                                             ⏰ Terjadwal

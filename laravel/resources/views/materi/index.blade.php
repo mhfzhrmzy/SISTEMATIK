@@ -167,8 +167,8 @@
                                 <td class="py-3 px-4 text-sm">{{ $item->jurusan ?? '-' }}</td>
                                 <td class="py-3 px-4">
                                     @if($item->upload_file || $item->file)
-                                        <a href="{{ route('materi.show', $item) }}" target="_blank" class="text-blue-600 hover:underline font-semibold">
-                                            Lihat File
+                                        <a href="{{ route('materi.show', $item) }}#page=1&view=Fit&navpanes=0" target="_blank" class="text-blue-600 hover:underline font-semibold" title="Buka file dengan tampilan pas 1 halaman">
+                                            Lihat File ↗
                                         </a>
                                     @else
                                         <span class="text-gray-400">Tidak ada file</span>

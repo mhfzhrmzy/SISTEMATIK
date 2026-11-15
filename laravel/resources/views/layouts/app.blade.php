@@ -8,6 +8,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <style>
+        input[type="file"]::file-selector-button,
+        input[type="file"]::-webkit-file-upload-button {
+            background-color: #7B1038 !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.625rem !important;
+            font-weight: 700 !important;
+            font-size: 0.75rem !important;
+            cursor: pointer !important;
+            margin-right: 0.875rem !important;
+            transition: background-color 0.15s ease !important;
+        }
+        input[type="file"]::file-selector-button:hover,
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background-color: #5E0C2B !important;
+        }
+    </style>
+    @stack('styles')
 </head>
 <body class="bg-[#F3F4F6] min-h-screen text-[#1F2937] antialiased font-sans selection:bg-[#7B1038] selection:text-white">
     @if (request()->routeIs('superadmin.*'))
@@ -32,34 +52,34 @@
                 <nav class="hidden md:flex items-center gap-2 lg:gap-3 text-[13px] lg:text-[14px] font-medium text-[#5E0C2B]">
                     @if (auth('siswa')->check())
                         <a href="{{ route('portal.materi.index') }}"
-                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
+                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">
                             Portal Siswa
                         </a>
                         <a href="{{ route('leaderboard.index') }}"
-                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('leaderboard.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
+                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('leaderboard.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">
                             Leaderboard
                         </a>
                         <a href="{{ route('siswa.sertifikat.index') }}"
-                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('siswa.sertifikat.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
+                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('siswa.sertifikat.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">
                             Sertifikat
                         </a>
                         <span class="w-px h-5 bg-[#E5CDD5] inline-block mx-1" aria-hidden="true"></span>
                         <a href="{{ route('siswa.profil') }}"
-                           class="px-3.5 py-1.5 rounded-full transition-all duration-150 {{ request()->routeIs('siswa.profil') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">
+                           class="px-3.5 py-1.5 rounded-full transition-all duration-150 {{ request()->routeIs('siswa.profil') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">
                             {{ auth('siswa')->user()->nama_lengkap }}
                         </a>
                         <form action="{{ route('siswa.logout') }}" method="POST" class="inline">
                             @csrf
-                            <button type="submit" class="text-[#7B1038] hover:bg-[#7B1038]/10 hover:text-[#5E0C2B] px-3.5 py-1.5 rounded-full text-sm font-semibold transition-colors duration-150">
+                            <button type="submit" class="text-[#7B1038] hover:bg-slate-100 hover:text-[#5E0C2B] px-3.5 py-1.5 rounded-full text-sm font-semibold transition-colors duration-150">
                                 Logout
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('admin.login') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('admin.login') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">Login Guru</a>
-                        <a href="{{ route('admin.register') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('admin.register') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">Registrasi Guru</a>
+                        <a href="{{ route('admin.login') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('admin.login') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">Login Guru</a>
+                        <a href="{{ route('admin.register') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('admin.register') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">Registrasi Guru</a>
                         <span class="w-px h-5 bg-[#E5CDD5] inline-block mx-1" aria-hidden="true"></span>
-                        <a href="{{ route('siswa.login') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('siswa.login') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">Login Siswa</a>
-                        <a href="{{ route('siswa.register') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('siswa.register') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-[#7B1038]/10' }}">Registrasi Siswa</a>
+                        <a href="{{ route('siswa.login') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('siswa.login') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">Login Siswa</a>
+                        <a href="{{ route('siswa.register') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('siswa.register') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">Registrasi Siswa</a>
                     @endif
                 </nav>
 
@@ -70,7 +90,7 @@
                             aria-label="Buka menu navigasi"
                             aria-expanded="false"
                             aria-controls="mobile-menu"
-                            class="inline-flex items-center justify-center p-2 rounded-lg text-[#7B1038] hover:bg-[#7B1038]/10 focus:outline-none focus:ring-2 focus:ring-[#7B1038] transition">
+                            class="inline-flex items-center justify-center p-2 rounded-lg text-[#7B1038] hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#7B1038] transition">
                         <svg id="hamburger-icon" class="w-6 h-6 block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -85,20 +105,20 @@
             <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-[#E5CDD5] shadow-lg px-4 py-3 space-y-1.5">
                 @if (auth('siswa')->check())
                     <a href="{{ route('portal.materi.index') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
+                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">
                         Portal Siswa
                     </a>
                     <a href="{{ route('leaderboard.index') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('leaderboard.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
+                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('leaderboard.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">
                         Leaderboard
                     </a>
                     <a href="{{ route('siswa.sertifikat.index') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.sertifikat.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
+                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.sertifikat.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">
                         Sertifikat
                     </a>
                     <div class="h-px bg-[#E5CDD5] my-2"></div>
                     <a href="{{ route('siswa.profil') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.profil') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">
+                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.profil') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">
                         {{ auth('siswa')->user()->nama_lengkap }}
                     </a>
                     <form action="{{ route('siswa.logout') }}" method="POST" class="pt-1">
@@ -108,11 +128,11 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('admin.login') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('admin.login') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">Login Guru</a>
-                    <a href="{{ route('admin.register') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('admin.register') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">Registrasi Guru</a>
+                    <a href="{{ route('admin.login') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('admin.login') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">Login Guru</a>
+                    <a href="{{ route('admin.register') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('admin.register') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">Registrasi Guru</a>
                     <div class="h-px bg-[#E5CDD5] my-2"></div>
-                    <a href="{{ route('siswa.login') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.login') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">Login Siswa</a>
-                    <a href="{{ route('siswa.register') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.register') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10 hover:text-[#7B1038]' }}">Registrasi Siswa</a>
+                    <a href="{{ route('siswa.login') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.login') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">Login Siswa</a>
+                    <a href="{{ route('siswa.register') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.register') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">Registrasi Siswa</a>
                 @endif
             </div>
         </header>

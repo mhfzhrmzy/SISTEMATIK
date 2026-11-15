@@ -281,7 +281,7 @@
                         <tr class="hover:bg-slate-50/70 transition duration-75">
                             <td class="px-4 py-3.5 whitespace-nowrap">
                                 <div class="flex items-center gap-2">
-                                    <span class="w-7 h-7 rounded-full bg-[#7B1038]/10 text-[#7B1038] flex items-center justify-center font-bold text-[10px] shrink-0 border border-[#7B1038]/20">
+                                    <span class="w-7 h-7 rounded-full bg-slate-100 text-[#7B1038] flex items-center justify-center font-bold text-[10px] shrink-0 border border-slate-200">
                                         {{ strtoupper(substr($item->siswa->nama_lengkap ?? 'S', 0, 1)) }}
                                     </span>
                                     <span class="font-bold text-slate-900">{{ $item->siswa->nama_lengkap ?? '-' }}</span>
@@ -304,7 +304,7 @@
                                 @if($item->file_sertifikat)
                                     <a href="{{ asset('storage/' . $item->file_sertifikat) }}"
                                        target="_blank"
-                                       class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#7B1038]/10 text-[#7B1038] hover:bg-[#7B1038] hover:text-white font-bold text-[11px] transition duration-150 border border-[#7B1038]/20">
+                                       class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-[#7B1038] hover:text-white font-bold text-[11px] transition duration-150 border border-slate-200 hover:border-[#7B1038]">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>

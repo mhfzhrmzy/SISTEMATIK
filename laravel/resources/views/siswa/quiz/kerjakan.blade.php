@@ -1,5 +1,53 @@
 @extends('layouts.app')
 @section('title', 'Kerjakan Quiz — ' . ($quiz->materi->judul_materi ?? 'Quiz'))
+
+@push('styles')
+<style>
+    /* Default / Unselected State */
+    .answer-label {
+        background-color: #F8F9FA;
+        border: 1.5px solid #E5E7EB;
+        transition: all 0.15s ease-in-out;
+    }
+    .answer-label:hover:not(.is-selected) {
+        background-color: #F1F3F5;
+        border-color: #CBD5E1;
+    }
+    .answer-label:hover:not(.is-selected) .choice-circle {
+        background-color: #FFFFFF;
+        border-color: #94A3B8;
+        color: #1E293B !important;
+    }
+
+    /* Selected State (Clean White + Maroon Border, NO Pink Error Background) */
+    .answer-label.is-selected {
+        background-color: #FFFFFF !important;
+        border: 2px solid #7B1038 !important;
+        box-shadow: 0 0 0 1px #7B1038, 0 2px 8px rgba(123, 16, 56, 0.08) !important;
+    }
+    .answer-label.is-selected .choice-circle {
+        background-color: #7B1038 !important;
+        border-color: #7B1038 !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Saat kursor hover ke jawaban yang sedang dipilih, teks ABCD TETAP PUTIH */
+    .answer-label.is-selected:hover {
+        background-color: #FFFFFF !important;
+        border-color: #7B1038 !important;
+    }
+    .answer-label.is-selected:hover .choice-circle {
+        background-color: #7B1038 !important;
+        border-color: #7B1038 !important;
+        color: #FFFFFF !important;
+    }
+    .answer-label.is-selected .choice-text {
+        color: #111827 !important;
+        font-weight: 600;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="w-full space-y-6">
 
@@ -8,7 +56,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
             <div>
                 <div class="flex items-center gap-2 flex-wrap mb-1">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#7B1038]/10 text-[#7B1038]">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#7B1038] text-white shadow-2xs">
                         {{ ucfirst($quiz->tipe_test) }}
                     </span>
                     @if($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap())
@@ -46,7 +94,7 @@
                 {{-- Timer absolut posttest --}}
                 @if(isset($sisaDetik) && $sisaDetik !== null)
                     <div id="absolute-timer-box"
-                         class="flex items-center gap-2 bg-[#7B1038]/10 text-[#7B1038] px-4 py-2 rounded-xl font-mono text-sm font-bold shadow-xs transition-colors"
+                         class="flex items-center gap-2 bg-slate-50 border-2 border-[#7B1038] text-[#7B1038] px-4 py-2 rounded-xl font-mono text-sm font-bold shadow-2xs transition-colors"
                          data-sisa-detik="{{ $sisaDetik }}">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
@@ -104,7 +152,7 @@
                             </p>
                             <button type="button"
                                     onclick="playTTS(this, @js($soal->pertanyaan), {{ $index }})"
-                                    class="tts-btn shrink-0 w-8 h-8 rounded-full border border-[#7B1038]/30 hover:bg-[#7B1038]/10 text-[#7B1038] flex items-center justify-center transition"
+                                    class="tts-btn shrink-0 w-8 h-8 rounded-full border border-[#7B1038]/30 hover:bg-[#7B1038] hover:text-white text-[#7B1038] flex items-center justify-center transition"
                                     id="tts-btn-{{ $index }}"
                                     title="Dengarkan soal">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -132,18 +180,19 @@
                                 $displayLetter = $optionLabels[$optIdx] ?? strtoupper($origKey);
                                 $optIdx++;
                             @endphp
-                            <label class="answer-label flex items-start gap-3.5 p-4 rounded-xl cursor-pointer bg-[#F8F9FA] hover:bg-gray-100 transition-all duration-150 group"
+                            <label class="answer-label flex items-start gap-3.5 p-4 rounded-xl cursor-pointer transition-all duration-150 {{ old('jawaban.'.$soal->id_soal) === $origKey ? 'is-selected' : '' }}"
                                    id="label-{{ $index }}-{{ $origKey }}">
                                 <input type="radio"
                                        name="jawaban[{{ $soal->id_soal }}]"
                                        value="{{ $origKey }}"
                                        class="hidden answer-radio"
-                                       id="radio-{{ $index }}-{{ $origKey }}">
-                                <span class="choice-circle shrink-0 w-8 h-8 rounded-xl bg-white text-[#6B7280] flex items-center justify-center text-xs font-bold shadow-xs group-hover:text-[#7B1038] transition-all"
+                                       id="radio-{{ $index }}-{{ $origKey }}"
+                                       {{ old('jawaban.'.$soal->id_soal) === $origKey ? 'checked' : '' }}>
+                                <span class="choice-circle shrink-0 w-8 h-8 rounded-xl bg-white text-[#6B7280] border border-gray-200 flex items-center justify-center text-xs font-bold shadow-xs transition-all"
                                       id="circle-{{ $index }}-{{ $origKey }}">
                                     {{ $displayLetter }}
                                 </span>
-                                <span class="text-sm font-medium text-[#1F2937] pt-1 leading-relaxed flex-1">
+                                <span class="choice-text text-sm font-medium text-[#1F2937] pt-1 leading-relaxed flex-1">
                                     {{ $choiceText }}
                                 </span>
                             </label>
@@ -192,7 +241,7 @@ let quizLocked = false;
 const ttsCache = new Map();
 let currentAudio = null;
 let currentTtsBtn = null;
-const TTS_ACTIVE_CLASSES = ['bg-[#7B1038]/10', 'border-[#7B1038]'];
+const TTS_ACTIVE_CLASSES = ['bg-[#7B1038]', 'text-white', 'border-[#7B1038]'];
 
 function resetTtsBtn(btn) {
     if (!btn) return;
@@ -286,26 +335,37 @@ if (absoluteTimerBox) {
 }
 
 // Style answer labels with selected state
+function updateAnswerSelection(radio) {
+    if (quizLocked || !radio) return;
+    const name = radio.name;
+    document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+        inp.closest('.answer-label')?.classList.remove('is-selected');
+    });
+    if (radio.checked) {
+        radio.closest('.answer-label')?.classList.add('is-selected');
+    }
+}
+
 document.querySelectorAll('.answer-label').forEach(label => {
     label.addEventListener('click', () => {
         if (quizLocked) return;
-        const name = label.querySelector('input').name;
-        // Reset all in this question
-        document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
-            const lbl = inp.closest('label');
-            const circle = lbl.querySelector('.choice-circle');
-            lbl.classList.remove('bg-[#7B1038]/10', 'ring-2', 'ring-[#7B1038]');
-            lbl.classList.add('bg-[#F8F9FA]');
-            circle.classList.remove('bg-[#7B1038]', 'text-white');
-            circle.classList.add('bg-white', 'text-[#6B7280]');
-        });
-        // Style selected
-        const circle = label.querySelector('.choice-circle');
-        label.classList.remove('bg-[#F8F9FA]');
-        label.classList.add('bg-[#7B1038]/10', 'ring-2', 'ring-[#7B1038]');
-        circle.classList.remove('bg-white', 'text-[#6B7280]');
-        circle.classList.add('bg-[#7B1038]', 'text-white');
+        const radio = label.querySelector('.answer-radio');
+        if (radio) {
+            radio.checked = true;
+            updateAnswerSelection(radio);
+        }
     });
+});
+
+document.querySelectorAll('.answer-radio').forEach(radio => {
+    radio.addEventListener('change', () => {
+        updateAnswerSelection(radio);
+    });
+});
+
+// Sinkronkan opsi yang sudah tercentang saat halaman dimuat
+document.querySelectorAll('.answer-radio:checked').forEach(radio => {
+    radio.closest('.answer-label')?.classList.add('is-selected');
 });
 
 function lockQuizAndSubmit() {
@@ -363,7 +423,7 @@ function updateAbsoluteDisplay() {
     const ss = String(s % 60).padStart(2, '0');
     el.innerText = hh + ':' + mm + ':' + ss;
 
-    box.classList.remove('bg-[#7B1038]/10', 'text-[#7B1038]',
+    box.classList.remove('bg-slate-50', 'text-[#7B1038]', 'border-2', 'border-[#7B1038]',
                          'bg-red-50', 'text-red-700',
                          'bg-amber-50', 'text-amber-800');
     if (s <= 60) {
@@ -371,7 +431,7 @@ function updateAbsoluteDisplay() {
     } else if (s <= 300) {
         box.classList.add('bg-amber-50', 'text-amber-800');
     } else {
-        box.classList.add('bg-[#7B1038]/10', 'text-[#7B1038]');
+        box.classList.add('bg-slate-50', 'text-[#7B1038]', 'border-2', 'border-[#7B1038]');
     }
 }
 

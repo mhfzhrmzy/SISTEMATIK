@@ -121,18 +121,34 @@
 
         {{-- Berkas File --}}
         <div>
-            <label for="file_sertifikat" class="block text-sm font-semibold text-gray-700 mb-1">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">
                 Berkas Sertifikat <span class="text-red-500">*</span>
             </label>
-            <input
-                type="file"
-                name="file_sertifikat"
-                id="file_sertifikat"
-                accept=".pdf,.jpg,.jpeg,.png"
-                style="border: 1px solid #cbd5e1;"
-                class="w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 bg-white rounded-lg p-1.5 cursor-pointer"
-                required
-            >
+            <div class="relative">
+                <label for="file_sertifikat" class="flex items-center gap-3 w-full p-2 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl cursor-pointer hover:border-[#7B1038] transition group shadow-2xs">
+                    <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#7B1038] group-hover:bg-[#5E0C2B] text-white text-xs font-bold rounded-lg transition duration-150 shadow-xs shrink-0 select-none">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        Pilih File
+                    </span>
+                    <span id="file-chosen-text-admin" class="text-xs text-slate-500 truncate font-medium flex-1">
+                        Belum ada berkas dipilih
+                    </span>
+                    <span class="text-[11px] font-semibold text-[#7B1038] bg-slate-100 group-hover:bg-slate-200 px-2.5 py-1 rounded-md shrink-0 hidden sm:inline-block border border-slate-200 transition">
+                        Telusuri
+                    </span>
+                </label>
+                <input
+                    type="file"
+                    name="file_sertifikat"
+                    id="file_sertifikat"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    class="sr-only"
+                    onchange="const f = this.files[0]; const t = document.getElementById('file-chosen-text-admin'); if(f) { t.innerHTML = '<span class=\'text-emerald-700 font-bold\'>✓ ' + f.name + '</span> <span class=\'text-slate-400 font-normal\'>(' + (f.size/1024/1024).toFixed(2) + ' MB)</span>'; } else { t.textContent = 'Belum ada berkas dipilih'; }"
+                    required
+                >
+            </div>
             <span class="text-xs text-gray-500 mt-1 block">Format: PDF, JPG, JPEG, PNG (Maksimal 2 MB) — file akan didistribusikan ke seluruh siswa terpilih.</span>
         </div>
 

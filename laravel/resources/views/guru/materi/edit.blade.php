@@ -189,10 +189,11 @@
                                 </p>
                             </div>
                         </div>
-                        <a href="{{ route('materi.show', $materi) }}"
+                        <a href="{{ route('materi.show', $materi) }}#page=1&view=Fit&navpanes=0"
                            target="_blank"
-                           class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-bold text-xs shadow-2xs transition duration-150 shrink-0">
-                            Buka File
+                           class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-bold text-xs shadow-2xs transition duration-150 shrink-0"
+                           title="Buka file dengan tampilan pas 1 halaman">
+                            Buka File ↗
                         </a>
                     </div>
                 @endif

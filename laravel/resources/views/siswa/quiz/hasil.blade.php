@@ -78,7 +78,7 @@
             </div>
 
             {{-- Total Points Card --}}
-            <div class="bg-[#7B1038]/5 rounded-xl p-4 text-center">
+            <div class="bg-slate-50 border-2 border-[#7B1038] rounded-2xl p-4 text-center shadow-xs">
                 <div class="text-[10px] font-bold text-[#7B1038] uppercase tracking-wider mb-1">Total Poin Masuk Leaderboard</div>
                 <div class="text-3xl font-black text-[#7B1038]">
                     {{ $totalPoin }}

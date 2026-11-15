@@ -6,7 +6,7 @@
 <div class="space-y-6">
 
     <div class="border-b border-gray-100 pb-4">
-        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038]/10 text-[#7B1038] mb-1">
+        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038] text-white mb-1 shadow-2xs">
             AKUN SAYA
         </span>
         <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937]">Profil &amp; Informasi Siswa</h1>
@@ -21,7 +21,7 @@
                 <img src="{{ asset('storage/' . $siswa->foto_profile) }}" alt="{{ $siswa->nama_lengkap }}"
                      class="w-24 h-24 mx-auto rounded-full object-cover shadow-xs border-2 border-white">
             @else
-                <div class="w-24 h-24 mx-auto rounded-full bg-[#7B1038]/10 text-[#7B1038] flex items-center justify-center font-bold text-2xl shadow-xs">
+                <div class="w-24 h-24 mx-auto rounded-full bg-[#7B1038] text-white flex items-center justify-center font-bold text-2xl shadow-xs">
                     {{ strtoupper(substr($siswa->nama_lengkap, 0, 3)) }}
                 </div>
             @endif
@@ -80,7 +80,7 @@
 
             <div class="pt-2">
                 <button type="button" onclick="document.getElementById('formPassword').classList.toggle('hidden')"
-                        class="text-xs font-semibold bg-gray-100 hover:bg-[#7B1038]/10 text-[#7B1038] rounded-xl px-4 py-2.5 transition">
+                        class="text-xs font-semibold bg-slate-100 hover:bg-[#7B1038] hover:text-white text-[#7B1038] border border-slate-200 rounded-xl px-4 py-2.5 transition">
                     🔑 Ganti Kata Sandi
                 </button>
             </div>

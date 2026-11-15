@@ -20,7 +20,7 @@
         <div class="field">
             <label>File Modul Saat Ini</label>
             @if($materi->file_path)
-                <p><a href="{{ asset('storage/'.$materi->file_path) }}" target="_blank">{{ $materi->file_name }}</a></p>
+                <p><a href="{{ asset('storage/'.$materi->file_path) }}#page=1&view=Fit&navpanes=0" target="_blank">{{ $materi->file_name }} ↗</a></p>
             @else
                 <p><em>Belum ada file</em></p>
             @endif

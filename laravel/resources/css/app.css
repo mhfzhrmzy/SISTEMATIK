@@ -2,6 +2,7 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
 
 :root {
     --color-maroon: #7B1038;
@@ -19,4 +20,23 @@
     --color-maroon: #7B1038;
     --color-maroon-dark: #5E0C2B;
     --color-maroon-border: #E5CDD5;
+}
+
+/* Global Maroon File Input Styling */
+input[type="file"]::file-selector-button,
+input[type="file"]::-webkit-file-upload-button {
+    background-color: #7B1038;
+    color: #FFFFFF;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin-right: 0.875rem;
+    transition: background-color 0.15s ease;
+}
+input[type="file"]::file-selector-button:hover,
+input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: #5E0C2B;
 }

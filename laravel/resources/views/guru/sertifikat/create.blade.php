@@ -44,7 +44,7 @@
                     <label class="block text-xs font-bold text-slate-700">
                         Siswa Penerima
                     </label>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#7B1038]/10 text-[#7B1038] border border-[#7B1038]/20">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#7B1038] text-white shadow-2xs">
                         {{ $siswaTerpilih->count() }} siswa terpilih
                     </span>
                 </div>
@@ -52,7 +52,7 @@
                 <div class="rounded-xl border border-slate-200 bg-white overflow-hidden max-h-48 overflow-y-auto divide-y divide-slate-100 shadow-2xs">
                     @foreach ($siswaTerpilih as $s)
                         <div class="flex items-center gap-3 px-3.5 py-2.5">
-                            <div class="w-7 h-7 rounded-lg bg-[#7B1038]/10 text-[#7B1038] flex items-center justify-center font-bold text-xs shrink-0 border border-[#7B1038]/20">
+                            <div class="w-7 h-7 rounded-lg bg-slate-100 text-[#7B1038] flex items-center justify-center font-bold text-xs shrink-0 border border-slate-200">
                                 {{ strtoupper(substr($s->nama_lengkap, 0, 1)) }}
                             </div>
                             <div class="truncate">
@@ -135,20 +135,35 @@
 
             {{-- Berkas File Sertifikat --}}
             <div>
-                <label for="file_sertifikat" class="block text-xs font-bold text-slate-700 mb-1">
+                <label class="block text-xs font-bold text-slate-700 mb-1">
                     Berkas Sertifikat <span class="text-rose-500">*</span>
                 </label>
                 <div class="relative">
+                    <label for="file_sertifikat" class="flex items-center gap-3 w-full p-2 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl cursor-pointer hover:border-[#7B1038] transition group shadow-2xs">
+                        <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#7B1038] group-hover:bg-[#5E0C2B] text-white text-xs font-bold rounded-lg transition duration-150 shadow-xs shrink-0 select-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                            Pilih File
+                        </span>
+                        <span id="file-chosen-text-guru" class="text-xs text-slate-500 truncate font-medium flex-1">
+                            Belum ada berkas dipilih
+                        </span>
+                        <span class="text-[11px] font-semibold text-[#7B1038] bg-slate-100 group-hover:bg-slate-200 px-2.5 py-1 rounded-md shrink-0 hidden sm:inline-block border border-slate-200 transition">
+                            Telusuri
+                        </span>
+                    </label>
                     <input
                         type="file"
                         name="file_sertifikat"
                         id="file_sertifikat"
                         accept=".pdf,.jpg,.jpeg,.png"
-                        class="w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#7B1038]/10 file:text-[#7B1038] hover:file:bg-[#7B1038]/20 file:transition file:cursor-pointer border border-slate-300 rounded-xl bg-white p-1.5 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20"
+                        class="sr-only"
+                        onchange="const f = this.files[0]; const t = document.getElementById('file-chosen-text-guru'); if(f) { t.innerHTML = '<span class=\'text-emerald-700 font-bold\'>✓ ' + f.name + '</span> <span class=\'text-slate-400 font-normal\'>(' + (f.size/1024/1024).toFixed(2) + ' MB)</span>'; } else { t.textContent = 'Belum ada berkas dipilih'; }"
                         required
                     >
                 </div>
-                <p class="text-slate-400 text-[10px] mt-1">Format: PDF, JPG, JPEG, PNG (Maks. 2 MB) — berkas akan didistribusikan langsung ke portofolio seluruh siswa terpilih.</p>
+                <p class="text-slate-400 text-[10px] mt-1.5">Format: PDF, JPG, JPEG, PNG (Maks. 2 MB) — berkas akan didistribusikan langsung ke portofolio seluruh siswa terpilih.</p>
             </div>
 
             {{-- Tombol Aksi --}}
