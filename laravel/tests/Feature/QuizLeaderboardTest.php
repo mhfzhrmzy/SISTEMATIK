@@ -71,7 +71,11 @@ class QuizLeaderboardTest extends TestCase
             'tanggal' => now()->startOfDay()->toDateTimeString(),
         ]);
 
-        $response->assertRedirect(route('admin.quiz.index'));
+        $quiz = Quiz::where('id_materi', $materi->id_materi)
+            ->where('tipe_test', 'pretest')
+            ->firstOrFail();
+
+        $response->assertRedirect(route('admin.soal.index', $quiz));
     }
 
     public function test_admin_can_import_csv_questions(): void

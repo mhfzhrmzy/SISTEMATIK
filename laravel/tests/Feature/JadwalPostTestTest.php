@@ -145,13 +145,12 @@ class JadwalPostTestTest extends TestCase
             'jam_mulai' => '08:00',
         ]);
 
-        $response->assertRedirect(route('admin.quiz.index'));
-
         $quiz = Quiz::where('id_materi', $this->materi->id_materi)
             ->where('tipe_test', 'posttest')
             ->first();
 
         $this->assertNotNull($quiz);
+        $response->assertRedirect(route('admin.soal.index', $quiz));
         $this->assertStringStartsWith('08:00', $quiz->jam_mulai);
         $this->assertEquals('2026-10-27', $quiz->tanggal->format('Y-m-d'));
         $this->assertEquals(45, $quiz->timer);
