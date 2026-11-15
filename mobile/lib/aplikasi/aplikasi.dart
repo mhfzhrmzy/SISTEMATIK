@@ -1,17 +1,67 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/aplikasi/tema_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
+import 'package:pretest_posttest_app/inti/layanan/navigasi_aplikasi.dart';
+import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/views/gerbang_sesi_view.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/views/login_view.dart';
 
 /// Widget root aplikasi Dasar Python.
-class Aplikasi extends StatelessWidget {
+class Aplikasi extends StatefulWidget {
   const Aplikasi({super.key});
+
+  @override
+  State<Aplikasi> createState() => _AplikasiState();
+}
+
+class _AplikasiState extends State<Aplikasi> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    NavigasiAplikasi.saatSesiBerakhir = _bukaLogin;
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    NavigasiAplikasi.saatSesiBerakhir = null;
+    super.dispose();
+  }
+
+  /// Dipanggil saat API menjawab 401 atau token sudah kedaluwarsa.
+  void _bukaLogin(String? pesan) {
+    final navigator = NavigasiAplikasi.kunci.currentState;
+
+    if (navigator == null) {
+      return;
+    }
+
+    navigator.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => LoginView(pesanAwal: pesan)),
+      (route) => false,
+    );
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      return;
+    }
+
+    if (SesiPengguna.sudahMasuk && SesiPengguna.kedaluwarsa) {
+      unawaited(NavigasiAplikasi.sesiBerakhir());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Dasar Python',
       debugShowCheckedModeBanner: false,
+      navigatorKey: NavigasiAplikasi.kunci,
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: WarnaAplikasi.utama,
@@ -28,8 +78,8 @@ class Aplikasi extends StatelessWidget {
           },
         ),
       ),
-      // Entry point langsung ke halaman Login
-      home: const LoginView(),
+      // Tentukan halaman awal dari sesi yang tersimpan.
+      home: const GerbangSesiView(),
     );
   }
 }

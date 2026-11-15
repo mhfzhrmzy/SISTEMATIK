@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/data/layanan_autentikasi.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/views/login_view.dart';
 import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/pengaturan_akun_view.dart';
@@ -21,7 +22,7 @@ import 'package:pretest_posttest_app/fitur/sertifikat/views/sertifikat_view.dart
 /// - Tab Peringkat -> [PapanPeringkatView]
 /// - Sertifikat & Portofolio -> [SertifikatView]
 /// - Keluar Akun -> dialog konfirmasi, lalu kembali ke [LoginView]
-class ProfilView extends StatelessWidget {
+class ProfilView extends StatefulWidget {
   /// Nama lengkap pengguna. Jika kosong, diambil dari sesi login.
   final String? nama;
 
@@ -34,9 +35,14 @@ class ProfilView extends StatelessWidget {
     this.kelas,
   });
 
-  String get _nama => nama ?? SesiPengguna.nama ?? 'Siswa';
+  @override
+  State<ProfilView> createState() => _ProfilViewState();
+}
 
-  String get _kelas => kelas ?? SesiPengguna.kelas ?? 'Kelas -';
+class _ProfilViewState extends State<ProfilView> {
+  String get _nama => widget.nama ?? SesiPengguna.nama ?? 'Siswa';
+
+  String get _kelas => widget.kelas ?? SesiPengguna.kelas ?? 'Kelas -';
 
   // ── Warna khusus halaman Profil ────────────────────────────────────────
   static const Color _warnaLatarAvatar = Color(0xFFBA7D8E);
@@ -104,8 +110,30 @@ class ProfilView extends StatelessWidget {
 
     if (yakin != true || !context.mounted) return;
 
-    // TODO: hapus sesi/token login di sini saat backend sudah terhubung.
-    Navigator.of(context).pushAndRemoveUntil(
+    final navigator = Navigator.of(context);
+    final navigatorRoot = Navigator.of(context, rootNavigator: true);
+    var dialogMasihTerbuka = true;
+
+    // Tampilkan indikator selama token dicabut di server.
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(color: WarnaAplikasi.utama),
+      ),
+    ).whenComplete(() => dialogMasihTerbuka = false);
+
+    try {
+      await const LayananAutentikasi().keluar();
+    } finally {
+      if (mounted && dialogMasihTerbuka) {
+        navigatorRoot.pop();
+      }
+    }
+
+    if (!mounted) return;
+
+    navigator.pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const LoginView()),
       (route) => false,
     );

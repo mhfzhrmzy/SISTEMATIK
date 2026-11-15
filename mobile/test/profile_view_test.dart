@@ -8,7 +8,12 @@ void main() {
       'ProfilView renders header, menu, and navigates to PengaturanAkunView',
       (WidgetTester tester) async {
     await tester.pumpWidget(
-      const MaterialApp(home: ProfilView()),
+      const MaterialApp(
+        home: ProfilView(
+          nama: 'Seto Son Horeg',
+          kelas: 'Kelas 10 TKJ - SMKN 2 Jember',
+        ),
+      ),
     );
 
     expect(find.text('Seto Son Horeg'), findsOneWidget);

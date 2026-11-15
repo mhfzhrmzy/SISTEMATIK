@@ -9,6 +9,7 @@ use App\Models\PenggunaSiswa;
 use App\Models\SuperAdmin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -37,6 +38,7 @@ class AuthApiTest extends TestCase
             ->assertJsonStructure([
                 'message',
                 'token',
+                'expires_at',
                 'role',
                 'user' => [
                     'nisn',
@@ -49,6 +51,13 @@ class AuthApiTest extends TestCase
                     'foto_profile',
                 ],
             ]);
+
+        $kedaluwarsa = Carbon::parse($response->json('expires_at'));
+
+        $this->assertTrue(
+            $kedaluwarsa->between(now()->addDays(29), now()->addDays(31)),
+            'Token siswa seharusnya berlaku sekitar 30 hari.'
+        );
 
         $this->assertDatabaseCount('personal_access_tokens', 1);
     }
@@ -105,6 +114,26 @@ class AuthApiTest extends TestCase
             ->assertJsonPath('message', 'Logout berhasil.');
 
         $this->assertDatabaseCount('personal_access_tokens', 0);
+
+        $this->app['auth']->forgetGuards();
+
+        $this->withToken($token)
+            ->getJson('/api/siswa/profil')
+            ->assertUnauthorized();
+    }
+
+    public function test_token_yang_sudah_kedaluwarsa_ditolak(): void
+    {
+        $siswa = $this->buatSiswa();
+        $token = $siswa->createToken(
+            'tes',
+            ['*'],
+            now()->subMinute()
+        )->plainTextToken;
+
+        $this->withToken($token)
+            ->getJson('/api/siswa/profil')
+            ->assertUnauthorized();
     }
 
     public function test_update_password_siswa_berhasil(): void
@@ -122,6 +151,35 @@ class AuthApiTest extends TestCase
             ->assertJsonPath('message', 'Password berhasil diubah.');
 
         $this->assertTrue(Hash::check('password-baru-baru', $siswa->fresh()->password));
+    }
+
+    public function test_ganti_password_mencabut_token_perangkat_lain(): void
+    {
+        $siswa = $this->buatSiswa();
+        $tokenSaatIni = $siswa->createToken('hp-ini')->plainTextToken;
+        $tokenLain = $siswa->createToken('hp-lain')->plainTextToken;
+
+        $this->withToken($tokenSaatIni)
+            ->putJson('/api/siswa/profil/password', [
+                'password_lama' => 'password123',
+                'password_baru' => 'password-baru-baru',
+                'password_baru_confirmation' => 'password-baru-baru',
+            ])
+            ->assertOk();
+
+        $this->app['auth']->forgetGuards();
+
+        $this->withToken($tokenSaatIni)
+            ->getJson('/api/siswa/profil')
+            ->assertOk();
+
+        $this->app['auth']->forgetGuards();
+
+        $this->withToken($tokenLain)
+            ->getJson('/api/siswa/profil')
+            ->assertUnauthorized();
+
+        $this->assertDatabaseCount('personal_access_tokens', 1);
     }
 
     public function test_update_password_siswa_menolak_password_lama_salah(): void

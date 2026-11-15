@@ -7,7 +7,10 @@ void main() {
       (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: BerandaView(),
+        home: BerandaView(
+          nama: 'Seto Son Horeg',
+          kelas: 'Kelas 10 TKJ - SMKN 2 Jember',
+        ),
       ),
     );
 

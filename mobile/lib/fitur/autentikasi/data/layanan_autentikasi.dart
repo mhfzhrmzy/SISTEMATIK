@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pretest_posttest_app/inti/konstanta/konfigurasi_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
+import 'package:pretest_posttest_app/inti/layanan/klien_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/models/hasil_login.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/models/pengguna_siswa.dart';
@@ -34,7 +35,7 @@ class LayananAutentikasi {
           )
           .timeout(const Duration(seconds: 15));
 
-      final data = _bacaJson(response.body);
+      final data = KlienApi.bacaJson(response);
       final dataPengguna = data['user'];
       final token = data['token'];
 
@@ -42,12 +43,15 @@ class LayananAutentikasi {
           token is String &&
           dataPengguna is Map<String, dynamic>) {
         final pengguna = PenggunaSiswa.fromJson(dataPengguna);
+        final kedaluwarsa = DateTime.tryParse(
+              data['expires_at']?.toString() ?? '',
+            )?.toLocal() ??
+            DateTime.now().add(const Duration(days: 30));
 
-        SesiPengguna.simpan(
+        await SesiPengguna.simpan(
           token: token,
-          nisn: pengguna.nisn,
-          nama: pengguna.namaLengkap,
-          kelas: pengguna.labelKelas,
+          pengguna: Map<String, dynamic>.from(dataPengguna),
+          kedaluwarsa: kedaluwarsa,
         );
 
         return HasilLogin(
@@ -57,7 +61,10 @@ class LayananAutentikasi {
       }
 
       throw KesalahanApi(
-        _pesanKesalahan(data),
+        KlienApi.pesanKesalahan(
+          data,
+          bawaan: 'Login gagal. Silakan coba lagi.',
+        ),
         statusCode: response.statusCode,
       );
     } on TimeoutException {
@@ -73,27 +80,51 @@ class LayananAutentikasi {
     }
   }
 
-  Map<String, dynamic> _bacaJson(String body) {
-    if (body.trim().isEmpty) {
-      return <String, dynamic>{};
+  /// Mengambil profil terbaru dan memperbarui cache sesi.
+  ///
+  /// Dipakai saat aplikasi dibuka untuk memastikan token masih berlaku.
+  Future<Map<String, dynamic>> ambilProfil({
+    bool tanganiSesiBerakhir = false,
+  }) async {
+    final response = await KlienApi.get(
+      '/siswa/profil',
+      tanganiSesiBerakhir: tanganiSesiBerakhir,
+    );
+    final data = KlienApi.bacaJson(response);
+    final dataPengguna = data['user'];
+
+    if (response.statusCode == 200 && dataPengguna is Map<String, dynamic>) {
+      final pengguna = Map<String, dynamic>.from(dataPengguna);
+      await SesiPengguna.perbaruiPengguna(pengguna);
+
+      return pengguna;
     }
 
-    final hasil = jsonDecode(body);
-
-    return hasil is Map<String, dynamic> ? hasil : <String, dynamic>{};
+    throw KesalahanApi(
+      KlienApi.pesanKesalahan(
+        data,
+        bawaan: 'Profil siswa gagal diambil.',
+      ),
+      statusCode: response.statusCode,
+    );
   }
 
-  String _pesanKesalahan(Map<String, dynamic> data) {
-    final errors = data['errors'];
-
-    if (errors is Map && errors.isNotEmpty) {
-      final pesanPertama = errors.values.first;
-
-      if (pesanPertama is List && pesanPertama.isNotEmpty) {
-        return pesanPertama.first.toString();
+  /// Logout: cabut token di server, lalu hapus sesi lokal.
+  ///
+  /// Sesi lokal tetap dihapus walaupun perangkat sedang offline atau token
+  /// sudah tidak valid, supaya pengguna benar-benar keluar dari aplikasi.
+  Future<void> keluar() async {
+    try {
+      if (SesiPengguna.sudahMasuk) {
+        await KlienApi.post(
+          '/siswa/logout',
+          tanganiSesiBerakhir: false,
+        ).timeout(const Duration(seconds: 8));
       }
+    } catch (_) {
+      // Abaikan kegagalan jaringan; sesi lokal tetap harus dihapus.
+    } finally {
+      await SesiPengguna.hapus();
     }
-
-    return data['message']?.toString() ?? 'Login gagal. Silakan coba lagi.';
   }
 }
