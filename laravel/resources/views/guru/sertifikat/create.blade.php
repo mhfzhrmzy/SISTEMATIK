@@ -57,7 +57,7 @@
                             </div>
                             <div class="truncate">
                                 <p class="text-xs font-bold text-slate-900 leading-tight truncate">{{ $s->nama_lengkap }}</p>
-                                <p class="text-[11px] text-slate-400">Kelas {{ str_replace(' ', '.', $s->kelas) }} — {{ $s->jurusan }}</p>
+                                <p class="text-[11px] text-slate-400">Kelas {{ str_replace(' ', '.', $s->kelas) }} | {{ $s->jurusan }}</p>
                             </div>
                         </div>
                     @endforeach

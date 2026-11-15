@@ -109,12 +109,12 @@
 
                                 <div class="flex flex-wrap items-center gap-3 text-xs text-[#6B7280]">
                                     <span class="flex items-center gap-1">📝 {{ $quiz->soal->count() }} Soal</span>
-                                    <span>•</span>
+                                    <span class="text-slate-300 font-light">|</span>
                                     <span>⭐ 100 Poin Total</span>
-                                    <span>•</span>
+                                    <span class="text-slate-300 font-light">|</span>
                                     <span>⏱ {{ $quiz->timer }} Menit</span>
                                     @if($quiz->soal->count() > 0)
-                                        <span>•</span>
+                                        <span class="text-slate-300 font-light">|</span>
                                         <span>🎯 ±{{ round(100 / $quiz->soal->count(), 2) }} Poin/Soal</span>
                                     @endif
                                 </div>
@@ -196,12 +196,12 @@
 
                                 <div class="flex flex-wrap items-center gap-3 text-xs text-[#6B7280]">
                                     <span class="flex items-center gap-1">📝 {{ $quiz->soal->count() }} Soal</span>
-                                    <span>•</span>
+                                    <span class="text-slate-300 font-light">|</span>
                                     <span>⭐ 100 Poin Total</span>
-                                    <span>•</span>
+                                    <span class="text-slate-300 font-light">|</span>
                                     <span>⏱ {{ $quiz->timer }} Menit</span>
                                     @if($quiz->soal->count() > 0)
-                                        <span>•</span>
+                                        <span class="text-slate-300 font-light">|</span>
                                         <span>🎯 ±{{ round(100 / $quiz->soal->count(), 2) }} Poin/Soal</span>
                                     @endif
                                 </div>

@@ -314,7 +314,7 @@
                                 </div>
                                 @if($quiz->materi && $quiz->materi->kelas)
                                     <div class="text-[11px] text-slate-500 mt-0.5">
-                                        Kelas {{ str_replace(' ', '.', $quiz->materi->kelas) }} &bull; {{ $quiz->materi->jurusan ?? '-' }}
+                                        Kelas {{ str_replace(' ', '.', $quiz->materi->kelas) }} | {{ $quiz->materi->jurusan ?? '-' }}
                                     </div>
                                 @endif
                             </td>

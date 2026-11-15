@@ -15,7 +15,7 @@
         </h1>
 
         <p class="text-xs sm:text-sm font-semibold text-[#7B1038] leading-snug mt-0.5">
-            Kelas {{ $siswaUser->kelas }} • {{ $siswaUser->jurusan }}
+            Kelas {{ $siswaUser->kelas }} | {{ $siswaUser->jurusan }}
         </p>
 
         <p class="text-[11px] sm:text-xs text-[#6B7280] font-mono leading-none mt-1">

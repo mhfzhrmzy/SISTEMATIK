@@ -11,7 +11,7 @@
             </h1>
             <p class="text-xs sm:text-sm text-slate-500">
                 @if ($isSiswa)
-                    Peringkat perolehan nilai Post-Test siswa di Kelas {{ $kelas }} &bull; {{ $jurusan }}.
+                    Peringkat perolehan nilai Post-Test siswa di Kelas {{ $kelas }} | {{ $jurusan }}.
                 @else
                     Peringkat perolehan poin dari pengerjaan kuis Pre-Test dan Post-Test siswa.
                 @endif
@@ -54,7 +54,7 @@
                         <div>
                             <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ruang Kelas &amp; Jurusan Anda</div>
                             <div class="text-sm font-bold text-slate-900">
-                                Kelas {{ $kelas }} • {{ $jurusan }}
+                                Kelas {{ $kelas }} | {{ $jurusan }}
                             </div>
                         </div>
                     </div>
@@ -247,7 +247,7 @@
                                     Leaderboard Post-Test Keseluruhan
                                 </div>
                                 <p class="text-xs text-slate-500">
-                                    Akumulasi seluruh nilai Post-Test siswa di Kelas {{ $kelas }} &bull; {{ $jurusan }}.
+                                    Akumulasi seluruh nilai Post-Test siswa di Kelas {{ $kelas }} | {{ $jurusan }}.
                                 </p>
                             </div>
                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#7B1038] text-white self-start sm:self-auto shadow-2xs">

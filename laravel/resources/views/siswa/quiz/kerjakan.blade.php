@@ -60,8 +60,9 @@
                         {{ ucfirst($quiz->tipe_test) }}
                     </span>
                     @if($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap())
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#E8F8F0] text-[#1F9254]">
-                            • Sedang Berlangsung
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#E8F8F0] text-[#1F9254]">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#1F9254]"></span>
+                            Sedang Berlangsung
                         </span>
                     @endif
                 </div>

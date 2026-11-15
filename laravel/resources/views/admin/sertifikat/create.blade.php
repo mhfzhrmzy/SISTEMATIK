@@ -39,7 +39,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-gray-900 leading-tight">{{ $s->nama_lengkap }}</p>
-                            <p class="text-xs text-gray-400">Kelas {{ $s->kelas }} — {{ $s->jurusan }}</p>
+                            <p class="text-xs text-gray-400">Kelas {{ $s->kelas }} | {{ $s->jurusan }}</p>
                         </div>
                     </div>
                 @endforeach

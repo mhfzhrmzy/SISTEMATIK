@@ -402,39 +402,51 @@
                 </span>
             </div>
 
-            {{-- Mode & Action Controls --}}
-            <div class="flex items-center gap-1.5 flex-wrap">
-                <button type="button"
-                        id="modal-btn-fit"
-                        onclick="switchModalPdfMode('fit')"
-                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#7B1038] text-white transition shadow-2xs">
-                    <span>1 Halaman Pas</span>
-                </button>
-                <button type="button"
-                        id="modal-btn-width"
-                        onclick="switchModalPdfMode('width')"
-                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-300 transition">
-                    <span>Pas Lebar</span>
-                </button>
-                <span class="w-px h-4 bg-slate-700 mx-1"></span>
-                <button type="button"
-                        onclick="toggleModalFullscreen()"
-                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200 transition"
-                        title="Layar Penuh">
-                    <span id="modal-text-fs">⛶ Layar Penuh</span>
-                </button>
-                <a id="modal-tab-link" href="#" target="_blank"
-                   class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200 transition"
-                   title="Buka di Tab Baru">
-                    <span>↗ Tab Baru</span>
-                </a>
-                <button type="button"
-                        onclick="closeMateriPreview()"
-                        class="p-1 rounded-lg bg-slate-700 hover:bg-rose-600 text-slate-300 hover:text-white transition ml-1 cursor-pointer"
-                        title="Tutup (Esc)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
+        {{-- Mode & Action Controls --}}
+        <div class="flex items-center gap-1.5 flex-wrap">
+            <button type="button"
+                    id="modal-btn-landscape"
+                    onclick="switchModalPdfMode('landscape')"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#7B1038] text-white transition shadow-2xs cursor-pointer"
+                    title="Format Landscape / Slide Presentasi (16:9 Pas 1 Halaman)">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2" stroke-width="2"/></svg>
+                <span>Landscape</span>
+            </button>
+            <button type="button"
+                    id="modal-btn-portrait"
+                    onclick="switchModalPdfMode('portrait')"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-300 transition cursor-pointer"
+                    title="Format Portrait / Dokumen A4">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" stroke-width="2"/></svg>
+                <span>Portrait</span>
+            </button>
+            <button type="button"
+                    id="modal-btn-fit"
+                    onclick="switchModalPdfMode('fit')"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-300 transition cursor-pointer"
+                    title="Pas Layar Penuh">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                <span>Pas Layar</span>
+            </button>
+            <span class="w-px h-4 bg-slate-700 mx-1"></span>
+            <button type="button"
+                    onclick="toggleModalFullscreen()"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200 transition cursor-pointer"
+                    title="Layar Penuh">
+                <span id="modal-text-fs">⛶ Layar Penuh</span>
+            </button>
+            <a id="modal-tab-link" href="#" target="_blank"
+               class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200 transition"
+               title="Buka di Tab Baru">
+                <span>↗ Tab Baru</span>
+            </a>
+            <button type="button"
+                    onclick="closeMateriPreview()"
+                    class="p-1 rounded-lg bg-slate-700 hover:bg-rose-600 text-slate-300 hover:text-white transition ml-1 cursor-pointer"
+                    title="Tutup (Esc)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
         </div>
 
         {{-- Iframe --}}
@@ -453,15 +465,40 @@
 @push('scripts')
 <script>
     let currentModalBaseUrl = '';
+    let currentModalMode = 'landscape';
+
+    function applyModalCardDimensions() {
+        const card = document.getElementById('materi-modal-card');
+        if (!card) return;
+        if (document.fullscreenElement) {
+            card.style.maxWidth = '100vw';
+            card.style.height = '100vh';
+            return;
+        }
+
+        const availHeight = Math.max(480, window.innerHeight - 70);
+
+        if (currentModalMode === 'landscape') {
+            card.style.maxWidth = '1020px';
+            const w = card.clientWidth || 980;
+            const targetH = Math.round((w * 9 / 16) + 48);
+            card.style.height = Math.max(480, Math.min(availHeight, targetH)) + 'px';
+        } else if (currentModalMode === 'portrait') {
+            card.style.maxWidth = '840px';
+            card.style.height = Math.min(availHeight, 880) + 'px';
+        } else {
+            card.style.maxWidth = '1200px';
+            card.style.height = availHeight + 'px';
+        }
+    }
 
     function openMateriPreview(fitUrl, rawUrl, title) {
         currentModalBaseUrl = rawUrl;
         document.getElementById('modal-materi-title').innerText = title;
         document.getElementById('modal-tab-link').href = fitUrl;
-        document.getElementById('modal-pdf-iframe').src = fitUrl;
         document.getElementById('materi-preview-modal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
-        switchModalPdfMode('fit');
+        switchModalPdfMode('landscape');
     }
 
     function closeMateriPreview() {
@@ -476,24 +513,27 @@
     }
 
     function switchModalPdfMode(mode) {
+        currentModalMode = mode;
         const iframe = document.getElementById('modal-pdf-iframe');
+        const btnLandscape = document.getElementById('modal-btn-landscape');
+        const btnPortrait = document.getElementById('modal-btn-portrait');
         const btnFit = document.getElementById('modal-btn-fit');
-        const btnWidth = document.getElementById('modal-btn-width');
         if (!iframe || !currentModalBaseUrl) return;
 
-        if (mode === 'fit') {
-            iframe.src = currentModalBaseUrl + '#page=1&view=Fit&navpanes=0';
-            btnFit?.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-            btnFit?.classList.add('bg-[#7B1038]', 'text-white', 'shadow-2xs');
-            btnWidth?.classList.remove('bg-[#7B1038]', 'text-white', 'shadow-2xs');
-            btnWidth?.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-        } else {
-            iframe.src = currentModalBaseUrl + '#page=1&view=FitH&navpanes=0';
-            btnWidth?.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-            btnWidth?.classList.add('bg-[#7B1038]', 'text-white', 'shadow-2xs');
-            btnFit?.classList.remove('bg-[#7B1038]', 'text-white', 'shadow-2xs');
-            btnFit?.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+        [btnLandscape, btnPortrait, btnFit].forEach(btn => {
+            if (!btn) return;
+            btn.classList.remove('bg-[#7B1038]', 'text-white', 'shadow-2xs');
+            btn.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+        });
+
+        const activeBtn = mode === 'landscape' ? btnLandscape : (mode === 'portrait' ? btnPortrait : btnFit);
+        if (activeBtn) {
+            activeBtn.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+            activeBtn.classList.add('bg-[#7B1038]', 'text-white', 'shadow-2xs');
         }
+
+        applyModalCardDimensions();
+        iframe.src = currentModalBaseUrl + '#page=1&view=Fit&navpanes=0';
     }
 
     function toggleModalFullscreen() {
@@ -521,6 +561,16 @@
         const textFs = document.getElementById('modal-text-fs');
         if (textFs) {
             textFs.innerText = isFs ? '✖ Keluar' : '⛶ Layar Penuh';
+        }
+        applyModalCardDimensions();
+    });
+
+    window.addEventListener('resize', () => {
+        const modal = document.getElementById('materi-preview-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+            applyModalCardDimensions();
+        }
+    });
         }
     });
 

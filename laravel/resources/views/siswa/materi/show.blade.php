@@ -74,42 +74,50 @@
 
                 @if ($isPdf)
                     {{-- Interactive PDF Reader Container --}}
-                    <div id="pdf-reader-container" class="rounded-2xl overflow-hidden bg-slate-900 border border-slate-700/80 shadow-md flex flex-col transition-all duration-150">
+                    <div id="pdf-reader-container" class="rounded-2xl overflow-hidden bg-[#2B3035] border border-slate-700/80 shadow-lg flex flex-col transition-all duration-200 mx-auto w-full max-w-5xl">
                         {{-- Reader Top Toolbar --}}
                         <div class="bg-slate-800 text-slate-200 px-4 py-2.5 flex items-center justify-between flex-wrap gap-2 text-xs border-b border-slate-700 select-none">
                             <div class="flex items-center gap-2">
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#7B1038] text-white text-[10px] font-bold tracking-wide uppercase">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#7B1038] text-white text-[10px] font-bold tracking-wide uppercase">
                                     PDF MODUL
                                 </span>
-                                <span class="font-medium text-slate-200 truncate max-w-[200px] sm:max-w-xs" title="{{ $materi->judul_materi }}">
+                                <span class="font-bold text-slate-100 truncate max-w-[200px] sm:max-w-xs" title="{{ $materi->judul_materi }}">
                                     {{ $materi->judul_materi }}
                                 </span>
                             </div>
 
-                            {{-- Mode Controls --}}
+                            {{-- Mode Controls (Fleksibel Landscape & Portrait) --}}
                             <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="text-[11px] text-slate-400 font-medium mr-1 hidden sm:inline">Mode:</span>
+                                <span class="text-[11px] text-slate-400 font-medium mr-1 hidden md:inline">Format:</span>
+                                <button type="button"
+                                        id="btn-mode-landscape"
+                                        onclick="switchPdfMode('landscape')"
+                                        class="pdf-mode-btn inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition bg-[#7B1038] text-white shadow-2xs cursor-pointer"
+                                        title="Format Landscape / Slide Presentasi (16:9 Pas 1 Halaman Tanpa Terpotong)">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2" stroke-width="2"/></svg>
+                                    <span>Landscape (Slide)</span>
+                                </button>
+                                <button type="button"
+                                        id="btn-mode-portrait"
+                                        onclick="switchPdfMode('portrait')"
+                                        class="pdf-mode-btn inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition bg-slate-700 hover:bg-slate-600 text-slate-300 cursor-pointer"
+                                        title="Format Portrait / Dokumen A4">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" stroke-width="2"/></svg>
+                                    <span>Portrait (A4)</span>
+                                </button>
                                 <button type="button"
                                         id="btn-mode-fit"
                                         onclick="switchPdfMode('fit')"
-                                        class="pdf-mode-btn inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition bg-[#7B1038] text-white shadow-2xs"
-                                        title="Satu Halaman Penuh Pas Layar (Tidak perlu scroll isi slide)">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
-                                    <span>1 Halaman Penuh</span>
-                                </button>
-                                <button type="button"
-                                        id="btn-mode-width"
-                                        onclick="switchPdfMode('width')"
-                                        class="pdf-mode-btn inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition bg-slate-700 hover:bg-slate-600 text-slate-300"
-                                        title="Pas Lebar (Zoom mengikuti lebar container)">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 12h8M8 17h8M4 7h.01M4 12h.01M4 17h.01"/></svg>
-                                    <span>Pas Lebar</span>
+                                        class="pdf-mode-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition bg-slate-700 hover:bg-slate-600 text-slate-300 cursor-pointer"
+                                        title="Pas Layar Penuh 1 Halaman (Tinggi Otomatis)">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                    <span>Pas Layar</span>
                                 </button>
                                 <span class="w-px h-4 bg-slate-700 mx-1"></span>
                                 <button type="button"
                                         onclick="togglePdfFullscreen()"
                                         id="btn-fullscreen"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200 transition"
+                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 text-slate-200 transition cursor-pointer"
                                         title="Tampilkan Layar Penuh">
                                     <svg class="w-3.5 h-3.5" id="icon-fs-enter" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                                     <svg class="w-3.5 h-3.5 hidden" id="icon-fs-exit" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -119,11 +127,11 @@
                         </div>
 
                         {{-- Viewer Frame --}}
-                        <div class="relative w-full bg-slate-900 flex-1">
+                        <div class="relative w-full bg-[#2B3035] flex items-center justify-center flex-1">
                             <iframe id="pdf-viewer-frame"
                                     src="{{ $pdfFitPageUrl }}"
                                     class="w-full border-0 block"
-                                    style="height: 84vh; min-height: 680px;"
+                                    style="height: 620px;"
                                     allow="fullscreen"
                                     title="Modul {{ $materi->judul_materi }}">
                             </iframe>
@@ -265,26 +273,61 @@
 @push('scripts')
 <script>
     const PDF_BASE_URL = @js(route('portal.materi.file', $materi));
+    let currentPdfMode = 'landscape';
+
+    function updatePdfDimensions() {
+        const container = document.getElementById('pdf-reader-container');
+        const iframe = document.getElementById('pdf-viewer-frame');
+        if (!container || !iframe) return;
+
+        if (document.fullscreenElement) {
+            container.style.maxWidth = '100vw';
+            iframe.style.height = 'calc(100vh - 44px)';
+            return;
+        }
+
+        const availHeight = Math.max(460, window.innerHeight - 200);
+
+        if (currentPdfMode === 'landscape') {
+            container.style.maxWidth = '1020px';
+            const w = container.clientWidth || 980;
+            // 16:9 ratio + ~44px viewer toolbar
+            const targetH = Math.round((w * 9 / 16) + 40);
+            iframe.style.height = Math.max(460, Math.min(availHeight, targetH)) + 'px';
+        } else if (currentPdfMode === 'portrait') {
+            container.style.maxWidth = '840px';
+            iframe.style.height = Math.max(620, Math.min(860, availHeight)) + 'px';
+        } else {
+            // Pas Layar Penuh
+            container.style.maxWidth = '100%';
+            iframe.style.height = availHeight + 'px';
+        }
+    }
 
     function switchPdfMode(mode) {
+        currentPdfMode = mode;
         const iframe = document.getElementById('pdf-viewer-frame');
+        const btnLandscape = document.getElementById('btn-mode-landscape');
+        const btnPortrait = document.getElementById('btn-mode-portrait');
         const btnFit = document.getElementById('btn-mode-fit');
-        const btnWidth = document.getElementById('btn-mode-width');
         if (!iframe) return;
 
-        if (mode === 'fit') {
-            iframe.src = PDF_BASE_URL + '#page=1&view=Fit&navpanes=0';
-            btnFit?.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-            btnFit?.classList.add('bg-[#7B1038]', 'text-white', 'shadow-2xs');
-            btnWidth?.classList.remove('bg-[#7B1038]', 'text-white', 'shadow-2xs');
-            btnWidth?.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-        } else {
-            iframe.src = PDF_BASE_URL + '#page=1&view=FitH&navpanes=0';
-            btnWidth?.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-            btnWidth?.classList.add('bg-[#7B1038]', 'text-white', 'shadow-2xs');
-            btnFit?.classList.remove('bg-[#7B1038]', 'text-white', 'shadow-2xs');
-            btnFit?.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+        [btnLandscape, btnPortrait, btnFit].forEach(btn => {
+            if (!btn) return;
+            btn.classList.remove('bg-[#7B1038]', 'text-white', 'shadow-2xs');
+            btn.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+        });
+
+        const activeBtn = mode === 'landscape' ? btnLandscape : (mode === 'portrait' ? btnPortrait : btnFit);
+        if (activeBtn) {
+            activeBtn.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+            activeBtn.classList.add('bg-[#7B1038]', 'text-white', 'shadow-2xs');
         }
+
+        updatePdfDimensions();
+
+        // Refresh frame hash with view=Fit to re-scale the page
+        iframe.src = PDF_BASE_URL + '#page=1&view=Fit&navpanes=0';
     }
 
     function togglePdfFullscreen() {
@@ -306,19 +349,22 @@
 
     document.addEventListener('fullscreenchange', () => {
         const isFs = !!document.fullscreenElement;
-        const iframe = document.getElementById('pdf-viewer-frame');
         const iconEnter = document.getElementById('icon-fs-enter');
         const iconExit = document.getElementById('icon-fs-exit');
         const textFs = document.getElementById('text-fs');
 
-        if (iframe) {
-            iframe.style.height = isFs ? 'calc(100vh - 44px)' : '84vh';
-        }
         if (iconEnter && iconExit && textFs) {
             iconEnter.classList.toggle('hidden', isFs);
             iconExit.classList.toggle('hidden', !isFs);
             textFs.innerText = isFs ? 'Keluar' : 'Layar Penuh';
         }
+        updatePdfDimensions();
+    });
+
+    window.addEventListener('resize', updatePdfDimensions);
+    document.addEventListener('DOMContentLoaded', () => {
+        updatePdfDimensions();
+        setTimeout(updatePdfDimensions, 250);
     });
 </script>
 @endpush
