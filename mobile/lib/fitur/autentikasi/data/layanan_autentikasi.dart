@@ -3,8 +3,10 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:pretest_posttest_app/inti/konstanta/konfigurasi_api.dart';
+import 'package:pretest_posttest_app/inti/layanan/cache_lokal.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/klien_api.dart';
+import 'package:pretest_posttest_app/inti/layanan/preferensi_lokal.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/models/hasil_login.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/models/pengguna_siswa.dart';
@@ -109,10 +111,7 @@ class LayananAutentikasi {
     );
   }
 
-  /// Logout: cabut token di server, lalu hapus sesi lokal.
-  ///
-  /// Sesi lokal tetap dihapus walaupun perangkat sedang offline atau token
-  /// sudah tidak valid, supaya pengguna benar-benar keluar dari aplikasi.
+  /// Logout: cabut token di server, hapus sesi lokal + cache + preferensi.
   Future<void> keluar() async {
     try {
       if (SesiPengguna.sudahMasuk) {
@@ -125,6 +124,8 @@ class LayananAutentikasi {
       // Abaikan kegagalan jaringan; sesi lokal tetap harus dihapus.
     } finally {
       await SesiPengguna.hapus();
+      await CacheLokal.bersihkanSemuaCacheApi();
+      await PreferensiLokal.bersihkanSemuaPreferensi();
     }
   }
 }

@@ -59,7 +59,7 @@ class _AplikasiState extends State<Aplikasi> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dasar Python',
+      title: 'SISTEMATIK',
       debugShowCheckedModeBanner: false,
       navigatorKey: NavigasiAplikasi.kunci,
       theme: ThemeData(

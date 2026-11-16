@@ -5,6 +5,7 @@ import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/header_tes.dart';
 import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 
 /// Halaman Buka Materi.
 ///
@@ -92,9 +93,11 @@ class _BukaMateriViewState extends State<BukaMateriView> {
       Navigator.of(context).pop();
     } else if (idx == 1) {
       setState(() => _indeksFooter = idx);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Halaman Peringkat (coming soon)')),
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const LeaderboardView()),
       );
+      if (!mounted) return;
+      setState(() => _indeksFooter = 0);
     } else if (idx == 2) {
       setState(() => _indeksFooter = idx);
       await Navigator.of(context).push(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/views/tes_view.dart';
-import 'pretest_data.dart';
+import 'package:pretest_posttest_app/fitur/pretest/data/pretest_data.dart';
 
 /// Halaman Pre-Test — membungkus [TesView] dengan data [daftarSoalPretest].
 class PretestView extends StatelessWidget {

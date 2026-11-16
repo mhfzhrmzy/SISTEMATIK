@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
-import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/data/layanan_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/views/upload_sertifikat_view.dart';
 
@@ -21,27 +22,38 @@ class SertifikatView extends StatefulWidget {
 }
 
 class _SertifikatViewState extends State<SertifikatView> {
-  // Daftar sertifikat — diisi dari daftarAwal jika ada, atau dummy data.
+  final LayananSertifikat _layanan = const LayananSertifikat();
+
+  // Daftar sertifikat — diisi dari daftarAwal jika ada, atau dari API.
   late List<ItemSertifikat> _daftarSertifikat;
+  bool _sedangMemuat = true;
+  bool _dariCache = false;
 
   @override
   void initState() {
     super.initState();
-    _daftarSertifikat = widget.daftarAwal ??
-        [
-          ItemSertifikat(
-            label: 'Sertifikat',
-            judul: 'Dasar Phyton',
-            tanggalTerbit: 'Diterbitkan pada: 12 Mar 2026',
-            tanggal: DateTime(2026, 3, 12),
-          ),
-          ItemSertifikat(
-            label: 'Sertifikat',
-            judul: 'Dasar Phyton',
-            tanggalTerbit: 'Diterbitkan pada: 01 Mar 2026',
-            tanggal: DateTime(2026, 3, 1),
-          ),
-        ];
+    _daftarSertifikat = widget.daftarAwal ?? const [];
+    if (widget.daftarAwal == null) {
+      _muatDaftarSertifikat();
+    } else {
+      _sedangMemuat = false;
+    }
+  }
+
+  Future<void> _muatDaftarSertifikat() async {
+    setState(() => _sedangMemuat = true);
+    try {
+      final hasil = await _layanan.ambilDaftarSertifikat();
+      if (!mounted) return;
+      setState(() {
+        _daftarSertifikat = hasil.daftar;
+        _dariCache = hasil.dariCache;
+        _sedangMemuat = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _sedangMemuat = false);
+    }
   }
 
   // State rentang tanggal terpilih (dari tanggal X sampai tanggal Y)
@@ -96,7 +108,7 @@ class _SertifikatViewState extends State<SertifikatView> {
       );
     } else if (idx == 1) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const PapanPeringkatView()),
+        MaterialPageRoute(builder: (_) => const LeaderboardView()),
       );
     }
   }
@@ -699,6 +711,38 @@ class _SertifikatViewState extends State<SertifikatView> {
                           const SizedBox(height: 12),
 
                           // ── 4. Card List Sertifikat ──────
+                          if (_sedangMemuat)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 36),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: WarnaAplikasi.utama,
+                                ),
+                              ),
+                            )
+                          else if (_dariCache)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.cloud_off_outlined,
+                                    size: 16,
+                                    color: WarnaAplikasi.utama,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Menampilkan data offline (cache terakhir)',
+                                    style: TextStyle(
+                                      color: WarnaAplikasi.utama
+                                          .withValues(alpha: 0.7),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
                           if (items.isEmpty)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 36),

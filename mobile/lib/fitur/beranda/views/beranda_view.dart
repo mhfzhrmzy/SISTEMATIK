@@ -7,10 +7,10 @@ import 'package:pretest_posttest_app/fitur/materi/data/data_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/views/buka_materi_view.dart';
-import 'package:pretest_posttest_app/fitur/pretest/pretest_view.dart';
-import 'package:pretest_posttest_app/fitur/posttest/posttest_view.dart';
+import 'package:pretest_posttest_app/fitur/pretest/views/pretest_view.dart';
+import 'package:pretest_posttest_app/fitur/posttest/views/posttest_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
-import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 
 /// Halaman Beranda / Dashboard utama setelah pengguna login.
 ///
@@ -54,8 +54,8 @@ class _BerandaViewState extends State<BerandaView> {
       final hasil = await _layananMateri.ambilDaftarMateri();
       if (!mounted) return;
       setState(() {
-        if (hasil.isNotEmpty) {
-          _daftarMateri = hasil;
+        if (hasil.daftar.isNotEmpty) {
+          _daftarMateri = hasil.daftar;
         }
         _sedangMemuat = false;
       });
@@ -78,7 +78,7 @@ class _BerandaViewState extends State<BerandaView> {
 
     setState(() => _indeksFooter = idx);
     final Widget tujuan = idx == 1
-        ? const PapanPeringkatView()
+        ? const LeaderboardView()
         : ProfilView(nama: _namaPengguna, kelas: _kelasPengguna);
 
     await Navigator.of(context).push(
@@ -209,8 +209,8 @@ class _BerandaViewState extends State<BerandaView> {
                                 final materi = _daftarMateri[i];
                                 return _KartuMateri(
                                   materi: materi,
-                                  saatDiketuk: () =>
-                                      _tampilkanLembarAksiMateri(gridCtx, materi),
+                                  saatDiketuk: () => _tampilkanLembarAksiMateri(
+                                      gridCtx, materi),
                                 );
                               },
                             ),

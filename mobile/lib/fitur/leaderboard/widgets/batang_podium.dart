@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
-import 'package:pretest_posttest_app/fitur/papan_peringkat/models/pengguna_peringkat.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/models/model_leaderboard.dart';
 
 /// Widget Podium Bar tunggal untuk Top 3.
 class BatangPodium extends StatelessWidget {
-  final PenggunaPeringkat pengguna;
+  final ModelLeaderboard pengguna;
   final double tinggiBatang;
   final double lebar;
 
