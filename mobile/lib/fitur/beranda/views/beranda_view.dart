@@ -4,6 +4,7 @@ import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/materi/data/data_materi.dart';
+import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/views/buka_materi_view.dart';
 import 'package:pretest_posttest_app/fitur/pretest/pretest_view.dart';
@@ -37,13 +38,39 @@ class BerandaView extends StatefulWidget {
 
 class _BerandaViewState extends State<BerandaView> {
   int _indeksFooter = 0;
+  final LayananMateri _layananMateri = const LayananMateri();
+  List<ModelMateri> _daftarMateri = daftarMateriDummy;
+  bool _sedangMemuat = false;
 
-  // ── Dummy data profil pengguna (ganti dengan data dari API/auth) ─────────
+  @override
+  void initState() {
+    super.initState();
+    _muatDaftarMateri();
+  }
+
+  Future<void> _muatDaftarMateri() async {
+    setState(() => _sedangMemuat = true);
+    try {
+      final hasil = await _layananMateri.ambilDaftarMateri();
+      if (!mounted) return;
+      setState(() {
+        if (hasil.isNotEmpty) {
+          _daftarMateri = hasil;
+        }
+        _sedangMemuat = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _sedangMemuat = false);
+    }
+  }
+
+  // ── Profil pengguna dari sesi login ─────────────────────────────────────
   String get _namaPengguna => widget.nama ?? SesiPengguna.nama ?? 'Siswa';
 
   String get _kelasPengguna => widget.kelas ?? SesiPengguna.kelas ?? 'Kelas -';
 
-  static const _totalMateri = 2;
+  int get _totalMateri => _daftarMateri.length;
   static const _totalQuiz = 4;
 
   Future<void> _saatFooterDiketuk(int idx) async {
@@ -74,10 +101,11 @@ class _BerandaViewState extends State<BerandaView> {
             MaterialPageRoute(builder: (_) => const PretestView()),
           );
         },
-        saatBukaMateri: () {
-          Navigator.of(ctx).push(
+        saatBukaMateri: () async {
+          await Navigator.of(ctx).push(
             MaterialPageRoute(builder: (_) => BukaMateriView(materi: materi)),
           );
+          _muatDaftarMateri();
         },
         saatPostTest: () {
           Navigator.of(ctx).push(
@@ -115,64 +143,79 @@ class _BerandaViewState extends State<BerandaView> {
                   // agar selalu fresh saat navigasi masuk/keluar
                   final double hp =
                       (constraints.maxWidth * 0.075).clamp(22.0, 40.0);
-                  return SingleChildScrollView(
-                    clipBehavior: Clip.none,
-                    physics: const BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(hp, 0, hp, 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Card statistik — berada persis di tengah antara header maroon dan konten
-                          const SizedBox(
-                            height: 36,
-                            child: OverflowBox(
-                              minHeight: 72,
-                              maxHeight: 72,
-                              alignment: Alignment.bottomCenter,
-                              child: _KartuStatistik(
-                                totalMateri: _totalMateri,
-                                totalQuiz: _totalQuiz,
+                  return RefreshIndicator(
+                    onRefresh: _muatDaftarMateri,
+                    color: WarnaAplikasi.utama,
+                    child: SingleChildScrollView(
+                      clipBehavior: Clip.none,
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(hp, 0, hp, 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Card statistik — berada persis di tengah antara header maroon dan konten
+                            SizedBox(
+                              height: 36,
+                              child: OverflowBox(
+                                minHeight: 72,
+                                maxHeight: 72,
+                                alignment: Alignment.bottomCenter,
+                                child: _KartuStatistik(
+                                  totalMateri: _totalMateri,
+                                  totalQuiz: _totalQuiz,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 14),
+                            const SizedBox(height: 14),
 
-                          // Label section materi
-                          const Text(
-                            'Materi Tersedia',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: WarnaAplikasi.utama,
+                            // Label section materi
+                            const Text(
+                              'Materi Tersedia',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: WarnaAplikasi.utama,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
+                            const SizedBox(height: 10),
 
-                          // Grid materi
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: EdgeInsets.zero,
-                            itemCount: daftarMateriDummy.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount:
-                                  constraints.maxWidth > 600 ? 4 : 2,
-                              mainAxisSpacing: 14,
-                              crossAxisSpacing: 14,
-                              childAspectRatio: 0.84,
+                            if (_sedangMemuat)
+                              const Padding(
+                                padding: EdgeInsets.only(bottom: 12),
+                                child: LinearProgressIndicator(
+                                  color: WarnaAplikasi.utama,
+                                  backgroundColor: Colors.white,
+                                ),
+                              ),
+
+                            // Grid materi
+                            GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: EdgeInsets.zero,
+                              itemCount: _daftarMateri.length,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount:
+                                    constraints.maxWidth > 600 ? 4 : 2,
+                                mainAxisSpacing: 14,
+                                crossAxisSpacing: 14,
+                                childAspectRatio: 0.84,
+                              ),
+                              itemBuilder: (gridCtx, i) {
+                                final materi = _daftarMateri[i];
+                                return _KartuMateri(
+                                  materi: materi,
+                                  saatDiketuk: () =>
+                                      _tampilkanLembarAksiMateri(gridCtx, materi),
+                                );
+                              },
                             ),
-                            itemBuilder: (gridCtx, i) {
-                              final materi = daftarMateriDummy[i];
-                              return _KartuMateri(
-                                materi: materi,
-                                saatDiketuk: () =>
-                                    _tampilkanLembarAksiMateri(gridCtx, materi),
-                              );
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -416,7 +459,7 @@ class _KartuMateri extends StatelessWidget {
                 ),
               ),
               child: Text(
-                materi.kelas,
+                materi.labelTampilanKelas,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,

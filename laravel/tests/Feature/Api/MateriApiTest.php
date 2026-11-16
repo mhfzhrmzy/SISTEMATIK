@@ -230,6 +230,96 @@ class MateriApiTest extends TestCase
             ->assertJsonPath('message', 'Kamu tidak memiliki akses ke file materi ini.');
     }
 
+    public function test_show_materi_mencatat_materi_siswa_dibuka(): void
+    {
+        $guru = $this->buatGuru();
+        $kelas = $this->buatKelas(10, 1);
+        $siswa = $this->buatSiswa($kelas, '0051234561');
+        $materi = $this->buatMateri($kelas, $guru, 'Dasar Jaringan');
+
+        $response = $this->withToken($this->tokenSiswa($siswa))
+            ->getJson("/api/siswa/materi/{$materi->id_materi}");
+
+        $response->assertOk()
+            ->assertJsonPath('data.is_dibuka', true)
+            ->assertJsonPath('data.is_selesai', false);
+
+        $this->assertDatabaseHas('materi_siswa', [
+            'nisn' => $siswa->nisn,
+            'id_materi' => $materi->id_materi,
+            'is_dibuka' => 1,
+            'is_selesai' => 0,
+        ]);
+    }
+
+    public function test_tandai_selesai_berhasil_toggle_status(): void
+    {
+        $guru = $this->buatGuru();
+        $kelas = $this->buatKelas(10, 1);
+        $siswa = $this->buatSiswa($kelas, '0051234561');
+        $materi = $this->buatMateri($kelas, $guru, 'Dasar Jaringan');
+
+        // Pertama kali panggil -> ditandai selesai (true)
+        $response1 = $this->withToken($this->tokenSiswa($siswa))
+            ->postJson("/api/siswa/materi/{$materi->id_materi}/selesai");
+
+        $response1->assertOk()
+            ->assertJsonPath('is_selesai', true);
+
+        $this->assertDatabaseHas('materi_siswa', [
+            'nisn' => $siswa->nisn,
+            'id_materi' => $materi->id_materi,
+            'is_selesai' => 1,
+        ]);
+
+        // Kedua kali panggil -> toggle jadi belum selesai (false)
+        $response2 = $this->withToken($this->tokenSiswa($siswa))
+            ->postJson("/api/siswa/materi/{$materi->id_materi}/selesai");
+
+        $response2->assertOk()
+            ->assertJsonPath('is_selesai', false);
+
+        $this->assertDatabaseHas('materi_siswa', [
+            'nisn' => $siswa->nisn,
+            'id_materi' => $materi->id_materi,
+            'is_selesai' => 0,
+        ]);
+    }
+
+    public function test_tandai_selesai_ditolak_jika_pretest_belum_selesai(): void
+    {
+        $guru = $this->buatGuru();
+        $kelas = $this->buatKelas(10, 1);
+        $siswa = $this->buatSiswa($kelas, '0051234561');
+        $materi = $this->buatMateri($kelas, $guru, 'Dasar Jaringan');
+        Quiz::create([
+            'id_materi' => $materi->id_materi,
+            'tipe_test' => 'pretest',
+            'tanggal' => now()->toDateString(),
+        ]);
+
+        $response = $this->withToken($this->tokenSiswa($siswa))
+            ->postJson("/api/siswa/materi/{$materi->id_materi}/selesai");
+
+        $response->assertForbidden()
+            ->assertJsonPath('message', 'Selesaikan Pre-Test terlebih dahulu sebelum menandai modul materi ini selesai.');
+    }
+
+    public function test_tandai_selesai_ditolak_untuk_kelas_lain(): void
+    {
+        $guru = $this->buatGuru();
+        $kelas = $this->buatKelas(10, 1);
+        $kelasLain = $this->buatKelas(10, 2);
+        $siswa = $this->buatSiswa($kelas, '0051234561');
+        $materi = $this->buatMateri($kelasLain, $guru, 'Materi Kelas Lain');
+
+        $response = $this->withToken($this->tokenSiswa($siswa))
+            ->postJson("/api/siswa/materi/{$materi->id_materi}/selesai");
+
+        $response->assertForbidden()
+            ->assertJsonPath('message', 'Kamu tidak memiliki akses ke materi ini.');
+    }
+
     private function tokenSiswa(PenggunaSiswa $siswa): string
     {
         return $siswa->createToken('tes')->plainTextToken;

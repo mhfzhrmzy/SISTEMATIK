@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/header_tes.dart';
+import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
 
@@ -35,6 +36,16 @@ class _BukaMateriViewState extends State<BukaMateriView> {
   bool get _adalahPertama => _halamanSaatIni == 0;
   bool get _adalahTerakhir => _halamanSaatIni == _totalHalaman - 1;
 
+  bool _sedangMenyimpan = false;
+
+  String get _kontenHalamanIni {
+    if (widget.materi.halamanKonten.isNotEmpty &&
+        _halamanSaatIni < widget.materi.halamanKonten.length) {
+      return widget.materi.halamanKonten[_halamanSaatIni];
+    }
+    return widget.materi.deskripsi;
+  }
+
   void _halamanSebelumnya() {
     if (_adalahPertama) return;
     setState(() => _halamanSaatIni--);
@@ -45,14 +56,35 @@ class _BukaMateriViewState extends State<BukaMateriView> {
     setState(() => _halamanSaatIni++);
   }
 
-  void _selesai() {
-    Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${widget.materi.judul} selesai dipelajari!'),
-        backgroundColor: WarnaAplikasi.utama,
-      ),
-    );
+  Future<void> _selesai() async {
+    if (_sedangMenyimpan) return;
+    setState(() => _sedangMenyimpan = true);
+
+    try {
+      final isSelesai =
+          await const LayananMateri().tandaiSelesai(widget.materi.id);
+      if (!mounted) return;
+      Navigator.of(context).pop(isSelesai);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isSelesai
+                ? '${widget.materi.judul} selesai dipelajari!'
+                : 'Status selesai pada ${widget.materi.judul} dibatalkan.',
+          ),
+          backgroundColor: WarnaAplikasi.utama,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _sedangMenyimpan = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
+    }
   }
 
   Future<void> _saatFooterDiketuk(int idx) async {
@@ -130,7 +162,10 @@ class _BukaMateriViewState extends State<BukaMateriView> {
                         const SizedBox(height: 14),
 
                         // Kotak Materi PDF (FIXED ukuran A4, TANPA scroll di dalamnya)
-                        _KotakKontainerPdf(tinggi: tinggiA4),
+                        _KotakKontainerPdf(
+                          tinggi: tinggiA4,
+                          konten: _kontenHalamanIni,
+                        ),
                       ],
                     ),
                   ),
@@ -275,14 +310,16 @@ class _KotakDeskripsi extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 class _KotakKontainerPdf extends StatelessWidget {
   final double tinggi;
+  final String? konten;
 
-  const _KotakKontainerPdf({required this.tinggi});
+  const _KotakKontainerPdf({required this.tinggi, this.konten});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       height: tinggi,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -294,6 +331,17 @@ class _KotakKontainerPdf extends StatelessWidget {
             offset: const Offset(0, 3),
           ),
         ],
+      ),
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Text(
+          konten ?? 'Konten materi tidak tersedia.',
+          style: TextStyle(
+            fontSize: 13.5,
+            color: Colors.grey.shade800,
+            height: 1.6,
+          ),
+        ),
       ),
     );
   }

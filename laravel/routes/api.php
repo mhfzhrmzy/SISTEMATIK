@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->prefix('siswa')->group(function () {
     Route::get('/materi', [MateriApiController::class, 'index']);
     Route::get('/materi/{materi}', [MateriApiController::class, 'show']);
     Route::get('/materi/{materi}/file', [MateriApiController::class, 'serveFile']);
+    Route::post('/materi/{materi}/selesai', [MateriApiController::class, 'tandaiSelesai']);
 
     // Quiz
     Route::get('/materi/{materi}/quiz', [QuizApiController::class, 'index']);
