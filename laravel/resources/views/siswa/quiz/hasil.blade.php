@@ -88,10 +88,12 @@
 
             {{-- Action Buttons --}}
             <div class="space-y-2 pt-1">
+                @if ($quiz->tipe_test === 'posttest')
                 <a href="{{ route('leaderboard.index') }}"
                    class="w-full flex items-center justify-center gap-2 bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-semibold py-3 rounded-xl shadow-xs transition duration-150 text-sm">
                     🏆 Lihat Peringkat Leaderboard
                 </a>
+                @endif
                 <a href="{{ route('portal.quiz.index', $quiz->materi) }}"
                    class="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-[#5E0C2B] font-semibold py-2.5 rounded-xl transition duration-150 text-xs sm:text-sm">
                     📋 Kembali ke Daftar Quiz
