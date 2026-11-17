@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
+import 'package:pretest_posttest_app/inti/layanan/layanan_tts.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/models/soal.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/opsi_jawaban.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/baris_timer_audio.dart';
@@ -41,6 +42,7 @@ class _TesViewState extends State<TesView> {
 
   @override
   void dispose() {
+    LayananTts.instance.hentikan();
     _kontrolerScroll.dispose();
     super.dispose();
   }
@@ -55,6 +57,7 @@ class _TesViewState extends State<TesView> {
 
   void _kembali() {
     if (_indeksSaatIni == 0) return;
+    LayananTts.instance.hentikan();
     setState(() {
       _indeksSaatIni -= 1;
     });
@@ -63,6 +66,7 @@ class _TesViewState extends State<TesView> {
 
   void _lanjut() {
     if (_indeksSaatIni >= widget.daftarSoal.length - 1) return;
+    LayananTts.instance.hentikan();
     setState(() {
       _indeksSaatIni += 1;
     });
@@ -75,7 +79,40 @@ class _TesViewState extends State<TesView> {
     }
   }
 
+  String _susunTeksSoal(Soal soal) {
+    final buffer = StringBuffer();
+    buffer.write('Soal nomor ${_indeksSaatIni + 1}. ');
+    if (soal.kode != null && soal.kode!.trim().isNotEmpty) {
+      buffer.write('Perhatikan kode program berikut: ${soal.kode}. ');
+    }
+    buffer.write('${soal.pertanyaan}. ');
+    if (soal.pilihan.isNotEmpty) {
+      const label = ['A', 'B', 'C', 'D'];
+      for (var i = 0; i < soal.pilihan.length; i++) {
+        final abjad = i < label.length ? label[i] : '${i + 1}';
+        buffer.write('Pilihan $abjad, ${soal.pilihan[i]}. ');
+      }
+    }
+    return buffer.toString();
+  }
+
+  Future<void> _putarAudioSoal(Soal soal) async {
+    final teks = _susunTeksSoal(soal);
+    try {
+      await LayananTts.instance.togglePutar(teks);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
+    }
+  }
+
   void _saatKirim() {
+    LayananTts.instance.hentikan();
     if (!_semuaTerjawab) return;
     showDialog<void>(
       context: context,
@@ -147,7 +184,9 @@ class _TesViewState extends State<TesView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        BarisTimerAudio(saatPutarAudio: () {}),
+                        BarisTimerAudio(
+                          saatPutarAudio: () => _putarAudioSoal(soal),
+                        ),
                         const SizedBox(height: 14),
                         KartuSoal(
                           teksSoal: soal.pertanyaan,
