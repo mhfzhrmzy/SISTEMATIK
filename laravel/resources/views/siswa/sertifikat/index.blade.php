@@ -52,8 +52,8 @@
                 </div>
                 <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
                     <a href="{{ asset('storage/' . $item->file_sertifikat) }}" target="_blank"
-                    class="font-semibold text-[#7B1038] hover:underline">
-                        📄 Lihat Berkas
+                       class="inline-flex items-center font-semibold text-[#7B1038] hover:underline">
+                        <span>Lihat Berkas</span>
                     </a>
                     @if ($item->tipe_sertifikat === 'mandiri')
                         <form action="{{ route('siswa.sertifikat.destroy', $item->id_sertifikat) }}" method="POST" onsubmit="return confirm('Hapus sertifikat ini?')">

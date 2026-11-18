@@ -29,8 +29,7 @@
                     Reset Filter
                 </a>
             @elseif ($isSiswa && ($selectedMateriId || $tipeLeaderboard === 'permateri'))
-                <a href="{{ route('leaderboard.index') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3.5 py-1.5 rounded-xl transition duration-150 shadow-2xs">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <a href="{{ route('leaderboard.index') }}" class="inline-flex items-center text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3.5 py-1.5 rounded-xl transition duration-150 shadow-2xs">
                     Kembali ke Keseluruhan
                 </a>
             @endif
@@ -301,10 +300,11 @@
                         1 => 'bg-gradient-to-b from-slate-100/70 via-slate-50/50 to-white text-slate-800 border-slate-200/80',  // Silver
                         2 => 'bg-gradient-to-b from-orange-100/70 via-orange-50/50 to-white text-orange-900 border-orange-200/80', // Bronze
                     ];
-                    $badges = [0 => '🥇 PERINGKAT 1', 1 => '🥈 PERINGKAT 2', 2 => '🥉 PERINGKAT 3'];
                 @endphp
                 <div class="rounded-2xl p-5 text-center shadow-2xs border relative overflow-hidden {{ $colors[$rank] ?? 'bg-white border-slate-200' }}">
-                    <div class="text-xs font-black uppercase tracking-wider mb-1.5">{{ $badges[$rank] }}</div>
+                    <div class="inline-flex items-center justify-center text-xs font-black uppercase tracking-wider mb-1.5">
+                        <span>PERINGKAT {{ $rank + 1 }}</span>
+                    </div>
                     <div class="text-base font-bold text-slate-900 truncate">{{ $item->pengguna->nama_lengkap ?? 'Siswa' }}</div>
                     <div class="text-[11px] text-slate-500 mb-2 font-mono">NISN: {{ $item->nisn }}</div>
 
@@ -373,10 +373,14 @@
                         <tr class="hover:bg-slate-50/70 transition duration-75 {{ auth('siswa')->check() && auth('siswa')->id() == $row->nisn ? 'bg-amber-50/50 font-medium' : '' }}">
                             {{-- Peringkat --}}
                             <td class="px-4 py-3.5 text-center font-bold">
-                                @if ($index === 0) 🥇 1
-                                @elseif ($index === 1) 🥈 2
-                                @elseif ($index === 2) 🥉 3
-                                @else <span class="text-slate-500">#{{ $index + 1 }}</span>
+                                @if ($index === 0)
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs font-black">1</span>
+                                @elseif ($index === 1)
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 text-slate-700 text-xs font-black">2</span>
+                                @elseif ($index === 2)
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 text-orange-700 text-xs font-black">3</span>
+                                @else
+                                    <span class="text-slate-500 text-xs">#{{ $index + 1 }}</span>
                                 @endif
                             </td>
 

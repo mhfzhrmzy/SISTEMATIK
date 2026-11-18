@@ -80,8 +80,8 @@
 
             <div class="pt-2">
                 <button type="button" onclick="document.getElementById('formPassword').classList.toggle('hidden')"
-                        class="text-xs font-semibold bg-slate-100 hover:bg-[#7B1038] hover:text-white text-[#7B1038] border border-slate-200 rounded-xl px-4 py-2.5 transition">
-                    🔑 Ganti Kata Sandi
+                        class="inline-flex items-center text-xs font-semibold bg-slate-100 hover:bg-[#7B1038] hover:text-white text-[#7B1038] border border-slate-200 rounded-xl px-4 py-2.5 transition">
+                    <span>Ganti Kata Sandi</span>
                 </button>
             </div>
 

@@ -5,6 +5,11 @@
 @source '../views/**/*.blade.php';
 
 :root {
+    --text-gray-900: #1F2937;
+    --text-gray-700: #374151;
+    --text-gray-600: #4B5563;
+    --text-gray-500: #6B7280;
+
     --color-maroon: #7B1038;
     --color-maroon-dark: #5E0C2B;
     --color-maroon-light: rgba(123, 16, 56, 0.10);
@@ -12,6 +17,14 @@
     --color-page-bg: #F3F4F6;
     --color-text-main: #1F2937;
     --color-text-secondary: #6B7280;
+}
+
+.text-gradient-gray {
+    background: linear-gradient(90deg, #1F2937, #6B7280);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: #1F2937;
 }
 
 @theme {
