@@ -25,14 +25,14 @@
     $dash = round($circumference * $persen / 100, 2);
 @endphp
 
-<div class="w-full max-w-2xl lg:max-w-3xl mx-auto my-auto">
+<div class="w-full max-w-4xl mx-auto my-auto">
 
     {{-- Main Result Card (Clean & Minimalis) --}}
     <div class="bg-white rounded-2xl shadow-xs overflow-hidden">
 
         {{-- Maroon Accent Header --}}
         <div class="bg-[#7B1038] px-6 sm:px-8 pt-6 sm:pt-7 pb-11 sm:pb-13 text-center text-white">
-            <span class="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/20 text-white mb-2 sm:mb-2.5">
+            <span class="inline-block px-3.5 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-white/20 text-white mb-2 sm:mb-2.5">
                 HASIL {{ strtoupper($quiz->tipe_test) }}
             </span>
             <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold leading-snug truncate">
@@ -53,8 +53,8 @@
                             style="transition: stroke-dasharray 1s ease;"/>
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                    <span class="text-2xl sm:text-3xl font-black text-[#1F2937]">{{ $persen }}%</span>
-                    <span class="text-[10px] sm:text-xs text-[#6B7280] font-semibold uppercase tracking-wider">Skor</span>
+                    <span class="text-xl sm:text-2xl font-black text-[#1F2937] leading-none mb-0.5">{{ $persen }}%</span>
+                    <span class="text-sm text-gray-600 font-semibold uppercase tracking-wider">Skor</span>
                 </div>
             </div>
         </div>
@@ -63,7 +63,7 @@
 
             {{-- Grade badge --}}
             <div>
-                <span class="inline-flex items-center gap-1.5 {{ $grade['bg'] }} {{ $grade['color'] }} text-xs sm:text-sm font-bold px-4 py-1.5 rounded-full">
+                <span class="inline-flex items-center gap-1.5 {{ $grade['bg'] }} {{ $grade['color'] }} text-sm font-bold px-4 py-1.5 rounded-full">
                     {{ $grade['label'] }}
                 </span>
             </div>
@@ -72,23 +72,23 @@
             <div class="grid grid-cols-3 gap-3 sm:gap-4">
                 <div class="bg-[#E8F8F0] rounded-2xl p-3 sm:p-3.5 text-center">
                     <div class="text-xl sm:text-2xl font-black text-[#1F9254]">{{ $benar }}</div>
-                    <div class="text-xs sm:text-sm text-[#1F9254] font-medium mt-0.5">Benar</div>
+                    <div class="text-sm text-[#1F9254] font-medium mt-0.5">Benar</div>
                 </div>
                 <div class="bg-rose-50 rounded-2xl p-3 sm:p-3.5 text-center">
                     <div class="text-xl sm:text-2xl font-black text-rose-600">{{ $total - $benar }}</div>
-                    <div class="text-xs sm:text-sm text-rose-700 font-medium mt-0.5">Salah</div>
+                    <div class="text-sm text-rose-700 font-medium mt-0.5">Salah</div>
                 </div>
                 <div class="bg-gray-50 rounded-2xl p-3 sm:p-3.5 text-center">
                     <div class="text-xl sm:text-2xl font-black text-[#1F2937]">{{ $total }}</div>
-                    <div class="text-xs sm:text-sm text-[#6B7280] font-medium mt-0.5">Total Soal</div>
+                    <div class="text-sm text-gray-600 font-medium mt-0.5">Total Soal</div>
                 </div>
             </div>
 
             {{-- Total Points Card --}}
             <div class="bg-slate-50 border border-slate-200 rounded-2xl py-3 sm:py-3.5 px-4 text-center shadow-2xs">
-                <div class="text-3xl sm:text-4xl font-semibold text-[#6B7280]">
+                <div class="text-3xl sm:text-4xl font-semibold text-gray-600">
                     {{ $totalPoin }}
-                    <span class="text-sm sm:text-base font-semibold text-[#6B7280]">Poin</span>
+                    <span class="text-base font-semibold text-gray-600">Poin</span>
                 </div>
             </div>
 
@@ -101,11 +101,11 @@
                 </a>
                 @endif
                 <a href="{{ route('portal.quiz.index', $quiz->materi) }}"
-                   class="w-full flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-[#5E0C2B] font-semibold py-2.5 sm:py-3 rounded-xl transition duration-150 text-xs sm:text-sm">
+                   class="w-full flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-[#5E0C2B] font-semibold py-2.5 sm:py-3 rounded-xl transition duration-150 text-sm">
                     <span>Kembali ke Daftar Quiz</span>
                 </a>
                 <a href="{{ route('portal.materi.show', $quiz->materi) }}"
-                   class="inline-flex items-center text-xs sm:text-sm font-semibold text-[#6B7280] hover:text-[#7B1038] transition py-1">
+                   class="w-full flex items-center justify-center bg-white hover:bg-gray-50 text-[#1F2937] border border-gray-300 font-semibold py-2.5 sm:py-3 rounded-xl transition duration-150 text-sm shadow-2xs">
                     <span>Buka Modul Bahan Ajar</span>
                 </a>
             </div>

@@ -6,10 +6,10 @@
     <!-- Header Leaderboard -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1">
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
                 Leaderboard dan Peringkat Nilai Siswa
             </h1>
-            <p class="text-xs sm:text-sm text-slate-500">
+            <p class="text-sm text-slate-600">
                 @if ($isSiswa)
                     Peringkat perolehan nilai Post-Test siswa di Kelas {{ $kelas }} | {{ $jurusan }}.
                 @else
@@ -19,17 +19,17 @@
         </div>
 
         <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
-            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/90 shadow-2xs">
+            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-sm font-bold bg-slate-100 text-slate-700 border border-slate-200/90 shadow-2xs">
                 {{ $leaderboards->count() }} Siswa Terdaftar
             </span>
 
             @if (! $isSiswa && ($kelas || $jurusan || $selectedMateriId || $filterTest))
-                <a href="{{ url()->current() }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3.5 py-1.5 rounded-xl transition duration-150 shadow-2xs">
+                <a href="{{ url()->current() }}" class="inline-flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3.5 py-1.5 rounded-xl transition duration-150 shadow-2xs">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     Reset Filter
                 </a>
             @elseif ($isSiswa && ($selectedMateriId || $tipeLeaderboard === 'permateri'))
-                <a href="{{ route('leaderboard.index') }}" class="inline-flex items-center text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3.5 py-1.5 rounded-xl transition duration-150 shadow-2xs">
+                <a href="{{ route('leaderboard.index') }}" class="inline-flex items-center text-sm font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3.5 py-1.5 rounded-xl transition duration-150 shadow-2xs">
                     Kembali ke Keseluruhan
                 </a>
             @endif
@@ -51,7 +51,7 @@
                             </svg>
                         </div>
                         <div>
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ruang Kelas &amp; Jurusan Anda</div>
+                            <div class="text-sm font-bold text-slate-600 uppercase tracking-wider">Ruang Kelas &amp; Jurusan Anda</div>
                             <div class="text-sm font-bold text-slate-900">
                                 Kelas {{ $kelas }} | {{ $jurusan }}
                             </div>

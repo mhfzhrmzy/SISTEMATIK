@@ -6,17 +6,17 @@
 <div class="space-y-6">
 
     <div class="border-b border-gray-100 pb-4">
-        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038] text-white mb-1 shadow-2xs">
+        <span class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-[#7B1038] text-white mb-1.5 shadow-2xs">
             AKUN SAYA
         </span>
         <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937]">Profil &amp; Informasi Siswa</h1>
-        <p class="text-xs sm:text-sm text-[#6B7280] mt-0.5">Kelola informasi data diri, foto profil, dan kredensial keamanan akun Anda.</p>
+        <p class="text-sm text-gray-600 mt-0.5">Kelola informasi data diri, foto profil, dan kredensial keamanan akun Anda.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
 
         {{-- Kartu profil --}}
-        <div class="lg:col-span-4 bg-white rounded-2xl shadow-xs p-6 text-center space-y-4 h-fit">
+        <x-card class="lg:col-span-4 text-center space-y-4 h-fit">
             @if ($siswa->foto_profile)
                 <img src="{{ asset('storage/' . $siswa->foto_profile) }}" alt="{{ $siswa->nama_lengkap }}"
                      class="w-24 h-24 mx-auto rounded-full object-cover shadow-xs border-2 border-white">
@@ -30,7 +30,7 @@
             <div class="flex justify-center gap-2">
                 <form action="{{ route('siswa.profil.foto') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <label class="cursor-pointer text-xs font-semibold bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-xl px-3.5 py-1.5 inline-block shadow-xs transition">
+                    <label class="cursor-pointer text-sm font-semibold bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-xl px-4 py-2 inline-block shadow-xs transition">
                         {{ $siswa->foto_profile ? 'Ubah Foto' : 'Upload Foto' }}
                         <input type="file" name="foto" accept="image/png,image/jpeg" class="hidden"
                                onchange="this.form.submit()">
@@ -42,7 +42,7 @@
                           onsubmit="return confirm('Hapus foto profil?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="text-xs font-semibold bg-gray-100 hover:bg-rose-50 text-rose-600 rounded-xl px-3.5 py-1.5 transition">
+                        <button type="submit" class="text-sm font-semibold bg-gray-100 hover:bg-rose-50 text-rose-600 rounded-xl px-4 py-2 transition">
                             Hapus Foto
                         </button>
                     </form>
@@ -51,19 +51,19 @@
 
             <div>
                 <h2 class="text-lg font-bold text-[#1F2937]">{{ $siswa->nama_lengkap }}</h2>
-                <p class="text-xs text-[#6B7280] font-mono mt-0.5">NISN: {{ $siswa->nisn }}</p>
+                <p class="text-sm text-gray-600 font-mono mt-0.5">NISN: {{ $siswa->nisn }}</p>
             </div>
 
-            <div class="pt-2 border-t border-gray-100 space-y-2 text-xs">
-                <div class="flex justify-between items-center text-[#6B7280]">
+            <div class="pt-2 border-t border-gray-100 space-y-2 text-sm">
+                <div class="flex justify-between items-center text-gray-600">
                     <span>Bergabung Sejak</span>
                     <span class="font-semibold text-[#1F2937]">{{ $siswa->created_at->translatedFormat('F Y') }}</span>
                 </div>
             </div>
-        </div>
+        </x-card>
 
         {{-- Data pokok --}}
-        <div class="lg:col-span-8 bg-white rounded-2xl shadow-xs p-6 sm:p-7 space-y-4">
+        <x-card class="lg:col-span-8 space-y-4">
             <h3 class="font-bold text-base text-[#1F2937]">Informasi Akademik</h3>
 
             @foreach ([
@@ -72,15 +72,15 @@
                 'Kelas'              => 'Kelas ' . ($siswa->kelas ?? '-'),
                 'Jurusan'            => $siswa->jurusan ?? '-',
             ] as $label => $nilai)
-                <div class="space-y-1">
-                    <p class="text-xs font-semibold text-[#6B7280]">{{ $label }}</p>
-                    <div class="bg-gray-50 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-[#1F2937]">{{ $nilai }}</div>
+                <div class="space-y-1.5">
+                    <p class="text-sm font-semibold text-gray-600">{{ $label }}</p>
+                    <div class="bg-gray-50 rounded-xl px-4 py-2.5 text-sm font-semibold text-[#1F2937]">{{ $nilai }}</div>
                 </div>
             @endforeach
 
             <div class="pt-2">
                 <button type="button" onclick="document.getElementById('formPassword').classList.toggle('hidden')"
-                        class="inline-flex items-center text-xs font-semibold bg-slate-100 hover:bg-[#7B1038] hover:text-white text-[#7B1038] border border-slate-200 rounded-xl px-4 py-2.5 transition">
+                        class="inline-flex items-center text-sm font-semibold bg-slate-100 hover:bg-[#7B1038] hover:text-white text-[#7B1038] border border-slate-200 rounded-xl px-4 py-2.5 transition">
                     <span>Ganti Kata Sandi</span>
                 </button>
             </div>
@@ -90,8 +90,8 @@
                 @csrf
                 @method('PUT')
 
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-[#6B7280]">Password Lama</label>
+                <div class="space-y-1.5">
+                    <label class="text-sm font-semibold text-gray-600">Password Lama</label>
                     <div class="flex gap-2">
                         <input type="password" id="pwLama" name="password_lama" required
                                autocomplete="current-password"
@@ -112,8 +112,8 @@
                     </div>
                 </div>
 
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-[#6B7280]">Password Baru (min. 8 karakter)</label>
+                <div class="space-y-1.5">
+                    <label class="text-sm font-semibold text-gray-600">Password Baru (min. 8 karakter)</label>
                     <div class="flex gap-2">
                         <input type="password" id="pwBaru" name="password_baru" required minlength="8"
                                autocomplete="new-password"
@@ -135,16 +135,16 @@
                 </div>
 
                 <div class="flex gap-2 pt-1">
-                    <button type="submit" class="text-xs font-semibold bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-xl px-5 py-2.5 shadow-xs transition">
+                    <button type="submit" class="text-sm font-semibold bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-xl px-5 py-2.5 shadow-xs transition">
                         Simpan Password
                     </button>
                     <button type="button" onclick="batalPassword()"
-                            class="text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-[#5E0C2B] rounded-xl px-4 py-2.5 transition">
+                            class="text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-[#5E0C2B] rounded-xl px-4 py-2.5 transition">
                         Batal
                     </button>
                 </div>
             </form>
-        </div>
+        </x-card>
     </div>
 
     <script>

@@ -42,14 +42,14 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-[#F3F4F6] min-h-screen text-[#1F2937] antialiased font-sans selection:bg-[#7B1038] selection:text-white {{ request()->routeIs('portal.quiz.kerjakan') ? 'h-screen overflow-hidden' : (request()->routeIs('portal.quiz.submit') ? 'h-screen overflow-hidden flex flex-col' : '') }}">
+<body class="bg-[#F3F4F6] min-h-screen text-[#1F2937] antialiased font-sans tracking-normal selection:bg-[#7B1038] selection:text-white {{ request()->routeIs('portal.quiz.kerjakan') ? 'h-screen overflow-hidden' : (request()->routeIs('portal.quiz.submit') ? 'h-screen overflow-hidden flex flex-col' : '') }}">
     @if (request()->routeIs('superadmin.*'))
         @yield('content')
     @else
         {{-- Navbar atas: tidak dipakai untuk guru (guru pakai sidebar) atau saat siswa sedang mengerjakan kuis (fokus ujian) --}}
         @if (!request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register', 'portal.quiz.kerjakan') && !auth('admin')->check())
         <header class="sticky top-0 z-50 bg-white shadow-[0_2px_8px_rgba(123,16,56,0.10)]">
-            <div class="w-full px-4 sm:px-6 lg:px-8 h-16 sm:h-[70px] flex items-center justify-between">
+            <div class="max-w-screen-2xl mx-auto px-10 h-16 sm:h-[70px] flex items-center justify-between">
                 <!-- Brand / Data Diri Siswa -->
                 @if (auth('siswa')->check())
                     @php
@@ -57,30 +57,30 @@
                         $navKelas = $navSiswa->nama_kelas ?? $navSiswa->kelas;
                     @endphp
                     <a href="{{ route('portal.materi.index') }}" class="flex items-baseline gap-1.5 sm:gap-2.5 hover:opacity-90 transition min-w-0 py-1" title="Portal Siswa">
-                        <span class="font-bold text-sm sm:text-base md:text-lg text-[var(--text-gray-900)] text-gradient-gray tracking-tight truncate">
+                        <span class="font-bold text-sm sm:text-base md:text-lg text-[var(--text-gray-900)] text-gradient-gray tracking-normal truncate">
                             {{ $navSiswa->nama_lengkap }}
                         </span>
-                        <span class="text-xs sm:text-sm text-gray-300 font-normal select-none">|</span>
-                        <span class="text-xs sm:text-sm font-medium text-[var(--text-gray-600)] whitespace-nowrap">
+                        <span class="text-sm text-gray-400 font-normal select-none">|</span>
+                        <span class="text-sm font-medium text-gray-600 whitespace-nowrap">
                             Kelas {{ $navKelas }}
                         </span>
-                        <span class="text-xs sm:text-sm text-gray-300 font-normal select-none hidden sm:inline">|</span>
-                        <span class="text-xs sm:text-sm font-medium text-[var(--text-gray-600)] truncate max-w-[140px] sm:max-w-[200px] md:max-w-xs hidden sm:inline">
+                        <span class="text-sm text-gray-400 font-normal select-none hidden sm:inline">|</span>
+                        <span class="text-sm font-medium text-gray-600 truncate max-w-[140px] sm:max-w-[200px] md:max-w-xs hidden sm:inline">
                             {{ $navSiswa->jurusan }}
                         </span>
-                        <span class="text-xs sm:text-sm text-gray-300 font-normal select-none hidden md:inline">|</span>
-                        <span class="text-xs sm:text-sm font-medium text-[var(--text-gray-600)] whitespace-nowrap hidden md:inline">
+                        <span class="text-sm text-gray-400 font-normal select-none hidden md:inline">|</span>
+                        <span class="text-sm font-medium text-gray-600 whitespace-nowrap hidden md:inline">
                             {{ $navSiswa->nisn }}
                         </span>
                     </a>
                 @else
-                    <a href="{{ route('home') }}" class="font-bold text-lg sm:text-xl text-[#7B1038] tracking-tight hover:opacity-90 transition">
+                    <a href="{{ route('home') }}" class="font-bold text-lg sm:text-xl text-[#7B1038] tracking-normal hover:opacity-90 transition">
                         Sistem Pembelajaran
                     </a>
                 @endif
 
                 <!-- Desktop Menu -->
-                <nav class="hidden md:flex items-center gap-2 lg:gap-3 text-[13px] lg:text-[14px] font-medium {{ auth('siswa')->check() ? 'text-[var(--text-gray-700)]' : 'text-[#5E0C2B]' }}">
+                <nav class="hidden md:flex items-center gap-2 lg:gap-3 text-sm font-medium {{ auth('siswa')->check() ? 'text-[var(--text-gray-700)]' : 'text-[#5E0C2B]' }}">
                     @if (auth('siswa')->check())
                         <a href="{{ route('portal.materi.index') }}"
                            class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[var(--text-gray-700)] hover:text-[var(--text-gray-900)] hover:bg-slate-100' }}">
@@ -177,26 +177,13 @@
                 @include('layouts.partials.sidebar-admin')
             @endif
 
-            <main class="w-full px-4 sm:px-6 lg:px-8 {{ request()->routeIs('portal.quiz.kerjakan') ? 'h-screen max-h-screen overflow-hidden flex flex-col py-3 sm:py-4' : (request()->routeIs('portal.quiz.submit') ? 'flex-1 min-h-0 overflow-hidden flex flex-col justify-center items-center py-2 sm:py-3' : 'py-5 sm:py-6') }} {{ auth('admin')->check() ? 'lg:ml-64 lg:w-[calc(100%-16rem)]' : '' }}">
-                @if (session('success'))
-                    <div class="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm flex items-center gap-2">
-                        <span>{{ session('success') }}</span>
+            <main class="w-full {{ request()->routeIs('portal.quiz.kerjakan') ? 'h-screen max-h-screen overflow-hidden flex flex-col py-3 sm:py-4 px-4 sm:px-6' : (request()->routeIs('portal.quiz.submit') ? 'flex-1 min-h-0 overflow-hidden flex flex-col justify-center items-center py-2 sm:py-3 px-4 sm:px-6' : 'py-6') }} {{ auth('admin')->check() ? 'lg:ml-64 lg:w-[calc(100%-16rem)] px-4 sm:px-6 lg:px-8' : '' }}">
+                @if (request()->routeIs('portal.quiz.kerjakan', 'portal.quiz.submit'))
+                    <div class="max-w-4xl mx-auto w-full {{ request()->routeIs('portal.quiz.kerjakan') ? 'flex-1 flex flex-col min-h-0' : 'flex-1 min-h-0 flex flex-col justify-center items-center' }}">
+                        @yield('content')
                     </div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="mb-6 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 text-sm">
-                        <p class="font-semibold mb-1">Terjadi kesalahan pada input:</p>
-                        <ul class="list-disc list-inside space-y-0.5">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                @if (auth('siswa')->check() || request()->routeIs('portal.*', 'siswa.*', 'leaderboard.*', 'admin.profil*'))
-                    <div class="w-full {{ request()->routeIs('portal.quiz.kerjakan') ? 'flex-1 flex flex-col min-h-0' : (request()->routeIs('portal.quiz.submit') ? 'flex-1 min-h-0 flex flex-col justify-center items-center' : '') }}">
+                @elseif (auth('siswa')->check() || request()->routeIs('portal.*', 'siswa.*', 'leaderboard.*', 'admin.profil*'))
+                    <div class="max-w-screen-2xl mx-auto px-10 w-full">
                         @yield('content')
                     </div>
                 @else
@@ -265,6 +252,117 @@
             });
         });
     </script>
+
+    {{-- Elegant Floating Toast Popup (Tidak Menggeser Konten, Auto Hilang 3.5 Detik) --}}
+    @php
+        $toastSuccess = session('success');
+        $toastError   = session('error');
+        $toastErrors  = $errors->any() ? $errors->all() : null;
+    @endphp
+
+    @if ($toastSuccess || $toastError || $toastErrors)
+    <div id="toast-container" class="fixed top-5 right-5 sm:top-6 sm:right-6 z-[9999] flex flex-col gap-3 max-w-sm sm:max-w-md w-[calc(100%-2.5rem)] pointer-events-none select-none">
+        @if ($toastSuccess)
+        <div class="toast-popup pointer-events-auto relative overflow-hidden bg-white/95 backdrop-blur-md border border-emerald-200/80 shadow-[0_10px_25px_-5px_rgba(16,185,129,0.18),0_8px_10px_-6px_rgba(0,0,0,0.06)] rounded-2xl p-4 flex items-start gap-3.5 transition-all duration-300 transform translate-y-0 opacity-100" role="alert">
+            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-[#1F9254] flex items-center justify-center shrink-0 shadow-2xs">
+                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2.25" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+            </div>
+            <div class="flex-1 min-w-0 pt-0.5">
+                <p class="text-sm font-bold text-[#1F2937]">Berhasil</p>
+                <p class="text-sm text-gray-600 mt-0.5 leading-relaxed font-medium">{{ $toastSuccess }}</p>
+            </div>
+            <button type="button" onclick="dismissToast(this.closest('.toast-popup'))" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition shrink-0 cursor-pointer" aria-label="Tutup notifikasi">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="toast-progress absolute bottom-0 left-0 h-0.5 bg-emerald-500 rounded-b-2xl"></div>
+        </div>
+        @endif
+
+        @if ($toastError)
+        <div class="toast-popup pointer-events-auto relative overflow-hidden bg-white/95 backdrop-blur-md border border-rose-200/80 shadow-[0_10px_25px_-5px_rgba(244,63,94,0.18),0_8px_10px_-6px_rgba(0,0,0,0.06)] rounded-2xl p-4 flex items-start gap-3.5 transition-all duration-300 transform translate-y-0 opacity-100" role="alert">
+            <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 shadow-2xs">
+                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2.25" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+            </div>
+            <div class="flex-1 min-w-0 pt-0.5">
+                <p class="text-sm font-bold text-[#1F2937]">Pemberitahuan</p>
+                <p class="text-sm text-gray-600 mt-0.5 leading-relaxed font-medium">{{ $toastError }}</p>
+            </div>
+            <button type="button" onclick="dismissToast(this.closest('.toast-popup'))" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition shrink-0 cursor-pointer" aria-label="Tutup notifikasi">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="toast-progress absolute bottom-0 left-0 h-0.5 bg-rose-500 rounded-b-2xl"></div>
+        </div>
+        @endif
+
+        @if ($toastErrors)
+        <div class="toast-popup pointer-events-auto relative overflow-hidden bg-white/95 backdrop-blur-md border border-rose-200/80 shadow-[0_10px_25px_-5px_rgba(244,63,94,0.18),0_8px_10px_-6px_rgba(0,0,0,0.06)] rounded-2xl p-4 flex items-start gap-3.5 transition-all duration-300 transform translate-y-0 opacity-100" role="alert">
+            <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 shadow-2xs">
+                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2.25" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+            </div>
+            <div class="flex-1 min-w-0 pt-0.5">
+                <p class="text-sm font-bold text-[#1F2937]">Terjadi Kesalahan</p>
+                <div class="text-sm text-gray-600 mt-0.5 space-y-1">
+                    @foreach ($toastErrors as $err)
+                        <p class="leading-relaxed font-medium">• {{ $err }}</p>
+                    @endforeach
+                </div>
+            </div>
+            <button type="button" onclick="dismissToast(this.closest('.toast-popup'))" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition shrink-0 cursor-pointer" aria-label="Tutup notifikasi">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="toast-progress absolute bottom-0 left-0 h-0.5 bg-rose-500 rounded-b-2xl"></div>
+        </div>
+        @endif
+    </div>
+
+    <style>
+        @keyframes toastProgressAnim {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        .toast-progress {
+            animation: toastProgressAnim 3.5s linear forwards;
+        }
+    </style>
+
+    <script>
+        function dismissToast(el) {
+            if (!el || el.dataset.dismissed) return;
+            el.dataset.dismissed = "true";
+            el.style.transition = "opacity 0.35s ease, transform 0.35s ease, max-height 0.35s ease, margin 0.35s ease";
+            el.style.opacity = "0";
+            el.style.transform = "translateX(24px) scale(0.96)";
+            setTimeout(() => {
+                el.remove();
+                const container = document.getElementById('toast-container');
+                if (container && container.children.length === 0) {
+                    container.remove();
+                }
+            }, 350);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const toasts = document.querySelectorAll('.toast-popup');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    dismissToast(toast);
+                }, 3500);
+            });
+        });
+    </script>
+    @endif
     @stack('scripts')
 </body>
 </html>

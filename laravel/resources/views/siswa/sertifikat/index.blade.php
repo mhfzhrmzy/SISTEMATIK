@@ -7,23 +7,17 @@
 
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
         <div>
-            <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038] text-white mb-1 shadow-2xs">
+            <span class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-[#7B1038] text-white mb-1.5 shadow-2xs">
                 PRESTASI BELAJAR
             </span>
             <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937]">Daftar Sertifikat &amp; Portofolio</h1>
-            <p class="text-xs sm:text-sm text-[#6B7280] mt-1">Koleksi sertifikat kelulusan modul dan sertifikat mandiri Anda.</p>
+            <p class="text-sm text-gray-600 mt-1">Koleksi sertifikat kelulusan modul dan sertifikat mandiri Anda.</p>
         </div>
         <a href="{{ route('siswa.sertifikat.create') }}"
-           class="inline-flex items-center gap-2 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl shadow-xs transition self-start sm:self-auto">
+           class="inline-flex items-center gap-2 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-xs transition self-start sm:self-auto">
             + Upload Sertifikat Baru
         </a>
     </div>
-
-    @if (session('success'))
-        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium">
-            {{ session('success') }}
-        </div>
-    @endif
 
     {{-- Filter tanggal --}}
     <div>
@@ -33,24 +27,24 @@
     {{-- Grid Kartu Sertifikat --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         @forelse ($sertifikat as $item)
-            <div class="bg-white p-5 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+            <x-card class="hover:shadow-md transition-all duration-200 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between gap-2 mb-3">
-                        <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold {{ $item->tipe_sertifikat === 'materi' ? 'bg-[#7B1038] text-white shadow-2xs' : 'bg-[#E8F8F0] text-[#1F9254]' }}">
+                        <span class="text-sm px-3 py-0.5 rounded-full font-semibold {{ $item->tipe_sertifikat === 'materi' ? 'bg-[#7B1038] text-white shadow-2xs' : 'bg-[#E8F8F0] text-[#1F9254]' }}">
                             {{ $item->tipe_sertifikat === 'materi' ? 'Kelulusan Modul' : 'Mandiri' }}
                         </span>
-                        <span class="text-xs text-[#6B7280]">{{ $item->tanggal_terbit ?? '-' }}</span>
+                        <span class="text-sm text-gray-600">{{ $item->tanggal_terbit ?? '-' }}</span>
                     </div>
                     <h2 class="font-bold text-[#1F2937] text-base leading-snug">{{ $item->judul_sertifikat }}</h2>
-                    <p class="text-xs text-[#6B7280] mt-1">Penerbit: {{ $item->penerbit ?? '-' }}</p>
+                    <p class="text-sm text-gray-600 mt-1">Penerbit: {{ $item->penerbit ?? '-' }}</p>
                     @if ($item->materi)
-                        <p class="text-xs text-[#7B1038] mt-1 font-semibold">Modul: {{ $item->materi->judul_materi }}</p>
+                        <p class="text-sm text-[#7B1038] mt-1 font-semibold">Modul: {{ $item->materi->judul_materi }}</p>
                     @endif
                     @if ($item->deskripsi)
-                        <p class="text-xs text-[#6B7280] mt-3 bg-gray-50 p-3 rounded-xl leading-relaxed">{{ $item->deskripsi }}</p>
+                        <p class="text-sm text-gray-600 mt-3 bg-gray-50 p-3 rounded-xl leading-relaxed">{{ $item->deskripsi }}</p>
                     @endif
                 </div>
-                <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
+                <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-sm">
                     <a href="{{ asset('storage/' . $item->file_sertifikat) }}" target="_blank"
                        class="inline-flex items-center font-semibold text-[#7B1038] hover:underline">
                         <span>Lihat Berkas</span>
@@ -63,9 +57,9 @@
                         </form>
                     @endif
                 </div>
-            </div>
+            </x-card>
         @empty
-            <div class="col-span-full bg-gray-50 p-10 text-center text-xs sm:text-sm text-[#6B7280] rounded-2xl">
+            <div class="col-span-full bg-gray-50 p-10 text-center text-sm text-gray-600 rounded-2xl">
                 @if ($filterAktif)
                     Tidak ada sertifikat pada rentang tanggal ini.
                 @else
