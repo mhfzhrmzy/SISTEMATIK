@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
-import 'package:pretest_posttest_app/fitur/materi/data/data_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/views/buka_materi_view.dart';
@@ -39,7 +38,7 @@ class BerandaView extends StatefulWidget {
 class _BerandaViewState extends State<BerandaView> {
   int _indeksFooter = 0;
   final LayananMateri _layananMateri = const LayananMateri();
-  List<ModelMateri> _daftarMateri = daftarMateriDummy;
+  List<ModelMateri> _daftarMateri = const [];
   bool _sedangMemuat = false;
 
   @override
@@ -54,9 +53,8 @@ class _BerandaViewState extends State<BerandaView> {
       final hasil = await _layananMateri.ambilDaftarMateri();
       if (!mounted) return;
       setState(() {
-        if (hasil.daftar.isNotEmpty) {
-          _daftarMateri = hasil.daftar;
-        }
+        // Gunakan data murni dari backend. Jika belum ada materi di database, list tetap kosong.
+        _daftarMateri = hasil.daftar;
         _sedangMemuat = false;
       });
     } catch (_) {
@@ -71,7 +69,11 @@ class _BerandaViewState extends State<BerandaView> {
   String get _kelasPengguna => widget.kelas ?? SesiPengguna.kelas ?? 'Kelas -';
 
   int get _totalMateri => _daftarMateri.length;
-  static const _totalQuiz = 4;
+
+  int get _totalQuiz => _daftarMateri.fold<int>(
+        0,
+        (sum, m) => sum + (m.hasPretest ? 1 : 0) + (m.hasPosttest ? 1 : 0),
+      );
 
   Future<void> _saatFooterDiketuk(int idx) async {
     if (idx == 0) return;
@@ -191,29 +193,42 @@ class _BerandaViewState extends State<BerandaView> {
                                 ),
                               ),
 
-                            // Grid materi
-                            GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              padding: EdgeInsets.zero,
-                              itemCount: _daftarMateri.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount:
-                                    constraints.maxWidth > 600 ? 4 : 2,
-                                mainAxisSpacing: 14,
-                                crossAxisSpacing: 14,
-                                childAspectRatio: 0.84,
+                            // Grid materi atau tampilan kosong jika belum di-upload guru
+                            if (_sedangMemuat && _daftarMateri.isEmpty)
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 36),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: WarnaAplikasi.utama,
+                                  ),
+                                ),
+                              )
+                            else if (_daftarMateri.isEmpty)
+                              const _KotakMateriKosong()
+                            else
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.zero,
+                                itemCount: _daftarMateri.length,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount:
+                                      constraints.maxWidth > 600 ? 4 : 2,
+                                  mainAxisSpacing: 14,
+                                  crossAxisSpacing: 14,
+                                  childAspectRatio: 0.84,
+                                ),
+                                itemBuilder: (gridCtx, i) {
+                                  final materi = _daftarMateri[i];
+                                  return _KartuMateri(
+                                    materi: materi,
+                                    saatDiketuk: () =>
+                                        _tampilkanLembarAksiMateri(
+                                            gridCtx, materi),
+                                  );
+                                },
                               ),
-                              itemBuilder: (gridCtx, i) {
-                                final materi = _daftarMateri[i];
-                                return _KartuMateri(
-                                  materi: materi,
-                                  saatDiketuk: () => _tampilkanLembarAksiMateri(
-                                      gridCtx, materi),
-                                );
-                              },
-                            ),
                           ],
                         ),
                       ),
@@ -643,6 +658,62 @@ class _UbinAksi extends StatelessWidget {
       ),
       trailing: Icon(Icons.chevron_right_rounded, color: Colors.grey.shade400),
       onTap: saatDiketuk,
+    );
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Kotak Status Materi Kosong (Ketika guru belum upload materi di database)
+// ────────────────────────────────────────────────────────────────────────────
+class _KotakMateriKosong extends StatelessWidget {
+  const _KotakMateriKosong();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.menu_book_outlined,
+            size: 48,
+            color: Colors.grey.shade400,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Belum ada materi pelajaran',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Materi untuk kelas Anda belum diunggah oleh guru pengajar.\nTarik layar ke bawah untuk memuat ulang.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade500,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
