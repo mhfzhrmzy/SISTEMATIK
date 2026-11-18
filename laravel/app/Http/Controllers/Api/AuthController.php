@@ -103,6 +103,21 @@ class AuthController extends Controller
         ]);
     }
 
+    public function updateProfilSiswa(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'nama_lengkap' => ['required', 'string', 'max:60'],
+        ]);
+
+        $siswa = $request->user();
+        $siswa->update($validated);
+
+        return response()->json([
+            'message' => 'Profil siswa berhasil diperbarui.',
+            'user' => $this->dataPenggunaSiswa($siswa->refresh()),
+        ]);
+    }
+
     /**
      * Format data siswa agar konsisten dipakai endpoint login dan profil.
      *

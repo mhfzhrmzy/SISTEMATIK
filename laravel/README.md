@@ -128,17 +128,22 @@ Auth memakai **Sanctum** token (`Authorization: Bearer <token>`).
 |--------|----------|-----------|
 | POST | `/api/siswa/logout` | Logout |
 | GET | `/api/siswa/profil` | Profil siswa |
+| PUT | `/api/siswa/profil` | Ubah nama profil (`nama_lengkap`) |
 | POST | `/api/siswa/profil/foto` | Update foto profil |
 | PUT | `/api/siswa/profil/password` | Ganti password |
 | GET | `/api/siswa/materi` | Daftar materi + status pretest |
 | GET | `/api/siswa/materi/{materi}` | Detail materi + quiz |
 | GET | `/api/siswa/materi/{materi}/file` | Unduh/ambil file materi |
-| GET | `/api/siswa/materi/{materi}/quiz` | Daftar quiz materi |
+| GET | `/api/siswa/materi/{materi}/quiz` | Daftar quiz materi; filter opsional `?tipe_test=pretest` atau `?tipe_test=posttest` |
 | GET | `/api/siswa/quiz/{quiz}` | Ambil soal (terkunci bila jadwal posttest belum buka) |
 | POST | `/api/siswa/quiz/{quiz}` | Submit jawaban → poin & leaderboard |
 | GET | `/api/siswa/leaderboard` | Peringkat |
 | GET | `/api/siswa/sertifikat` | Daftar sertifikat |
 | GET | `/api/siswa/sertifikat/{sertifikat}/download` | Unduh sertifikat |
+
+Submit quiz menerima JSON `{"jawaban":{"<id_soal>":"a"}}`; jawaban hanya
+menerima pilihan `a`, `b`, `c`, atau `d`. Untuk pengaturan akun, kirim
+`{"nama_lengkap":"Nama Siswa"}` ke `PUT /api/siswa/profil`.
 
 Inspeksi lengkap: `php artisan route:list --path=api`
 

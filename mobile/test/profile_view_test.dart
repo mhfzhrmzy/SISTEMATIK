@@ -1,14 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/models/pengguna_siswa.dart';
+import 'package:pretest_posttest_app/fitur/profil/data/layanan_profil.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/pengaturan_akun_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
+
+class _LayananProfilPalsu extends LayananProfil {
+  @override
+  Future<PenggunaSiswa> ambil() async => _pengguna('Seto Son Horeg');
+
+  @override
+  Future<PenggunaSiswa> ubahNama(String nama) async => _pengguna(nama);
+
+  PenggunaSiswa _pengguna(String nama) => PenggunaSiswa(
+        nisn: '0084729103',
+        namaLengkap: nama,
+        kelas: '10',
+        jurusan: 'TKJ',
+      );
+}
 
 void main() {
   testWidgets(
       'ProfilView renders header, menu, and navigates to PengaturanAkunView',
       (WidgetTester tester) async {
     await tester.pumpWidget(
-      const MaterialApp(home: ProfilView()),
+      MaterialApp(
+        home: ProfilView(
+          nama: 'Seto Son Horeg',
+          kelas: 'Kelas 10 TKJ - SMKN 2 Jember',
+          layananProfil: _LayananProfilPalsu(),
+        ),
+      ),
     );
 
     expect(find.text('Seto Son Horeg'), findsOneWidget);
@@ -38,7 +61,6 @@ void main() {
     await tester.tap(tombolSimpan);
     await tester.pump();
 
-    expect(find.text('Perubahan data akun siswa berhasil disimpan!'),
-        findsOneWidget);
+    expect(find.text('Perubahan data akun berhasil disimpan.'), findsOneWidget);
   });
 }

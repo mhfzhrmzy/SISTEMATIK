@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
+import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/views/login_view.dart';
 import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/pengaturan_akun_view.dart';
+import 'package:pretest_posttest_app/fitur/profil/data/layanan_profil.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/views/sertifikat_view.dart';
 
 /// Halaman Profil pengguna.
@@ -27,16 +29,18 @@ class ProfilView extends StatelessWidget {
 
   /// Kelas pengguna. Jika kosong, diambil dari sesi login.
   final String? kelas;
+  final LayananProfil? layananProfil;
 
   const ProfilView({
     super.key,
     this.nama,
     this.kelas,
+    this.layananProfil,
   });
 
-  String get _nama => nama ?? SesiPengguna.nama ?? 'Siswa';
+  String get _nama => SesiPengguna.nama ?? nama ?? 'Siswa';
 
-  String get _kelas => kelas ?? SesiPengguna.kelas ?? 'Kelas -';
+  String get _kelas => SesiPengguna.kelas ?? kelas ?? 'Kelas -';
 
   // ── Warna khusus halaman Profil ────────────────────────────────────────
   static const Color _warnaLatarAvatar = Color(0xFFBA7D8E);
@@ -104,7 +108,26 @@ class ProfilView extends StatelessWidget {
 
     if (yakin != true || !context.mounted) return;
 
-    // TODO: hapus sesi/token login di sini saat backend sudah terhubung.
+    try {
+      await (layananProfil ?? LayananProfil()).keluar();
+      SesiPengguna.hapus();
+    } on KesalahanApi catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(error.pesan)));
+      return;
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('Gagal keluar dari akun.')),
+        );
+      return;
+    }
+
+    if (!context.mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const LoginView()),
       (route) => false,
@@ -160,6 +183,7 @@ class ProfilView extends StatelessWidget {
                                     MaterialPageRoute(
                                       builder: (_) => PengaturanAkunView(
                                         namaAwal: _nama,
+                                        layananProfil: layananProfil,
                                       ),
                                     ),
                                   ),

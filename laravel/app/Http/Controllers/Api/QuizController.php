@@ -14,6 +14,10 @@ class QuizController extends Controller
 {
     public function index(Request $request, Materi $materi): JsonResponse
     {
+        $validated = $request->validate([
+            'tipe_test' => ['sometimes', 'in:pretest,posttest'],
+        ]);
+
         $siswa = $request->user();
 
         if ((int) $materi->id_kelas !== (int) $siswa->id_kelas) {
@@ -22,7 +26,14 @@ class QuizController extends Controller
             ], 403);
         }
 
-        $quizzes = $materi->quiz()->with('soal')->latest()->get();
+        $quizzes = $materi->quiz()
+            ->with('soal')
+            ->when(
+                isset($validated['tipe_test']),
+                fn ($query) => $query->where('tipe_test', $validated['tipe_test'])
+            )
+            ->latest()
+            ->get();
 
         // Filter: posttest tanpa jadwal lengkap tidak ditampilkan
         $quizzes = $quizzes->filter(function (Quiz $quiz) {
@@ -257,8 +268,13 @@ class QuizController extends Controller
             }
         }
 
+        $validated = $request->validate([
+            'jawaban' => ['sometimes', 'array'],
+            'jawaban.*' => ['nullable', 'in:a,b,c,d'],
+        ]);
+
         $soals = $quiz->soal;
-        $jawaban = $request->input('jawaban', []);
+        $jawaban = $validated['jawaban'] ?? [];
 
         $benar = 0;
         foreach ($soals as $soal) {

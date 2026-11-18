@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
-import 'package:pretest_posttest_app/fitur/materi/data/data_materi.dart';
+import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/views/buka_materi_view.dart';
 import 'package:pretest_posttest_app/fitur/pretest/pretest_view.dart';
@@ -24,11 +25,13 @@ class BerandaView extends StatefulWidget {
 
   /// Label kelas pengguna yang login. Jika kosong, diambil dari sesi.
   final String? kelas;
+  final LayananMateri? layananMateri;
 
   const BerandaView({
     super.key,
     this.nama,
     this.kelas,
+    this.layananMateri,
   });
 
   @override
@@ -37,14 +40,23 @@ class BerandaView extends StatefulWidget {
 
 class _BerandaViewState extends State<BerandaView> {
   int _indeksFooter = 0;
+  late final LayananMateri _layananMateri;
+  late Future<List<ModelMateri>> _materiFuture;
 
-  // ── Dummy data profil pengguna (ganti dengan data dari API/auth) ─────────
-  String get _namaPengguna => widget.nama ?? SesiPengguna.nama ?? 'Siswa';
+  String get _namaPengguna => SesiPengguna.nama ?? widget.nama ?? 'Siswa';
 
-  String get _kelasPengguna => widget.kelas ?? SesiPengguna.kelas ?? 'Kelas -';
+  String get _kelasPengguna => SesiPengguna.kelas ?? widget.kelas ?? 'Kelas -';
 
-  static const _totalMateri = 2;
-  static const _totalQuiz = 4;
+  @override
+  void initState() {
+    super.initState();
+    _layananMateri = widget.layananMateri ?? LayananMateri();
+    _materiFuture = _layananMateri.daftar();
+  }
+
+  void _muatUlangMateri() {
+    setState(() => _materiFuture = _layananMateri.daftar());
+  }
 
   Future<void> _saatFooterDiketuk(int idx) async {
     if (idx == 0) return;
@@ -71,7 +83,9 @@ class _BerandaViewState extends State<BerandaView> {
         materi: materi,
         saatPreTest: () {
           Navigator.of(ctx).push(
-            MaterialPageRoute(builder: (_) => const PretestView()),
+            MaterialPageRoute(
+              builder: (_) => PretestView(idMateri: materi.id),
+            ),
           );
         },
         saatBukaMateri: () {
@@ -81,7 +95,9 @@ class _BerandaViewState extends State<BerandaView> {
         },
         saatPostTest: () {
           Navigator.of(ctx).push(
-            MaterialPageRoute(builder: (_) => const PosttestView()),
+            MaterialPageRoute(
+              builder: (_) => PosttestView(idMateri: materi.id),
+            ),
           );
         },
       ),
@@ -124,51 +140,91 @@ class _BerandaViewState extends State<BerandaView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Card statistik — berada persis di tengah antara header maroon dan konten
-                          const SizedBox(
-                            height: 36,
-                            child: OverflowBox(
-                              minHeight: 72,
-                              maxHeight: 72,
-                              alignment: Alignment.bottomCenter,
-                              child: _KartuStatistik(
-                                totalMateri: _totalMateri,
-                                totalQuiz: _totalQuiz,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-
-                          // Label section materi
-                          const Text(
-                            'Materi Tersedia',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: WarnaAplikasi.utama,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-
-                          // Grid materi
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: EdgeInsets.zero,
-                            itemCount: daftarMateriDummy.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount:
-                                  constraints.maxWidth > 600 ? 4 : 2,
-                              mainAxisSpacing: 14,
-                              crossAxisSpacing: 14,
-                              childAspectRatio: 0.84,
-                            ),
-                            itemBuilder: (gridCtx, i) {
-                              final materi = daftarMateriDummy[i];
-                              return _KartuMateri(
-                                materi: materi,
-                                saatDiketuk: () =>
-                                    _tampilkanLembarAksiMateri(gridCtx, materi),
+                          FutureBuilder<List<ModelMateri>>(
+                            future: _materiFuture,
+                            builder: (context, snapshot) {
+                              final materis = snapshot.data ?? const [];
+                              final totalQuiz = materis.fold<int>(
+                                0,
+                                (total, materi) => total + materi.jumlahQuiz,
+                              );
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 36,
+                                    child: OverflowBox(
+                                      minHeight: 72,
+                                      maxHeight: 72,
+                                      alignment: Alignment.bottomCenter,
+                                      child: _KartuStatistik(
+                                        totalMateri: materis.length,
+                                        totalQuiz: totalQuiz,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  const Text(
+                                    'Materi Tersedia',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: WarnaAplikasi.utama,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting)
+                                    const Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(24),
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    )
+                                  else if (snapshot.hasError)
+                                    _PesanMateri(
+                                      pesan: snapshot.error is KesalahanApi
+                                          ? (snapshot.error as KesalahanApi)
+                                              .pesan
+                                          : 'Gagal memuat materi dari server.',
+                                      ulangi: _muatUlangMateri,
+                                    )
+                                  else if (materis.isEmpty)
+                                    const Padding(
+                                      padding: EdgeInsets.all(20),
+                                      child: Center(
+                                        child:
+                                            Text('Belum ada materi tersedia.'),
+                                      ),
+                                    )
+                                  else
+                                    GridView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      padding: EdgeInsets.zero,
+                                      itemCount: materis.length,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount:
+                                            constraints.maxWidth > 600 ? 4 : 2,
+                                        mainAxisSpacing: 14,
+                                        crossAxisSpacing: 14,
+                                        childAspectRatio: 0.84,
+                                      ),
+                                      itemBuilder: (gridCtx, i) {
+                                        final materi = materis[i];
+                                        return _KartuMateri(
+                                          materi: materi,
+                                          saatDiketuk: () =>
+                                              _tampilkanLembarAksiMateri(
+                                            gridCtx,
+                                            materi,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                ],
                               );
                             },
                           ),
@@ -178,6 +234,31 @@ class _BerandaViewState extends State<BerandaView> {
                   );
                 },
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PesanMateri extends StatelessWidget {
+  const _PesanMateri({required this.pesan, required this.ulangi});
+
+  final String pesan;
+  final VoidCallback ulangi;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Text(pesan, textAlign: TextAlign.center),
+            TextButton(
+              onPressed: ulangi,
+              child: const Text('Coba lagi'),
             ),
           ],
         ),
@@ -505,75 +586,76 @@ class _LembarAksiMateri extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      decoration: BoxDecoration(
+      child: Material(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(2),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          // Judul materi
-          Text(
-            materi.judul,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: WarnaAplikasi.utama,
+            // Judul materi
+            Text(
+              materi.judul,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: WarnaAplikasi.utama,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            materi.kelas,
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-          ),
-          const SizedBox(height: 20),
-          const Divider(height: 1),
+            const SizedBox(height: 4),
+            Text(
+              materi.kelas,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+            ),
+            const SizedBox(height: 20),
+            const Divider(height: 1),
 
-          // Aksi: Kerjakan Pre-Test
-          _UbinAksi(
-            ikon: Icons.quiz_outlined,
-            label: 'Kerjakan Pre-Test',
-            saatDiketuk: () {
-              Navigator.pop(context);
-              saatPreTest();
-            },
-          ),
-          const Divider(height: 1),
+            // Aksi: Kerjakan Pre-Test
+            _UbinAksi(
+              ikon: Icons.quiz_outlined,
+              label: 'Kerjakan Pre-Test',
+              saatDiketuk: () {
+                Navigator.pop(context);
+                saatPreTest();
+              },
+            ),
+            const Divider(height: 1),
 
-          // Aksi: Buka Materi
-          _UbinAksi(
-            ikon: Icons.menu_book_rounded,
-            label: 'Buka Materi',
-            saatDiketuk: () {
-              Navigator.pop(context);
-              saatBukaMateri();
-            },
-          ),
-          const Divider(height: 1),
+            // Aksi: Buka Materi
+            _UbinAksi(
+              ikon: Icons.menu_book_rounded,
+              label: 'Buka Materi',
+              saatDiketuk: () {
+                Navigator.pop(context);
+                saatBukaMateri();
+              },
+            ),
+            const Divider(height: 1),
 
-          // Aksi: Post-Test
-          _UbinAksi(
-            ikon: Icons.assignment_turned_in_outlined,
-            label: 'Post-Test',
-            saatDiketuk: () {
-              Navigator.pop(context);
-              saatPostTest();
-            },
-          ),
-          const SizedBox(height: 12),
-        ],
+            // Aksi: Post-Test
+            _UbinAksi(
+              ikon: Icons.assignment_turned_in_outlined,
+              label: 'Post-Test',
+              saatDiketuk: () {
+                Navigator.pop(context);
+                saatPostTest();
+              },
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
       ),
     );
   }

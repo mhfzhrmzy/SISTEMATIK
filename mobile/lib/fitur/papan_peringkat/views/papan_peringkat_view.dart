@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pretest_posttest_app/fitur/papan_peringkat/data/layanan_papan_peringkat.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
+import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
 import 'package:pretest_posttest_app/fitur/papan_peringkat/models/pengguna_peringkat.dart';
@@ -16,66 +18,53 @@ class PapanPeringkatView extends StatefulWidget {
 }
 
 class _PapanPeringkatViewState extends State<PapanPeringkatView> {
-  // 0 = Keseluruhan, 1 = Permateri
-  int _tabTerpilih = 0;
+  final LayananPapanPeringkat _layanan = LayananPapanPeringkat();
+  List<PenggunaPeringkat> _peringkat = [];
+  bool _memuat = true;
+  String? _pesanGalat;
 
-  // Selected sub-materi index (ketika tab Permateri dipilih)
-  int _indeksMateriTerpilih = 0;
+  List<PenggunaPeringkat> get _daftarPeringkat =>
+      _peringkat.where((item) => item.peringkat > 3 && !item.isMe).toList();
 
-  final List<String> _daftarMateri = [
-    'MS Word',
-    'MS Excel',
-    'Power Point',
-    'Windows 11',
-    'Dasar Python',
-  ];
+  PenggunaPeringkat? get _penggunaSaatIni {
+    for (final item in _peringkat) {
+      if (item.isMe) return item;
+    }
+    return null;
+  }
 
-  // Dummy data Top 3
-  final PenggunaPeringkat _peringkat1 = const PenggunaPeringkat(
-    peringkat: 1,
-    nama: 'Appip',
-    skor: 100,
-  );
+  @override
+  void initState() {
+    super.initState();
+    _muatPeringkat();
+  }
 
-  final PenggunaPeringkat _peringkat2 = const PenggunaPeringkat(
-    peringkat: 2,
-    nama: 'Agus',
-    skor: 96,
-  );
-
-  final PenggunaPeringkat _peringkat3 = const PenggunaPeringkat(
-    peringkat: 3,
-    nama: 'Sins',
-    skor: 90,
-  );
-
-  // Dummy data rank 4 ke bawah
-  final List<PenggunaPeringkat> _daftarPeringkat = const [
-    PenggunaPeringkat(peringkat: 4, nama: 'Ahmad Fauzi', skor: 88),
-    PenggunaPeringkat(peringkat: 5, nama: 'Biolina Rahma', skor: 87),
-    PenggunaPeringkat(peringkat: 6, nama: 'Candra Kartika', skor: 85),
-    PenggunaPeringkat(peringkat: 7, nama: 'Dini Lestari', skor: 84),
-    PenggunaPeringkat(peringkat: 8, nama: 'Eko Prasetyo', skor: 83),
-    PenggunaPeringkat(peringkat: 9, nama: 'Fajar Nugroho', skor: 82),
-    PenggunaPeringkat(peringkat: 10, nama: 'Gita Saraswati', skor: 80),
-    PenggunaPeringkat(peringkat: 11, nama: 'Hadi Saputra', skor: 79),
-    PenggunaPeringkat(peringkat: 12, nama: 'Intan Permata', skor: 78),
-    PenggunaPeringkat(peringkat: 13, nama: 'Joko Susilo', skor: 77),
-    PenggunaPeringkat(peringkat: 14, nama: 'Kartika Sari', skor: 75),
-    PenggunaPeringkat(peringkat: 15, nama: 'Lukman Hakim', skor: 74),
-    PenggunaPeringkat(peringkat: 16, nama: 'Maya Indah', skor: 73),
-    PenggunaPeringkat(peringkat: 17, nama: 'Naufal Zaki', skor: 72),
-    PenggunaPeringkat(peringkat: 18, nama: 'Olivia Wijaya', skor: 70),
-    PenggunaPeringkat(peringkat: 19, nama: 'Pandu Dewanata', skor: 69),
-    PenggunaPeringkat(peringkat: 20, nama: 'Qori Amalia', skor: 68),
-  ];
-
-  // User rank terpin di bawah
-  final PenggunaPeringkat _penggunaSaatIni = const PenggunaPeringkat(
-    peringkat: 21,
-    nama: 'Seto Son Horeg',
-    skor: 67,
-  );
+  Future<void> _muatPeringkat() async {
+    setState(() {
+      _memuat = true;
+      _pesanGalat = null;
+    });
+    try {
+      final hasil = await _layanan.ambil();
+      if (!mounted) return;
+      setState(() {
+        _peringkat = hasil.siswa;
+        _memuat = false;
+      });
+    } on KesalahanApi catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _pesanGalat = error.pesan;
+        _memuat = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _pesanGalat = 'Gagal memuat leaderboard.';
+        _memuat = false;
+      });
+    }
+  }
 
   void _saatFooterDiketuk(int idx) {
     if (idx == 1) return;
@@ -204,30 +193,21 @@ class _PapanPeringkatViewState extends State<PapanPeringkatView> {
                               ),
                               child: Row(
                                 children: [
-                                  // Tab Keseluruhan
                                   Expanded(
                                     child: InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          _tabTerpilih = 0;
-                                        });
-                                      },
+                                      onTap: () {},
                                       borderRadius: BorderRadius.circular(10),
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: _tabTerpilih == 0
-                                              ? WarnaAplikasi.utama
-                                              : Colors.transparent,
+                                          color: WarnaAplikasi.utama,
                                           borderRadius:
                                               BorderRadius.circular(10),
                                         ),
                                         alignment: Alignment.center,
-                                        child: Text(
+                                        child: const Text(
                                           'Keseluruhan',
                                           style: TextStyle(
-                                            color: _tabTerpilih == 0
-                                                ? Colors.white
-                                                : WarnaAplikasi.utama,
+                                            color: Colors.white,
                                             fontWeight: FontWeight.w600,
                                             fontSize: 13.5,
                                           ),
@@ -235,31 +215,24 @@ class _PapanPeringkatViewState extends State<PapanPeringkatView> {
                                       ),
                                     ),
                                   ),
-
-                                  // Tab Permateri
                                   Expanded(
                                     child: InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          _tabTerpilih = 1;
-                                        });
-                                      },
+                                      onTap: () => ScaffoldMessenger.of(context)
+                                        ..hideCurrentSnackBar()
+                                        ..showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'API leaderboard belum mendukung filter per materi.',
+                                            ),
+                                          ),
+                                        ),
                                       borderRadius: BorderRadius.circular(10),
                                       child: Container(
-                                        decoration: BoxDecoration(
-                                          color: _tabTerpilih == 1
-                                              ? WarnaAplikasi.utama
-                                              : Colors.transparent,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
                                         alignment: Alignment.center,
-                                        child: Text(
+                                        child: const Text(
                                           'Permateri',
                                           style: TextStyle(
-                                            color: _tabTerpilih == 1
-                                                ? Colors.white
-                                                : WarnaAplikasi.utama,
+                                            color: WarnaAplikasi.utama,
                                             fontWeight: FontWeight.w600,
                                             fontSize: 13.5,
                                           ),
@@ -271,99 +244,59 @@ class _PapanPeringkatViewState extends State<PapanPeringkatView> {
                               ),
                             ),
 
-                            // ── Sub-Filter Pills ─────────────────────
-                            if (_tabTerpilih == 1) ...[
-                              const SizedBox(height: 14),
-                              SizedBox(
-                                height: 32,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: _daftarMateri.length,
-                                  separatorBuilder: (_, __) =>
-                                      const SizedBox(width: 8),
-                                  itemBuilder: (ctx, idx) {
-                                    final terpilih =
-                                        idx == _indeksMateriTerpilih;
-
-                                    return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          _indeksMateriTerpilih = idx;
-                                        });
-                                      },
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 14,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: terpilih
-                                              ? WarnaAplikasi.utama
-                                              : const Color(0xFFF1EFF1),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Text(
-                                          _daftarMateri[idx],
-                                          style: TextStyle(
-                                            color: terpilih
-                                                ? Colors.white
-                                                : WarnaAplikasi.utama
-                                                    .withValues(alpha: 0.65),
-                                            fontSize: 12,
-                                            fontWeight: terpilih
-                                                ? FontWeight.bold
-                                                : FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-
                             const SizedBox(height: 18),
 
-                            // ── Top 3 Podium Section ─────────────────
-                            FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.center,
-                              child: SizedBox(
-                                height: 130,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    // Peringkat 2
-                                    BatangPodium(
-                                      pengguna: _peringkat2,
-                                      tinggiBatang: 70,
-                                      lebar: 84,
-                                    ),
-
-                                    const SizedBox(width: 12),
-
-                                    // Peringkat 1
-                                    BatangPodium(
-                                      pengguna: _peringkat1,
-                                      tinggiBatang: 96,
-                                      lebar: 90,
-                                    ),
-
-                                    const SizedBox(width: 12),
-
-                                    // Peringkat 3
-                                    BatangPodium(
-                                      pengguna: _peringkat3,
-                                      tinggiBatang: 52,
-                                      lebar: 84,
-                                    ),
-                                  ],
+                            if (_memuat)
+                              const Padding(
+                                padding: EdgeInsets.all(24),
+                                child: CircularProgressIndicator(),
+                              )
+                            else if (_pesanGalat != null)
+                              Column(
+                                children: [
+                                  Text(_pesanGalat!),
+                                  TextButton(
+                                    onPressed: _muatPeringkat,
+                                    child: const Text('Coba lagi'),
+                                  ),
+                                ],
+                              )
+                            else if (_peringkat.isEmpty)
+                              const Padding(
+                                padding: EdgeInsets.all(24),
+                                child: Text('Belum ada nilai di leaderboard.'),
+                              )
+                            else if (_peringkat.length >= 3)
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.center,
+                                child: SizedBox(
+                                  height: 130,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      BatangPodium(
+                                        pengguna: _peringkat[1],
+                                        tinggiBatang: 70,
+                                        lebar: 84,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      BatangPodium(
+                                        pengguna: _peringkat[0],
+                                        tinggiBatang: 96,
+                                        lebar: 90,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      BatangPodium(
+                                        pengguna: _peringkat[2],
+                                        tinggiBatang: 52,
+                                        lebar: 84,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
 
                             const SizedBox(height: 16),
 
@@ -422,53 +355,54 @@ class _PapanPeringkatViewState extends State<PapanPeringkatView> {
                             ),
 
                             // ── Pinned Current User Rank Bar ─────────
-                            Container(
-                              margin: const EdgeInsets.only(
-                                bottom: 12,
-                                top: 4,
-                              ),
-                              height: 48,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                              ),
-                              decoration: BoxDecoration(
-                                color: WarnaAplikasi.utama,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: WarnaAplikasi.utama
-                                        .withValues(alpha: 0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    '${_penggunaSaatIni.peringkat}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                            if (_penggunaSaatIni case final pengguna?
+                                when pengguna.peringkat > 3)
+                              Container(
+                                margin: const EdgeInsets.only(
+                                  bottom: 12,
+                                  top: 4,
+                                ),
+                                height: 48,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 18),
+                                decoration: BoxDecoration(
+                                  color: WarnaAplikasi.utama,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: WarnaAplikasi.utama
+                                          .withValues(alpha: 0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
                                     ),
-                                  ),
-                                  const SizedBox(width: 18),
-                                  Expanded(
-                                    child: Text(
-                                      _penggunaSaatIni.nama,
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      '${pengguna.peringkat}',
                                       style: const TextStyle(
                                         color: Colors.white,
-                                        fontSize: 15,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 18),
+                                    Expanded(
+                                      child: Text(
+                                        pengguna.nama,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),

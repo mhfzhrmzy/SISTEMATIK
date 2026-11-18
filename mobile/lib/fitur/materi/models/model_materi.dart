@@ -6,6 +6,9 @@ class ModelMateri {
   final String judul;
   final String guruMapel;
   final String deskripsi;
+  final String? urlFile;
+  final int jumlahQuiz;
+  final bool pretestSelesai;
 
   /// Daftar halaman konten materi (teks/HTML per halaman).
   final List<String> halamanKonten;
@@ -17,6 +20,9 @@ class ModelMateri {
     required this.guruMapel,
     required this.deskripsi,
     required this.halamanKonten,
+    this.urlFile,
+    this.jumlahQuiz = 0,
+    this.pretestSelesai = false,
   });
 
   /// Jumlah halaman materi.
@@ -24,13 +30,22 @@ class ModelMateri {
 
   // ── Factory dari JSON (siap pakai saat integrasi API) ───────────────────
   factory ModelMateri.fromJson(Map<String, dynamic> json) {
+    final isi = (json['isi_materi'] ?? json['deskripsi'] ?? '').toString();
+    final pages = json['halaman_konten'];
+    final id = json['id_materi'] ?? json['id'];
+
     return ModelMateri(
-      id: json['id'] as int,
-      kelas: json['kelas'] as String,
-      judul: json['judul'] as String,
-      guruMapel: json['guru_mapel'] as String,
-      deskripsi: json['deskripsi'] as String,
-      halamanKonten: List<String>.from(json['halaman_konten'] as List<dynamic>),
+      id: id is num ? id.toInt() : int.parse(id.toString()),
+      kelas: (json['kelas'] ?? '').toString(),
+      judul: (json['judul_materi'] ?? json['judul'] ?? '').toString(),
+      guruMapel: (json['guru_pengajar'] ?? json['guru_mapel'] ?? '').toString(),
+      deskripsi: isi,
+      halamanKonten: pages is List
+          ? pages.map((page) => page.toString()).toList()
+          : (isi.isEmpty ? const [] : [isi]),
+      urlFile: json['upload_file']?.toString(),
+      jumlahQuiz: _integer(json['quiz_count']),
+      pretestSelesai: json['pretest_completed'] == true,
     );
   }
 
@@ -42,4 +57,7 @@ class ModelMateri {
         'deskripsi': deskripsi,
         'halaman_konten': halamanKonten,
       };
+
+  static int _integer(dynamic value) =>
+      value is num ? value.toInt() : int.tryParse('$value') ?? 0;
 }

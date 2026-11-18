@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
+import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
+import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
+import 'package:pretest_posttest_app/fitur/profil/data/layanan_profil.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
 import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
@@ -22,6 +26,7 @@ class PengaturanAkunView extends StatefulWidget {
 
   /// Jurusan siswa (misal: "TKJ").
   final String jurusan;
+  final LayananProfil? layananProfil;
 
   const PengaturanAkunView({
     super.key,
@@ -29,6 +34,7 @@ class PengaturanAkunView extends StatefulWidget {
     this.nisn = '0084729103',
     this.kelas = '10',
     this.jurusan = 'TKJ',
+    this.layananProfil,
   });
 
   @override
@@ -51,14 +57,24 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
   // ── State visibilitas password ─────────────────────────────────────────────
   bool _sembunyikanPasswordSaatIni = true;
   bool _sembunyikanPasswordBaru = true;
+  bool _sedangMenyimpan = false;
+  String? _fotoProfil;
+  late final LayananProfil _layananProfil;
 
   @override
   void initState() {
     super.initState();
-    _kontrolerNisn = TextEditingController(text: widget.nisn);
-    _kontrolerNama = TextEditingController(text: widget.namaAwal ?? '');
-    _kontrolerKelas = TextEditingController(text: widget.kelas);
-    _kontrolerJurusan = TextEditingController(text: widget.jurusan);
+    _layananProfil = widget.layananProfil ?? LayananProfil();
+    _kontrolerNisn =
+        TextEditingController(text: SesiPengguna.nisn ?? widget.nisn);
+    _kontrolerNama =
+        TextEditingController(text: SesiPengguna.nama ?? widget.namaAwal ?? '');
+    _kontrolerKelas =
+        TextEditingController(text: SesiPengguna.kelas ?? widget.kelas);
+    _kontrolerJurusan =
+        TextEditingController(text: SesiPengguna.jurusan ?? widget.jurusan);
+    _fotoProfil = SesiPengguna.fotoProfil;
+    _muatProfil();
   }
 
   @override
@@ -93,29 +109,107 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
   }
 
   // ── Aksi simpan perubahan ──────────────────────────────────────────────────
-  void _simpanPerubahan() {
-    FocusScope.of(context).unfocus();
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(
-          content: Text('Perubahan data akun siswa berhasil disimpan!'),
-          backgroundColor: WarnaAplikasi.utama,
-          duration: Duration(seconds: 2),
-        ),
+  Future<void> _muatProfil() async {
+    try {
+      final pengguna = await _layananProfil.ambil();
+      if (!mounted) return;
+      setState(() {
+        _kontrolerNisn.text = pengguna.nisn;
+        _kontrolerNama.text = pengguna.namaLengkap;
+        _kontrolerKelas.text = pengguna.kelas ?? '';
+        _kontrolerJurusan.text = pengguna.jurusan ?? '';
+        _fotoProfil = pengguna.fotoProfil;
+      });
+      SesiPengguna.perbaruiProfil(
+        nama: pengguna.namaLengkap,
+        kelas: pengguna.labelKelas,
+        jurusan: pengguna.jurusan,
+        fotoProfil: pengguna.fotoProfil,
       );
+    } on KesalahanApi catch (error) {
+      if (mounted) _tampilkanPesan(error.pesan);
+    } catch (_) {
+      if (mounted) _tampilkanPesan('Gagal memuat profil dari server.');
+    }
   }
 
-  // ── Aksi ganti foto avatar ─────────────────────────────────────────────────
-  void _pilihFotoAvatar() {
+  Future<void> _simpanPerubahan() async {
+    FocusScope.of(context).unfocus();
+
+    final nama = _kontrolerNama.text.trim();
+    final passwordLama = _kontrolerPasswordSaatIni.text;
+    final passwordBaru = _kontrolerPasswordBaru.text;
+    if (nama.isEmpty) {
+      _tampilkanPesan('Nama lengkap wajib diisi.');
+      return;
+    }
+    if (passwordLama.isNotEmpty != passwordBaru.isNotEmpty) {
+      _tampilkanPesan(
+          'Isi password lama dan password baru untuk menggantinya.');
+      return;
+    }
+
+    setState(() => _sedangMenyimpan = true);
+    try {
+      if (passwordLama.isNotEmpty) {
+        await _layananProfil.ubahPassword(
+          lama: passwordLama,
+          baru: passwordBaru,
+        );
+      }
+      final pengguna = await _layananProfil.ubahNama(nama);
+      if (!mounted) return;
+      SesiPengguna.perbaruiProfil(
+        nama: pengguna.namaLengkap,
+        kelas: pengguna.labelKelas,
+        jurusan: pengguna.jurusan,
+      );
+      _kontrolerPasswordSaatIni.clear();
+      _kontrolerPasswordBaru.clear();
+      setState(() => _sedangMenyimpan = false);
+      _tampilkanPesan('Perubahan data akun berhasil disimpan.');
+    } on KesalahanApi catch (error) {
+      if (!mounted) return;
+      setState(() => _sedangMenyimpan = false);
+      _tampilkanPesan(error.pesan);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _sedangMenyimpan = false);
+      _tampilkanPesan('Gagal menyimpan perubahan akun.');
+    }
+  }
+
+  Future<void> _pilihFotoAvatar() async {
+    try {
+      final foto = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxWidth: 1200,
+      );
+      if (foto == null) return;
+      final Uint8List bytes = await foto.readAsBytes();
+      final url = await _layananProfil.unggahFoto(
+        namaFile: foto.name,
+        bytes: bytes,
+      );
+      if (!mounted) return;
+      setState(() => _fotoProfil = url);
+      SesiPengguna.perbaruiProfil(fotoProfil: url);
+      _tampilkanPesan('Foto profil berhasil diperbarui.');
+    } on KesalahanApi catch (error) {
+      if (mounted) _tampilkanPesan(error.pesan);
+    } catch (_) {
+      if (mounted) _tampilkanPesan('Foto profil gagal diperbarui.');
+    }
+  }
+
+  void _tampilkanPesan(String pesan) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        const SnackBar(
-          content: Text('Fitur ubah foto profil (Kamera/Galeri)'),
+        SnackBar(
+          content: Text(pesan),
           backgroundColor: WarnaAplikasi.utama,
-          duration: Duration(seconds: 2),
         ),
       );
   }
@@ -162,6 +256,7 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
                           // ── 2. Avatar Tengah dengan Badge Kamera ───────────
                           Center(
                             child: _AvatarSiswa(
+                              fotoUrl: _fotoProfil,
                               saatDiketuk: _pilihFotoAvatar,
                             ),
                           ),
@@ -245,7 +340,9 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
                                 SizedBox(
                                   height: 44,
                                   child: ElevatedButton(
-                                    onPressed: _simpanPerubahan,
+                                    onPressed: _sedangMenyimpan
+                                        ? null
+                                        : _simpanPerubahan,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: WarnaAplikasi.utama,
                                       foregroundColor: Colors.white,
@@ -254,14 +351,23 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
                                         borderRadius: BorderRadius.circular(22),
                                       ),
                                     ),
-                                    child: const Text(
-                                      'Simpan Perubahan',
-                                      style: TextStyle(
-                                        fontSize: 13.5,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: -0.2,
-                                      ),
-                                    ),
+                                    child: _sedangMenyimpan
+                                        ? const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : const Text(
+                                            'Simpan Perubahan',
+                                            style: TextStyle(
+                                              fontSize: 13.5,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: -0.2,
+                                            ),
+                                          ),
                                   ),
                                 ),
                               ],
@@ -377,8 +483,9 @@ class _TombolKembali extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 class _AvatarSiswa extends StatelessWidget {
   final VoidCallback saatDiketuk;
+  final String? fotoUrl;
 
-  const _AvatarSiswa({required this.saatDiketuk});
+  const _AvatarSiswa({required this.saatDiketuk, this.fotoUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -400,11 +507,25 @@ class _AvatarSiswa extends StatelessWidget {
                 width: 3.5,
               ),
             ),
-            child: const Icon(
-              Icons.person,
-              size: 58,
-              color: WarnaAplikasi.utama,
-            ),
+            child: fotoUrl == null
+                ? const Icon(
+                    Icons.person,
+                    size: 58,
+                    color: WarnaAplikasi.utama,
+                  )
+                : ClipOval(
+                    child: Image.network(
+                      fotoUrl!,
+                      width: 86,
+                      height: 86,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.person,
+                        size: 58,
+                        color: WarnaAplikasi.utama,
+                      ),
+                    ),
+                  ),
           ),
 
           // Badge Ikon Kamera di Kanan Bawah
@@ -527,4 +648,3 @@ class _KolomInput extends StatelessWidget {
     );
   }
 }
-

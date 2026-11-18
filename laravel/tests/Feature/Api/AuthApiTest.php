@@ -94,6 +94,34 @@ class AuthApiTest extends TestCase
             ->assertJsonPath('user.jurusan', 'Teknik Komputer & Jaringan');
     }
 
+    public function test_siswa_bisa_memperbarui_nama_profil(): void
+    {
+        $siswa = $this->buatSiswa();
+        $token = $siswa->createToken('tes')->plainTextToken;
+
+        $this->withToken($token)
+            ->putJson('/api/siswa/profil', ['nama_lengkap' => 'Andi Wijaya'])
+            ->assertOk()
+            ->assertJsonPath('message', 'Profil siswa berhasil diperbarui.')
+            ->assertJsonPath('user.nama_lengkap', 'Andi Wijaya');
+
+        $this->assertDatabaseHas('pengguna_siswa', [
+            'nisn' => $siswa->nisn,
+            'nama_lengkap' => 'Andi Wijaya',
+        ]);
+    }
+
+    public function test_update_profil_menolak_nama_kosong(): void
+    {
+        $siswa = $this->buatSiswa();
+        $token = $siswa->createToken('tes')->plainTextToken;
+
+        $this->withToken($token)
+            ->putJson('/api/siswa/profil', ['nama_lengkap' => ''])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['nama_lengkap']);
+    }
+
     public function test_siswa_bisa_logout_dan_token_dihapus(): void
     {
         $siswa = $this->buatSiswa();

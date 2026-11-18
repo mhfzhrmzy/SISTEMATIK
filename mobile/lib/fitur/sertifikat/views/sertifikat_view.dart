@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/data/layanan_sertifikat.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
+import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
+import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
 import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/views/upload_sertifikat_view.dart';
 
 /// Halaman daftar sertifikat & portofolio.
 class SertifikatView extends StatefulWidget {
   /// Daftar sertifikat awal — bisa dioper dari UploadSertifikatView
   /// setelah operasi CRUD agar data tetap sinkron.
   final List<ItemSertifikat>? daftarAwal;
+  final LayananSertifikat? layananSertifikat;
 
-  const SertifikatView({super.key, this.daftarAwal});
+  const SertifikatView({
+    super.key,
+    this.daftarAwal,
+    this.layananSertifikat,
+  });
 
   @override
   State<SertifikatView> createState() => _SertifikatViewState();
@@ -23,25 +30,16 @@ class SertifikatView extends StatefulWidget {
 class _SertifikatViewState extends State<SertifikatView> {
   // Daftar sertifikat — diisi dari daftarAwal jika ada, atau dummy data.
   late List<ItemSertifikat> _daftarSertifikat;
+  late final LayananSertifikat _layananSertifikat;
+  bool _memuat = false;
+  String? _pesanGalat;
 
   @override
   void initState() {
     super.initState();
-    _daftarSertifikat = widget.daftarAwal ??
-        [
-          ItemSertifikat(
-            label: 'Sertifikat',
-            judul: 'Dasar Phyton',
-            tanggalTerbit: 'Diterbitkan pada: 12 Mar 2026',
-            tanggal: DateTime(2026, 3, 12),
-          ),
-          ItemSertifikat(
-            label: 'Sertifikat',
-            judul: 'Dasar Phyton',
-            tanggalTerbit: 'Diterbitkan pada: 01 Mar 2026',
-            tanggal: DateTime(2026, 3, 1),
-          ),
-        ];
+    _layananSertifikat = widget.layananSertifikat ?? LayananSertifikat();
+    _daftarSertifikat = widget.daftarAwal ?? [];
+    if (widget.daftarAwal == null) _muatSertifikat();
   }
 
   // State rentang tanggal terpilih (dari tanggal X sampai tanggal Y)
@@ -101,28 +99,52 @@ class _SertifikatViewState extends State<SertifikatView> {
     }
   }
 
-  /// Navigasi ke halaman Form Upload Sertifikat Baru (CRUD)
-  void _navigasiUpload() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => UploadSertifikatView(
-          daftarSertifikat: List.from(_daftarSertifikat),
-          saatDaftarBerubah: (updated) {},
-        ),
-      ),
-    );
+  Future<void> _muatSertifikat() async {
+    setState(() {
+      _memuat = true;
+      _pesanGalat = null;
+    });
+    try {
+      final daftar = await _layananSertifikat.daftar();
+      if (!mounted) return;
+      setState(() {
+        _daftarSertifikat = daftar;
+        _memuat = false;
+      });
+    } on KesalahanApi catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _pesanGalat = error.pesan;
+        _memuat = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _pesanGalat = 'Gagal memuat sertifikat.';
+        _memuat = false;
+      });
+    }
   }
 
-  void _unduhSertifikat(ItemSertifikat item) {
+  Future<void> _unduhSertifikat(ItemSertifikat item) async {
+    if (item.id == null) {
+      _tampilkanPesan('ID sertifikat tidak tersedia.');
+      return;
+    }
+    try {
+      final bytes = await _layananSertifikat.unduh(item.id!);
+      await simpanFile(bytes, 'sertifikat_${item.id}.pdf');
+    } on KesalahanApi catch (error) {
+      _tampilkanPesan(error.pesan);
+    } catch (_) {
+      _tampilkanPesan('Sertifikat gagal diunduh.');
+    }
+  }
+
+  void _tampilkanPesan(String pesan) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text('Mengunduh sertifikat ${item.judul}...'),
-          backgroundColor: WarnaAplikasi.utama,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      ..showSnackBar(SnackBar(content: Text(pesan)));
   }
 
   Widget _temaPemilihTanggal(BuildContext context, Widget? child) {
@@ -593,26 +615,6 @@ class _SertifikatViewState extends State<SertifikatView> {
 
                           const SizedBox(height: 14),
 
-                          // ── 2. Tombol "Upload Sertifikat Baru" ─
-                          SizedBox(
-                            width: double.infinity,
-                            height: 46,
-                            child: ElevatedButton(
-                              onPressed: _navigasiUpload,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: WarnaAplikasi.utama,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)),
-                              ),
-                              child: const Text('Upload Sertifikat Baru',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-
                           const SizedBox(height: 20),
 
                           // ── 3. Heading "Daftar sertifikat" + Tombol Filter ──
@@ -699,7 +701,26 @@ class _SertifikatViewState extends State<SertifikatView> {
                           const SizedBox(height: 12),
 
                           // ── 4. Card List Sertifikat ──────
-                          if (items.isEmpty)
+                          if (_memuat)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(24),
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          else if (_pesanGalat != null)
+                            Center(
+                              child: Column(
+                                children: [
+                                  Text(_pesanGalat!),
+                                  TextButton(
+                                    onPressed: _muatSertifikat,
+                                    child: const Text('Coba lagi'),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else if (items.isEmpty)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 36),
                               child: Center(

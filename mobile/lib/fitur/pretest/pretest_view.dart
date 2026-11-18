@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/views/tes_view.dart';
-import 'pretest_data.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/data/layanan_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/views/pemilih_quiz_view.dart';
 
-/// Halaman Pre-Test — membungkus [TesView] dengan data [daftarSoalPretest].
+/// Mengambil dan menampilkan pre-test yang tersedia untuk materi.
 class PretestView extends StatelessWidget {
-  const PretestView({super.key});
+  const PretestView({
+    super.key,
+    required this.idMateri,
+    this.layananQuiz,
+  });
+
+  final int idMateri;
+  final LayananQuiz? layananQuiz;
 
   @override
   Widget build(BuildContext context) {
-    return TesView(
-      judul: 'Pre-Test',
-      daftarSoal: daftarSoalPretest,
+    return PemilihQuizView(
+      idMateri: idMateri,
+      tipeTest: 'pretest',
+      layananQuiz: layananQuiz,
     );
   }
 }

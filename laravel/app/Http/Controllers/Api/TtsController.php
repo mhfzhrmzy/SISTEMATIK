@@ -35,12 +35,11 @@ class TtsController extends Controller
         }
 
         try {
-            // Ditambahkan ->withoutVerifying() agar aman dari pemblokiran SSL di localhost
-            $response = Http::withoutVerifying()
-                ->withHeaders([
-                    'xi-api-key' => $apiKey,
-                    'Content-Type' => 'application/json',
-                ])->post("https://api.elevenlabs.io/v1/text-to-speech/{$voiceId}", [
+            $response = Http::withHeaders([
+                'xi-api-key' => $apiKey,
+                'Content-Type' => 'application/json',
+            ])
+                ->post("https://api.elevenlabs.io/v1/text-to-speech/{$voiceId}", [
                     'text' => $text,
                     'model_id' => 'eleven_multilingual_v2',
                     'voice_settings' => [

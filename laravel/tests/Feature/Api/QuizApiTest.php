@@ -91,6 +91,29 @@ class QuizApiTest extends TestCase
             ->assertJsonPath('message', 'Kamu tidak memiliki akses ke materi ini.');
     }
 
+    public function test_daftar_quiz_bisa_difilter_berdasarkan_tipe_test(): void
+    {
+        $siswa = $this->buatSiswaAktif();
+        $materi = $this->buatMateri($siswa);
+        Quiz::create([
+            'id_materi' => $materi->id_materi,
+            'tipe_test' => 'pretest',
+            'tanggal' => now()->toDateString(),
+        ]);
+        Quiz::create([
+            'id_materi' => $materi->id_materi,
+            'tipe_test' => 'posttest',
+            'tanggal' => now()->addDay()->toDateString(),
+            'jam_mulai' => '08:00',
+        ]);
+
+        $this->withToken($this->tokenSiswa($siswa))
+            ->getJson("/api/siswa/materi/{$materi->id_materi}/quiz?tipe_test=pretest")
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.tipe_test', 'pretest');
+    }
+
     public function test_kerjakan_quiz_mengembalikan_soal_dan_pilihan(): void
     {
         $siswa = $this->buatSiswaAktif();
@@ -250,6 +273,25 @@ class QuizApiTest extends TestCase
             ->postJson("/api/siswa/quiz/{$quiz->id_quiz}", ['jawaban' => []])
             ->assertForbidden()
             ->assertJsonPath('message', 'Kamu tidak memiliki akses ke quiz ini.');
+    }
+
+    public function test_submit_quiz_menolak_kunci_jawaban_tidak_valid(): void
+    {
+        $siswa = $this->buatSiswaAktif();
+        $materi = $this->buatMateri($siswa);
+        $quiz = Quiz::create([
+            'id_materi' => $materi->id_materi,
+            'tipe_test' => 'pretest',
+            'tanggal' => now()->toDateString(),
+        ]);
+        $soal = $this->buatSoal($quiz, 'Pertanyaan?', 'a');
+
+        $this->withToken($this->tokenSiswa($siswa))
+            ->postJson("/api/siswa/quiz/{$quiz->id_quiz}", [
+                'jawaban' => [$soal->id_soal => 'z'],
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(["jawaban.{$soal->id_soal}"]);
     }
 
     public function test_submit_posttest_ditolak_setelah_sudah_dikerjakan(): void

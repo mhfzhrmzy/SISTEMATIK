@@ -48,6 +48,8 @@ class LayananAutentikasi {
           nisn: pengguna.nisn,
           nama: pengguna.namaLengkap,
           kelas: pengguna.labelKelas,
+          jurusan: pengguna.jurusan,
+          fotoProfil: pengguna.fotoProfil,
         );
 
         return HasilLogin(

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/header_tes.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
+import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
+import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
 
 /// Halaman Buka Materi.
 ///
@@ -20,8 +23,13 @@ import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
 /// - Responsif penuh di mobile & tablet (portrait maupun landscape).
 class BukaMateriView extends StatefulWidget {
   final ModelMateri materi;
+  final LayananMateri? layananMateri;
 
-  const BukaMateriView({super.key, required this.materi});
+  const BukaMateriView({
+    super.key,
+    required this.materi,
+    this.layananMateri,
+  });
 
   @override
   State<BukaMateriView> createState() => _BukaMateriViewState();
@@ -30,10 +38,71 @@ class BukaMateriView extends StatefulWidget {
 class _BukaMateriViewState extends State<BukaMateriView> {
   int _halamanSaatIni = 0;
   int _indeksFooter = 0;
+  late final LayananMateri _layananMateri;
+  late ModelMateri _materi;
+  bool _memuatDetail = true;
+  String? _pesanGalat;
 
-  int get _totalHalaman => widget.materi.totalHalaman;
+  int get _totalHalaman => _materi.totalHalaman == 0 ? 1 : _materi.totalHalaman;
   bool get _adalahPertama => _halamanSaatIni == 0;
   bool get _adalahTerakhir => _halamanSaatIni == _totalHalaman - 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _materi = widget.materi;
+    _layananMateri = widget.layananMateri ?? LayananMateri();
+    _muatDetail();
+  }
+
+  Future<void> _muatDetail() async {
+    setState(() {
+      _memuatDetail = true;
+      _pesanGalat = null;
+    });
+    try {
+      final detail = await _layananMateri.detail(widget.materi.id);
+      if (!mounted) return;
+      setState(() {
+        _materi = detail;
+        _halamanSaatIni = 0;
+        _memuatDetail = false;
+      });
+    } on KesalahanApi catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _pesanGalat = error.pesan;
+        _memuatDetail = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _pesanGalat = 'Gagal memuat detail materi.';
+        _memuatDetail = false;
+      });
+    }
+  }
+
+  Future<void> _unduhFileMateri() async {
+    try {
+      final bytes = await _layananMateri.unduhFile(_materi.id);
+      final url = Uri.tryParse(_materi.urlFile ?? '');
+      final namaFile = url != null && url.pathSegments.isNotEmpty
+          ? url.pathSegments.last
+          : 'materi_${_materi.id}';
+      await simpanFile(bytes, namaFile);
+    } on KesalahanApi catch (error) {
+      if (mounted) _tampilkanPesan(error.pesan);
+    } catch (_) {
+      if (mounted) _tampilkanPesan('File materi gagal diunduh.');
+    }
+  }
+
+  void _tampilkanPesan(String pesan) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(pesan)));
+  }
 
   void _halamanSebelumnya() {
     if (_adalahPertama) return;
@@ -49,7 +118,7 @@ class _BukaMateriViewState extends State<BukaMateriView> {
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${widget.materi.judul} selesai dipelajari!'),
+        content: Text('${_materi.judul} selesai dipelajari!'),
         backgroundColor: WarnaAplikasi.utama,
       ),
     );
@@ -100,7 +169,7 @@ class _BukaMateriViewState extends State<BukaMateriView> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // ── 1. Header Materi (Sama persis dengan Pre-Test & Post-Test) ──
-                HeaderTes(judul: widget.materi.judul),
+                HeaderTes(judul: _materi.judul),
 
                 // ── 2. Tombol Back ke Beranda (FIXED, tidak ikut ter-scroll) ─
                 Padding(
@@ -121,16 +190,42 @@ class _BukaMateriViewState extends State<BukaMateriView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (_pesanGalat != null)
+                          Card(
+                            child: ListTile(
+                              title: Text(_pesanGalat!),
+                              trailing: IconButton(
+                                onPressed: _muatDetail,
+                                icon: const Icon(Icons.refresh),
+                              ),
+                            ),
+                          ),
+                        if (_memuatDetail) const LinearProgressIndicator(),
                         // Label Deskripsi singkat
                         const _LabelDeskripsi(),
                         const SizedBox(height: 6),
 
                         // Container deskripsi (auto-height, responsif terhadap panjang teks)
-                        _KotakDeskripsi(deskripsi: widget.materi.deskripsi),
+                        _KotakDeskripsi(deskripsi: _materi.deskripsi),
+                        if (_materi.urlFile != null) ...[
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton.icon(
+                              onPressed: _unduhFileMateri,
+                              icon: const Icon(Icons.download),
+                              label: const Text('Unduh file materi'),
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: 14),
 
-                        // Kotak Materi PDF (FIXED ukuran A4, TANPA scroll di dalamnya)
-                        _KotakKontainerPdf(tinggi: tinggiA4),
+                        _KotakKontainerPdf(
+                          tinggi: tinggiA4,
+                          konten: _materi.halamanKonten.isEmpty
+                              ? _materi.deskripsi
+                              : _materi.halamanKonten[_halamanSaatIni],
+                        ),
                       ],
                     ),
                   ),
@@ -275,8 +370,9 @@ class _KotakDeskripsi extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 class _KotakKontainerPdf extends StatelessWidget {
   final double tinggi;
+  final String konten;
 
-  const _KotakKontainerPdf({required this.tinggi});
+  const _KotakKontainerPdf({required this.tinggi, required this.konten});
 
   @override
   Widget build(BuildContext context) {
@@ -294,6 +390,10 @@ class _KotakKontainerPdf extends StatelessWidget {
             offset: const Offset(0, 3),
           ),
         ],
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: SelectableText(konten),
       ),
     );
   }
