@@ -9,6 +9,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <style>
+        :root {
+            --text-gray-900: #1F2937;
+            --text-gray-700: #374151;
+            --text-gray-600: #4B5563;
+            --text-gray-500: #6B7280;
+        }
+        .text-gradient-gray {
+            background: linear-gradient(90deg, #1F2937, #6B7280);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: #1F2937;
+        }
         input[type="file"]::file-selector-button,
         input[type="file"]::-webkit-file-upload-button {
             background-color: #7B1038 !important;
@@ -37,10 +50,28 @@
         @if (!request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register') && !auth('admin')->check())
         <header class="sticky top-0 z-50 bg-white shadow-[0_2px_8px_rgba(123,16,56,0.10)]">
             <div class="w-full px-4 sm:px-6 lg:px-8 h-16 sm:h-[70px] flex items-center justify-between">
-                <!-- Brand -->
+                <!-- Brand / Data Diri Siswa -->
                 @if (auth('siswa')->check())
-                    <a href="{{ route('portal.materi.index') }}" class="font-bold text-lg sm:text-xl text-[#7B1038] tracking-tight hover:opacity-90 transition">
-                        Sistem Pembelajaran
+                    @php
+                        $navSiswa = auth('siswa')->user();
+                        $navKelas = $navSiswa->nama_kelas ?? $navSiswa->kelas;
+                    @endphp
+                    <a href="{{ route('portal.materi.index') }}" class="flex items-baseline gap-1.5 sm:gap-2.5 hover:opacity-90 transition min-w-0 py-1" title="Portal Siswa">
+                        <span class="font-bold text-sm sm:text-base md:text-lg text-[var(--text-gray-900)] text-gradient-gray tracking-tight truncate">
+                            {{ $navSiswa->nama_lengkap }}
+                        </span>
+                        <span class="text-xs sm:text-sm text-gray-300 font-normal select-none">|</span>
+                        <span class="text-xs sm:text-sm font-medium text-[var(--text-gray-600)] whitespace-nowrap">
+                            Kelas {{ $navKelas }}
+                        </span>
+                        <span class="text-xs sm:text-sm text-gray-300 font-normal select-none hidden sm:inline">|</span>
+                        <span class="text-xs sm:text-sm font-medium text-[var(--text-gray-600)] truncate max-w-[140px] sm:max-w-[200px] md:max-w-xs hidden sm:inline">
+                            {{ $navSiswa->jurusan }}
+                        </span>
+                        <span class="text-xs sm:text-sm text-gray-300 font-normal select-none hidden md:inline">|</span>
+                        <span class="text-xs sm:text-sm font-medium text-[var(--text-gray-600)] whitespace-nowrap hidden md:inline">
+                            {{ $navSiswa->nisn }}
+                        </span>
                     </a>
                 @else
                     <a href="{{ route('home') }}" class="font-bold text-lg sm:text-xl text-[#7B1038] tracking-tight hover:opacity-90 transition">
@@ -49,28 +80,28 @@
                 @endif
 
                 <!-- Desktop Menu -->
-                <nav class="hidden md:flex items-center gap-2 lg:gap-3 text-[13px] lg:text-[14px] font-medium text-[#5E0C2B]">
+                <nav class="hidden md:flex items-center gap-2 lg:gap-3 text-[13px] lg:text-[14px] font-medium {{ auth('siswa')->check() ? 'text-[var(--text-gray-700)]' : 'text-[#5E0C2B]' }}">
                     @if (auth('siswa')->check())
                         <a href="{{ route('portal.materi.index') }}"
-                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">
+                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[var(--text-gray-700)] hover:text-[var(--text-gray-900)] hover:bg-slate-100' }}">
                             Portal Siswa
                         </a>
                         <a href="{{ route('leaderboard.index') }}"
-                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('leaderboard.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">
+                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('leaderboard.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[var(--text-gray-700)] hover:text-[var(--text-gray-900)] hover:bg-slate-100' }}">
                             Leaderboard
                         </a>
                         <a href="{{ route('siswa.sertifikat.index') }}"
-                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('siswa.sertifikat.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">
+                           class="px-4 py-2 rounded-full transition-all duration-150 {{ request()->routeIs('siswa.sertifikat.*') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[var(--text-gray-700)] hover:text-[var(--text-gray-900)] hover:bg-slate-100' }}">
                             Sertifikat
                         </a>
                         <span class="w-px h-5 bg-[#E5CDD5] inline-block mx-1" aria-hidden="true"></span>
                         <a href="{{ route('siswa.profil') }}"
-                           class="px-3.5 py-1.5 rounded-full transition-all duration-150 {{ request()->routeIs('siswa.profil') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">
+                           class="px-3.5 py-1.5 rounded-full transition-all duration-150 {{ request()->routeIs('siswa.profil') ? 'bg-[#7B1038] text-white shadow-xs font-semibold' : 'text-[var(--text-gray-700)] hover:text-[var(--text-gray-900)] hover:bg-slate-100' }}">
                             {{ auth('siswa')->user()->nama_lengkap }}
                         </a>
                         <form action="{{ route('siswa.logout') }}" method="POST" class="inline">
                             @csrf
-                            <button type="submit" class="text-[#7B1038] hover:bg-slate-100 hover:text-[#5E0C2B] px-3.5 py-1.5 rounded-full text-sm font-semibold transition-colors duration-150">
+                            <button type="submit" class="text-[var(--text-gray-700)] hover:bg-slate-100 hover:text-[var(--text-gray-900)] px-3.5 py-1.5 rounded-full text-sm font-semibold transition-colors duration-150">
                                 Logout
                             </button>
                         </form>
@@ -90,7 +121,7 @@
                             aria-label="Buka menu navigasi"
                             aria-expanded="false"
                             aria-controls="mobile-menu"
-                            class="inline-flex items-center justify-center p-2 rounded-lg text-[#7B1038] hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#7B1038] transition">
+                            class="inline-flex items-center justify-center p-2 rounded-lg {{ auth('siswa')->check() ? 'text-[var(--text-gray-700)] hover:text-[var(--text-gray-900)]' : 'text-[#7B1038]' }} hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#7B1038] transition">
                         <svg id="hamburger-icon" class="w-6 h-6 block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -105,25 +136,25 @@
             <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-[#E5CDD5] shadow-lg px-4 py-3 space-y-1.5">
                 @if (auth('siswa')->check())
                     <a href="{{ route('portal.materi.index') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">
+                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('portal.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[var(--text-gray-700)] hover:bg-slate-100 hover:text-[var(--text-gray-900)]' }}">
                         Portal Siswa
                     </a>
                     <a href="{{ route('leaderboard.index') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('leaderboard.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">
+                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('leaderboard.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[var(--text-gray-700)] hover:bg-slate-100 hover:text-[var(--text-gray-900)]' }}">
                         Leaderboard
                     </a>
                     <a href="{{ route('siswa.sertifikat.index') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.sertifikat.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">
+                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.sertifikat.*') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[var(--text-gray-700)] hover:bg-slate-100 hover:text-[var(--text-gray-900)]' }}">
                         Sertifikat
                     </a>
                     <div class="h-px bg-[#E5CDD5] my-2"></div>
                     <a href="{{ route('siswa.profil') }}"
-                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.profil') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">
+                       class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.profil') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[var(--text-gray-700)] hover:bg-slate-100 hover:text-[var(--text-gray-900)]' }}">
                         {{ auth('siswa')->user()->nama_lengkap }}
                     </a>
                     <form action="{{ route('siswa.logout') }}" method="POST" class="pt-1">
                         @csrf
-                        <button type="submit" class="w-full flex items-center justify-center min-h-[44px] px-4 py-2.5 bg-gray-100 text-[#7B1038] hover:bg-[#7B1038] hover:text-white rounded-xl text-sm font-semibold transition">
+                        <button type="submit" class="w-full flex items-center justify-center min-h-[44px] px-4 py-2.5 bg-gray-100 text-[var(--text-gray-700)] hover:bg-[#7B1038] hover:text-white rounded-xl text-sm font-semibold transition">
                             Logout
                         </button>
                     </form>

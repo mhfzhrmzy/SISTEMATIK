@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -32,11 +33,15 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $siswa->createToken('siswa-token')->plainTextToken;
+        $masaBerlaku = (int) config('sanctum.expiration');
+        $kedaluwarsa = now()->addMinutes($masaBerlaku);
+
+        $token = $siswa->createToken('siswa-token', ['*'], $kedaluwarsa)->plainTextToken;
 
         return response()->json([
             'message' => 'Login berhasil.',
             'token' => $token,
+            'expires_at' => $kedaluwarsa->toIso8601String(),
             'role' => 'siswa',
             'user' => $this->dataPenggunaSiswa($siswa),
         ]);
@@ -88,7 +93,11 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $token = $request->user()->currentAccessToken();
+
+        if ($token instanceof PersonalAccessToken) {
+            $token->delete();
+        }
 
         return response()->json([
             'message' => 'Logout berhasil.',
@@ -178,6 +187,16 @@ class AuthController extends Controller
         }
 
         $siswa->update(['password' => $validated['password_baru']]);
+
+        // Password berubah: cabut token di perangkat lain, biarkan sesi ini tetap aktif.
+        $tokenSaatIni = $request->user()->currentAccessToken();
+        $idTokenSaatIni = $tokenSaatIni instanceof PersonalAccessToken
+            ? $tokenSaatIni->getKey()
+            : null;
+
+        $siswa->tokens()
+            ->when($idTokenSaatIni, fn ($query, $id) => $query->whereKeyNot($id))
+            ->delete();
 
         return response()->json([
             'message' => 'Password berhasil diubah.',

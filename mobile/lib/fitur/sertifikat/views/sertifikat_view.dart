@@ -6,7 +6,7 @@ import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
-import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
 
@@ -28,11 +28,12 @@ class SertifikatView extends StatefulWidget {
 }
 
 class _SertifikatViewState extends State<SertifikatView> {
-  // Daftar sertifikat — diisi dari daftarAwal jika ada, atau dummy data.
+  // Daftar sertifikat — diisi dari daftarAwal jika ada, atau dari API.
   late List<ItemSertifikat> _daftarSertifikat;
   late final LayananSertifikat _layananSertifikat;
   bool _memuat = false;
   String? _pesanGalat;
+  bool _dariCache = false;
 
   @override
   void initState() {
@@ -94,7 +95,7 @@ class _SertifikatViewState extends State<SertifikatView> {
       );
     } else if (idx == 1) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const PapanPeringkatView()),
+        MaterialPageRoute(builder: (_) => const LeaderboardView()),
       );
     }
   }
@@ -105,10 +106,11 @@ class _SertifikatViewState extends State<SertifikatView> {
       _pesanGalat = null;
     });
     try {
-      final daftar = await _layananSertifikat.daftar();
+      final hasil = await _layananSertifikat.ambilDaftarSertifikat();
       if (!mounted) return;
       setState(() {
-        _daftarSertifikat = daftar;
+        _daftarSertifikat = hasil.daftar;
+        _dariCache = hasil.dariCache;
         _memuat = false;
       });
     } on KesalahanApi catch (error) {
@@ -720,7 +722,29 @@ class _SertifikatViewState extends State<SertifikatView> {
                                 ],
                               ),
                             )
-                          else if (items.isEmpty)
+                          else if (_dariCache)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.cloud_off_outlined,
+                                    size: 16,
+                                    color: WarnaAplikasi.utama,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Menampilkan data offline (cache terakhir)',
+                                    style: TextStyle(
+                                      color: WarnaAplikasi.utama
+                                          .withValues(alpha: 0.7),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (!_memuat && _pesanGalat == null && items.isEmpty)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 36),
                               child: Center(

@@ -23,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(function (Request $request) {
             return $request->is('portal*') ? route('siswa.login') : route('admin.login');
         });
+
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

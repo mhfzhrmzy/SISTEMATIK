@@ -50,7 +50,8 @@ return [
     |
     */
 
-    'expiration' => null,
+    // Token mobile berlaku 30 hari (43.200 menit). Bisa diubah lewat .env.
+    'expiration' => env('SANCTUM_EXPIRATION', 60 * 24 * 30),
 
     /*
     |--------------------------------------------------------------------------

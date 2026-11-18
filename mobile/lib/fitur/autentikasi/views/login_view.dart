@@ -9,7 +9,10 @@ import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 
 /// Halaman Login — entry point pertama setelah aplikasi terbuka.
 class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+  /// Pesan yang langsung ditampilkan, misalnya saat sesi kedaluwarsa.
+  final String? pesanAwal;
+
+  const LoginView({super.key, this.pesanAwal});
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -21,6 +24,12 @@ class _LoginViewState extends State<LoginView> {
 
   bool _sedangMemuat = false;
   String? _pesanGalat;
+
+  @override
+  void initState() {
+    super.initState();
+    _pesanGalat = widget.pesanAwal;
+  }
 
   @override
   void dispose() {

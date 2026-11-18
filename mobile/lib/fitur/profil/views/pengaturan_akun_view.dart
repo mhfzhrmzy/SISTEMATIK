@@ -7,7 +7,7 @@ import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/fitur/profil/data/layanan_profil.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
-import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 
 /// Halaman Pengaturan Akun Siswa.
 ///
@@ -99,7 +99,7 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
         break;
       case 1:
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const PapanPeringkatView()),
+          MaterialPageRoute(builder: (_) => const LeaderboardView()),
         );
         break;
       case 2:
@@ -120,7 +120,7 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
         _kontrolerJurusan.text = pengguna.jurusan ?? '';
         _fotoProfil = pengguna.fotoProfil;
       });
-      SesiPengguna.perbaruiProfil(
+      await SesiPengguna.perbaruiProfil(
         nama: pengguna.namaLengkap,
         kelas: pengguna.labelKelas,
         jurusan: pengguna.jurusan,
@@ -159,7 +159,7 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
       }
       final pengguna = await _layananProfil.ubahNama(nama);
       if (!mounted) return;
-      SesiPengguna.perbaruiProfil(
+      await SesiPengguna.perbaruiProfil(
         nama: pengguna.namaLengkap,
         kelas: pengguna.labelKelas,
         jurusan: pengguna.jurusan,
@@ -194,7 +194,7 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
       );
       if (!mounted) return;
       setState(() => _fotoProfil = url);
-      SesiPengguna.perbaruiProfil(fotoProfil: url);
+      await SesiPengguna.perbaruiProfil(fotoProfil: url);
       _tampilkanPesan('Foto profil berhasil diperbarui.');
     } on KesalahanApi catch (error) {
       if (mounted) _tampilkanPesan(error.pesan);

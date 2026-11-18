@@ -10,13 +10,7 @@
 
     <div class="relative" id="filterWrap">
         <button type="button" id="btnFilter" aria-expanded="false"
-                class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl border transition duration-150 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 {{ $filterAktif ? 'bg-[#7B1038] text-white border-[#7B1038] shadow-xs hover:bg-[#5E0C2B]' : 'bg-white text-slate-700 border-slate-300 hover:border-[#7B1038] hover:text-[#7B1038] shadow-2xs' }}">
-            <svg class="w-4 h-4 {{ $filterAktif ? 'text-white' : 'text-[#7B1038]' }}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h8m4 0h4M4 12h4m4 0h8M4 18h10m4 0h2"/>
-                <circle cx="14" cy="6" r="2"/>
-                <circle cx="10" cy="12" r="2"/>
-                <circle cx="16" cy="18" r="2"/>
-            </svg>
+                class="inline-flex items-center px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl border transition duration-150 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 {{ $filterAktif ? 'bg-[#7B1038] text-white border-[#7B1038] shadow-xs hover:bg-[#5E0C2B]' : 'bg-white text-slate-700 border-slate-300 hover:border-[#7B1038] hover:text-[#7B1038] shadow-2xs' }}">
             <span>Filter{{ $filterAktif ? ' (Aktif)' : '' }}</span>
         </button>
 
@@ -26,7 +20,11 @@
 
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <p class="text-sm font-bold text-slate-900">Filter Tanggal Terbit</p>
-                <button type="button" id="btnTutupFilter" class="w-7 h-7 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 text-xl leading-none transition" aria-label="Tutup">&times;</button>
+                <button type="button" id="btnTutupFilter" class="w-7 h-7 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" aria-label="Tutup">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
 
             {{-- Rentang tanggal --}}
@@ -92,12 +90,13 @@
 @if ($filterAktif)
     <div class="mt-3 flex flex-wrap items-center gap-3">
         <span class="inline-flex items-center gap-2 pl-3 pr-2 py-1 text-xs font-semibold text-white bg-[#7B1038] rounded-full shadow-2xs">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M4 11h16M5 21h14a1 1 0 001-1V7a1 1 0 00-1-1H5a1 1 0 00-1 1v13a1 1 0 001 1z"/>
-            </svg>
-            {{ $fmt($dari) ?? 'Awal' }} &ndash; {{ $fmt($sampai) ?? 'Sekarang' }}
+            <span>{{ $fmt($dari) ?? 'Awal' }} &ndash; {{ $fmt($sampai) ?? 'Sekarang' }}</span>
             <a href="{{ route('siswa.sertifikat.index') }}" title="Hapus filter"
-            class="w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-[#5E0C2B] text-white text-xs">&times;</a>
+            class="w-4 h-4 inline-flex items-center justify-center rounded-full hover:bg-[#5E0C2B] text-white">
+                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </a>
         </span>
         <span class="text-xs font-medium text-slate-500">{{ $sertifikat->count() }} sertifikat ditemukan</span>
     </div>

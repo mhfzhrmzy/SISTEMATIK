@@ -18,17 +18,18 @@ class ItemSertifikat {
 
   factory ItemSertifikat.fromJson(Map<String, dynamic> json) {
     final id = json['id_sertifikat'];
-    final tanggal = DateTime.tryParse('${json['tanggal_terbit']}');
-    final kategori = json['kategori']?.toString();
+    final tanggal =
+        DateTime.tryParse('${json['tanggal_terbit'] ?? json['tanggal']}');
+    final kategori = (json['kategori'] ?? json['label'])?.toString();
     return ItemSertifikat(
       id: id is num ? id.toInt() : int.tryParse('$id'),
       label: kategori == null || kategori.isEmpty ? 'Sertifikat' : kategori,
-      judul: (json['judul_sertifikat'] ?? '').toString(),
+      judul: (json['judul_sertifikat'] ?? json['judul'] ?? '').toString(),
       tanggalTerbit: tanggal == null
           ? 'Tanggal terbit tidak tersedia'
           : 'Diterbitkan pada: ${_formatTanggal(tanggal)}',
       tanggal: tanggal ?? DateTime(1970),
-      urlFile: json['file_url']?.toString(),
+      urlFile: (json['file_url'] ?? json['url_file'])?.toString(),
     );
   }
 

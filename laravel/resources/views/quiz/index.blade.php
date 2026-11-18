@@ -1,59 +1,59 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Quiz System</title>
-    <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f8fafc; color: #1e293b; margin: 0; padding: 2rem; }
-        .container { max-width: 1100px; margin: 0 auto; background: #ffffff; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        h2 { margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem; }
-        .alert { padding: 0.85rem 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.95rem; }
-        .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-        .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-        .form-card { background: #f1f5f9; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: #475569; }
-        .form-group input, .form-group select, .form-group textarea { padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; }
-        .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.2s; }
-        .btn-primary { background: #2563eb; color: #fff; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-danger { background: #ef4444; color: #fff; }
-        .btn-danger:hover { background: #dc2626; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: #fff; border-radius: 8px; overflow: hidden; }
-        th, td { border: 1px solid #e2e8f0; padding: 0.85rem; text-align: left; font-size: 0.9rem; }
-        th { background-color: #f8fafc; font-weight: 600; color: #334155; }
-        .badge { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
-        .badge-pre { background: #e0e7ff; color: #3730a3; }
-        .badge-post { background: #fef3c7; color: #92400e; }
-    </style>
-</head>
-<body>
+@extends('layouts.app')
 
-<div class="container">
-    <h2>Kelola Data Quiz</h2>
+@section('title', 'Kelola Data Quiz')
 
+@section('content')
+<div class="space-y-6">
+    <!-- Header Page -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                Kelola Data Quiz
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                Manajemen quiz pre-test dan post-test untuk bahan ajar siswa.
+            </p>
+        </div>
+    </div>
+
+    <!-- Alert Notifikasi -->
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm flex items-center gap-2">
+            <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>{{ session('success') }}</span>
+        </div>
     @endif
     @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+        <div class="rounded-xl bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 text-sm flex items-center gap-2">
+            <svg class="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span>{{ session('error') }}</span>
+        </div>
     @endif
 
-    <div class="form-card">
-        <h3 style="margin-top:0; font-size:1.1rem;">Tambah Quiz Baru</h3>
-        <form action="{{ route('quiz.store') }}" method="POST">
+    <!-- Form Tambah Quiz Baru -->
+    <div class="bg-white rounded-2xl p-6 shadow-xs border border-slate-200/80">
+        <h2 class="text-base sm:text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="w-2 h-5 bg-[#7B1038] rounded-full inline-block"></span>
+            Tambah Quiz Baru
+        </h2>
+
+        <form action="{{ route('quiz.store') }}" method="POST" class="space-y-4">
             @csrf
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>ID Quiz</label>
-                    <input type="text" name="id_quiz" placeholder="Contoh: QZ001" required value="{{ old('id_quiz') }}">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">ID Quiz</label>
+                    <input type="text" name="id_quiz" placeholder="Contoh: QZ001" required value="{{ old('id_quiz') }}"
+                           class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038] focus:border-transparent transition">
                 </div>
-                <div class="form-group">
-                    <label>Guru (NIP)</label>
-                    <select name="nip" required>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Guru (NIP)</label>
+                    <select name="nip" required
+                            class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038] focus:border-transparent transition">
                         <option value="">-- Pilih Guru --</option>
                         @foreach($gurus as $guru)
                             <option value="{{ $guru->nip }}" {{ old('nip') == $guru->nip ? 'selected' : '' }}>
@@ -62,9 +62,11 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Materi</label>
-                    <select name="id_materi" required>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Materi</label>
+                    <select name="id_materi" required
+                            class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038] focus:border-transparent transition">
                         <option value="">-- Pilih Materi --</option>
                         @foreach($materis as $materi)
                             <option value="{{ $materi->id_materi }}" {{ old('id_materi') == $materi->id_materi ? 'selected' : '' }}>
@@ -73,82 +75,125 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Tipe Test</label>
-                    <select name="tipe_test" required>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tipe Test</label>
+                    <select name="tipe_test" required
+                            class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038] focus:border-transparent transition">
                         <option value="pre_test" {{ old('tipe_test') == 'pre_test' ? 'selected' : '' }}>Pre Test</option>
                         <option value="post_test" {{ old('tipe_test') == 'post_test' ? 'selected' : '' }}>Post Test</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Poin</label>
-                    <input type="number" name="poin" min="0" required value="{{ old('poin', 100) }}">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Poin</label>
+                    <input type="number" name="poin" min="0" required value="{{ old('poin', 100) }}"
+                           class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038] focus:border-transparent transition">
                 </div>
-                <div class="form-group">
-                    <label>Timer (Menit)</label>
-                    <input type="number" name="timer" min="1" required value="{{ old('timer', 30) }}">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Timer (Menit)</label>
+                    <input type="number" name="timer" min="1" required value="{{ old('timer', 30) }}"
+                           class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038] focus:border-transparent transition">
                 </div>
-                <div class="form-group">
-                    <label>Tanggal</label>
-                    <input type="date" name="tanggal" required value="{{ old('tanggal') }}">
+
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Tanggal</label>
+                    <input type="date" name="tanggal" required value="{{ old('tanggal') }}"
+                           class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038] focus:border-transparent transition">
                 </div>
             </div>
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label>Kunci Jawaban</label>
-                <textarea name="kunci_jawaban" rows="2" placeholder="Masukkan kunci jawaban..." required>{{ old('kunci_jawaban') }}</textarea>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kunci Jawaban</label>
+                <textarea name="kunci_jawaban" rows="2" placeholder="Masukkan kunci jawaban..." required
+                          class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7B1038] focus:border-transparent transition">{{ old('kunci_jawaban') }}</textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Simpan Quiz</button>
+
+            <div class="pt-2">
+                <button type="submit"
+                        class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-semibold px-5 py-2.5 rounded-xl text-sm shadow-xs transition inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Simpan Quiz
+                </button>
+            </div>
         </form>
     </div>
 
-    <h3>Daftar Quiz</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>ID Quiz</th>
-                <th>Guru / NIP</th>
-                <th>Materi</th>
-                <th>Tipe</th>
-                <th>Poin</th>
-                <th>Timer</th>
-                <th>Tanggal</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($quizzes as $q)
-                <tr>
-                    <td><strong>{{ $q->id_quiz }}</strong></td>
-                    <td>{{ $q->guru->nama_lengkap ?? $q->nip }}</td>
-                    <td>{{ $q->materi->judul_materi ?? $q->id_materi }}</td>
-                    <td>
-                        <span class="badge {{ $q->tipe_test == 'pre_test' ? 'badge-pre' : 'badge-post' }}">
-                            {{ str_replace('_', ' ', $q->tipe_test) }}
-                        </span>
-                    </td>
-                    <td>{{ $q->poin }}</td>
-                    <td>{{ $q->timer }} Menit</td>
-                    <td>{{ $q->tanggal }}</td>
-                    <td>
-                        <form action="{{ route('quiz.destroy', $q->id_quiz) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus quiz ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="8" style="text-align: center; color: #64748b;">Belum ada data quiz.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+    <!-- Tabel Daftar Quiz -->
+    <div class="bg-white rounded-2xl shadow-xs border border-slate-200/80 overflow-hidden">
+        <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="text-base sm:text-lg font-bold text-slate-900">
+                Daftar Quiz
+            </h2>
+        </div>
 
-    <div style="margin-top: 1rem;">
-        {{ $quizzes->links() }}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-700">
+                <thead class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    <tr>
+                        <th class="px-5 py-3.5">ID Quiz</th>
+                        <th class="px-5 py-3.5">Guru / NIP</th>
+                        <th class="px-5 py-3.5">Materi</th>
+                        <th class="px-5 py-3.5">Tipe</th>
+                        <th class="px-5 py-3.5 text-center">Poin</th>
+                        <th class="px-5 py-3.5 text-center">Timer</th>
+                        <th class="px-5 py-3.5">Tanggal</th>
+                        <th class="px-5 py-3.5 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($quizzes as $q)
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="px-5 py-4 font-bold text-slate-900">{{ $q->id_quiz }}</td>
+                            <td class="px-5 py-4">{{ $q->guru->nama_lengkap ?? $q->nip }}</td>
+                            <td class="px-5 py-4 font-medium">{{ $q->materi->judul_materi ?? $q->id_materi }}</td>
+                            <td class="px-5 py-4">
+                                @if($q->tipe_test == 'pre_test')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                        PRE TEST
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                        POST TEST
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-5 py-4 text-center font-semibold">{{ $q->poin }}</td>
+                            <td class="px-5 py-4 text-center">{{ $q->timer }} Menit</td>
+                            <td class="px-5 py-4 text-slate-600">{{ $q->tanggal }}</td>
+                            <td class="px-5 py-4 text-center">
+                                <form action="{{ route('quiz.destroy', $q->id_quiz) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus quiz ini?')" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="inline-flex items-center gap-1 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-lg transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Hapus
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="px-5 py-10 text-center text-slate-400">
+                                Belum ada data quiz.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if(method_exists($quizzes, 'links'))
+            <div class="p-4 border-t border-slate-100">
+                {{ $quizzes->links() }}
+            </div>
+        @endif
     </div>
 </div>
-
-</body>
-</html>
+@endsection
