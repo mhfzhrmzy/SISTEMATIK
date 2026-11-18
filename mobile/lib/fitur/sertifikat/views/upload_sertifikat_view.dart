@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
-import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/views/sertifikat_view.dart';
@@ -126,7 +126,7 @@ class _UploadSertifikatViewState extends State<UploadSertifikatView>
       );
     } else if (idx == 1) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const PapanPeringkatView()),
+        MaterialPageRoute(builder: (_) => const LeaderboardView()),
       );
     }
   }

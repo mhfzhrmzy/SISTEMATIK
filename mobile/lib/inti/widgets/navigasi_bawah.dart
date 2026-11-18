@@ -15,7 +15,7 @@ import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 /// ```
 class NavigasiBawah extends StatelessWidget {
   /// Index tab yang sedang aktif:
-  /// 0 = Home, 1 = Peringkat (Trophy), 2 = Profil
+  /// 0 = Home, 1 = Leaderboard (Trophy), 2 = Profil
   final int indeksSaatIni;
 
   /// Callback saat item di-tap. Jika null, navigasi dihandle secara internal.
@@ -59,7 +59,7 @@ class NavigasiBawah extends StatelessWidget {
                 _ItemNavigasi(
                   ikon: Icons.emoji_events_outlined,
                   ikonAktif: Icons.emoji_events_rounded,
-                  label: 'Peringkat',
+                  label: 'Leaderboard',
                   aktif: indeksSaatIni == 1,
                   saatDiketuk: () => (saatDiketuk ?? (_) {})(1),
                 ),

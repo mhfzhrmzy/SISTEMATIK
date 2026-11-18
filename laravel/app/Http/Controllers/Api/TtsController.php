@@ -16,8 +16,8 @@ class TtsController extends Controller
         ]);
 
         $text = $validated['text'];
-        $apiKey = env('ELEVENLABS_API_KEY');
-        $voiceId = env('ELEVENLABS_VOICE_ID', 'pNInz6obpgDQGcFmaJgB');
+        $apiKey = config('services.elevenlabs.key') ?: env('ELEVENLABS_API_KEY');
+        $voiceId = config('services.elevenlabs.voice_id') ?: env('ELEVENLABS_VOICE_ID', 'pNInz6obpgDQGcFmaJgB');
 
         $cacheKey = 'tts/'.md5($text.$voiceId).'.mp3';
 

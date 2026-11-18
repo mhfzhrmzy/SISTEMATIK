@@ -69,7 +69,7 @@
                 <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937] mt-1">{{ $quiz->materi->judul_materi ?? 'Quiz' }}</h1>
                 @if($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap())
                     <p class="text-xs text-[#6B7280] mt-1 flex items-center gap-1.5">
-                        <span>📅 Waktu Pengerjaan:</span>
+                        <span class="font-medium">Waktu Pengerjaan:</span>
                         <strong>{{ $quiz->waktuMulai()->format('H:i') }} – {{ $quiz->waktuSelesai()->format('H:i') }} WIB</strong>
                     </p>
                 @endif
@@ -118,7 +118,11 @@
     {{-- Overlay waktu habis --}}
     <div id="waktu-habis-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden items-center justify-center">
         <div class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm mx-4">
-            <div class="text-4xl mb-3">⏳</div>
+            <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
             <h3 class="text-lg font-bold text-[#1F2937] mb-1">Waktu Habis</h3>
             <p class="text-xs sm:text-sm text-[#6B7280]">Waktu pengerjaan telah berakhir. Jawaban Anda sedang dikirim otomatis...</p>
         </div>
@@ -127,11 +131,15 @@
     {{-- Form / Soal --}}
     @if ($quiz->soal->isEmpty())
         <div class="bg-white rounded-2xl shadow-xs p-10 text-center">
-            <div class="text-4xl mb-3">📭</div>
+            <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+            </div>
             <p class="text-sm font-semibold text-[#1F2937]">Belum ada soal pada quiz ini.</p>
             <a href="{{ route('portal.quiz.index', $quiz->materi) }}"
-               class="inline-block mt-4 text-xs font-semibold text-[#7B1038] hover:underline">
-                ← Kembali ke daftar quiz
+               class="inline-flex items-center mt-4 text-xs font-semibold text-[#7B1038] hover:underline">
+                <span>Kembali ke daftar quiz</span>
             </a>
         </div>
     @else
@@ -204,8 +212,8 @@
                     <div class="flex justify-between items-center pt-4 border-t border-gray-100 gap-3">
                         @if ($index > 0)
                             <button type="button" onclick="prevSoal()"
-                                    class="nav-btn flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-[#5E0C2B] text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition">
-                                ← Sebelumnya
+                                    class="nav-btn flex items-center bg-gray-100 hover:bg-gray-200 text-[#5E0C2B] text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition">
+                                <span>Sebelumnya</span>
                             </button>
                         @else
                             <div></div>
@@ -213,13 +221,13 @@
 
                         @if ($index < $quiz->soal->count() - 1)
                             <button type="button" onclick="nextSoal()"
-                                    class="nav-btn flex items-center gap-1.5 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
-                                Selanjutnya →
+                                    class="nav-btn flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
+                                <span>Selanjutnya</span>
                             </button>
                         @else
                             <button type="submit"
-                                    class="nav-btn flex items-center gap-1.5 bg-[#1F9254] hover:bg-[#167442] text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-xl shadow-xs transition">
-                                🚀 Kumpulkan Jawaban
+                                    class="nav-btn flex items-center bg-[#1F9254] hover:bg-[#167442] text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-xl shadow-xs transition">
+                                <span>Kumpulkan Jawaban</span>
                             </button>
                         @endif
                     </div>

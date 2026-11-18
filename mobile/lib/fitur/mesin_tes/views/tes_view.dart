@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
+import 'package:pretest_posttest_app/inti/layanan/layanan_tts.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/models/soal.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/data/layanan_quiz.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/layanan_tts.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/opsi_jawaban.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/baris_timer_audio.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/kartu_soal.dart';
@@ -24,7 +24,6 @@ class TesView extends StatefulWidget {
   final int timerMenit;
   final int? sisaDetik;
   final LayananQuiz? layananQuiz;
-  final LayananTts? layananTts;
 
   const TesView({
     super.key,
@@ -34,7 +33,6 @@ class TesView extends StatefulWidget {
     this.timerMenit = 30,
     this.sisaDetik,
     this.layananQuiz,
-    this.layananTts,
   });
 
   @override
@@ -46,7 +44,6 @@ class _TesViewState extends State<TesView> {
   late List<int?> _jawabanTerpilih;
   final ScrollController _kontrolerScroll = ScrollController();
   bool _sedangMengirim = false;
-  LayananTts? _layananTts;
 
   @override
   void initState() {
@@ -58,9 +55,8 @@ class _TesViewState extends State<TesView> {
 
   @override
   void dispose() {
+    unawaited(LayananTts.instance.hentikan());
     _kontrolerScroll.dispose();
-    final tts = _layananTts;
-    if (tts != null) unawaited(tts.tutup());
     super.dispose();
   }
 
@@ -74,6 +70,7 @@ class _TesViewState extends State<TesView> {
 
   void _kembali() {
     if (_indeksSaatIni == 0) return;
+    unawaited(LayananTts.instance.hentikan());
     setState(() {
       _indeksSaatIni -= 1;
     });
@@ -82,6 +79,7 @@ class _TesViewState extends State<TesView> {
 
   void _lanjut() {
     if (_indeksSaatIni >= widget.daftarSoal.length - 1) return;
+    unawaited(LayananTts.instance.hentikan());
     setState(() {
       _indeksSaatIni += 1;
     });
@@ -98,10 +96,11 @@ class _TesViewState extends State<TesView> {
     if (!_semuaTerjawab || _sedangMengirim) return;
     final idQuiz = widget.idQuiz;
     if (idQuiz == null) {
-      _tampilkanPesan('Identitas quiz tidak tersedia.');
+      tampilkanPesan('Identitas quiz tidak tersedia.');
       return;
     }
 
+    unawaited(LayananTts.instance.hentikan());
     setState(() => _sedangMengirim = true);
     try {
       final hasil = await (widget.layananQuiz ?? LayananQuiz()).kirimJawaban(
@@ -145,30 +144,40 @@ class _TesViewState extends State<TesView> {
       );
       if (selesai == true && mounted) Navigator.of(context).pop();
     } on KesalahanApi catch (error) {
-      if (mounted) {
-        setState(() => _sedangMengirim = false);
-        _tampilkanPesan(error.pesan);
-      }
+      if (!mounted) return;
+      setState(() => _sedangMengirim = false);
+      tampilkanPesan(error.pesan);
     } catch (_) {
-      if (mounted) {
-        setState(() => _sedangMengirim = false);
-        _tampilkanPesan('Jawaban gagal dikirim. Silakan coba lagi.');
-      }
+      if (!mounted) return;
+      setState(() => _sedangMengirim = false);
+      tampilkanPesan('Jawaban gagal dikirim. Silakan coba lagi.');
     }
   }
 
-  Future<void> _putarAudio(String teks) async {
+  String _susunTeksSoal(Soal soal) {
+    final buffer = StringBuffer('Soal nomor ${_indeksSaatIni + 1}. ');
+    if (soal.kode != null && soal.kode!.trim().isNotEmpty) {
+      buffer.write('Perhatikan kode program berikut: ${soal.kode}. ');
+    }
+    buffer.write('${soal.pertanyaan}. ');
+    for (var i = 0; i < soal.pilihan.length; i++) {
+      final label = i < 4 ? String.fromCharCode(65 + i) : '${i + 1}';
+      buffer.write('Pilihan $label, ${soal.pilihan[i]}. ');
+    }
+    return buffer.toString();
+  }
+
+  Future<void> _putarAudioSoal(Soal soal) async {
     try {
-      _layananTts ??= widget.layananTts ?? LayananTts();
-      await _layananTts!.ucapkan(teks);
+      await LayananTts.instance.togglePutar(_susunTeksSoal(soal));
     } on KesalahanApi catch (error) {
-      if (mounted) _tampilkanPesan(error.pesan);
+      if (mounted) tampilkanPesan(error.pesan);
     } catch (_) {
-      if (mounted) _tampilkanPesan('Audio gagal diputar.');
+      if (mounted) tampilkanPesan('Audio gagal diputar.');
     }
   }
 
-  void _tampilkanPesan(String pesan) {
+  void tampilkanPesan(String pesan) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(pesan)));
@@ -235,7 +244,7 @@ class _TesViewState extends State<TesView> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         BarisTimerAudio(
-                          saatPutarAudio: () => _putarAudio(soal.pertanyaan),
+                          saatPutarAudio: () => _putarAudioSoal(soal),
                           labelTimer: '${widget.timerMenit} Menit',
                         ),
                         const SizedBox(height: 14),
@@ -248,7 +257,9 @@ class _TesViewState extends State<TesView> {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: OpsiJawaban(
-                              label: _labelOpsi[i],
+                              label: i < _labelOpsi.length
+                                  ? _labelOpsi[i]
+                                  : '${i + 1}',
                               teks: soal.pilihan[i],
                               terpilih: terpilih == i,
                               saatDiketuk: () => _pilihJawaban(i),

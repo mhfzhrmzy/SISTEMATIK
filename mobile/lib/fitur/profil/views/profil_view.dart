@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
-import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/data/layanan_autentikasi.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/views/login_view.dart';
-import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/pengaturan_akun_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/data/layanan_profil.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/views/sertifikat_view.dart';
@@ -20,10 +20,10 @@ import 'package:pretest_posttest_app/fitur/sertifikat/views/sertifikat_view.dart
 ///
 /// Navigasi:
 /// - Tab Home  -> kembali ke Beranda (root route)
-/// - Tab Peringkat -> [PapanPeringkatView]
+/// - Tab Leaderboard -> [LeaderboardView]
 /// - Sertifikat & Portofolio -> [SertifikatView]
 /// - Keluar Akun -> dialog konfirmasi, lalu kembali ke [LoginView]
-class ProfilView extends StatelessWidget {
+class ProfilView extends StatefulWidget {
   /// Nama lengkap pengguna. Jika kosong, diambil dari sesi login.
   final String? nama;
 
@@ -38,9 +38,14 @@ class ProfilView extends StatelessWidget {
     this.layananProfil,
   });
 
-  String get _nama => SesiPengguna.nama ?? nama ?? 'Siswa';
+  @override
+  State<ProfilView> createState() => _ProfilViewState();
+}
 
-  String get _kelas => SesiPengguna.kelas ?? kelas ?? 'Kelas -';
+class _ProfilViewState extends State<ProfilView> {
+  String get _nama => widget.nama ?? SesiPengguna.nama ?? 'Siswa';
+
+  String get _kelas => widget.kelas ?? SesiPengguna.kelas ?? 'Kelas -';
 
   // ── Warna khusus halaman Profil ────────────────────────────────────────
   static const Color _warnaLatarAvatar = Color(0xFFBA7D8E);
@@ -56,7 +61,7 @@ class ProfilView extends StatelessWidget {
         break;
       case 1:
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const PapanPeringkatView()),
+          MaterialPageRoute(builder: (_) => const LeaderboardView()),
         );
         break;
       case 2:
@@ -108,27 +113,35 @@ class ProfilView extends StatelessWidget {
 
     if (yakin != true || !context.mounted) return;
 
+    final navigator = Navigator.of(context);
+    final navigatorRoot = Navigator.of(context, rootNavigator: true);
+    var dialogMasihTerbuka = true;
+
+    // Tampilkan indikator selama token dicabut di server.
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(color: WarnaAplikasi.utama),
+      ),
+    ).whenComplete(() => dialogMasihTerbuka = false);
+
     try {
-      await (layananProfil ?? LayananProfil()).keluar();
-      SesiPengguna.hapus();
-    } on KesalahanApi catch (error) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(error.pesan)));
-      return;
-    } catch (_) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(content: Text('Gagal keluar dari akun.')),
-        );
-      return;
+      if (widget.layananProfil != null) {
+        await widget.layananProfil!.keluar();
+        await SesiPengguna.hapus();
+      } else {
+        await const LayananAutentikasi().keluar();
+      }
+    } finally {
+      if (mounted && dialogMasihTerbuka) {
+        navigatorRoot.pop();
+      }
     }
 
-    if (!context.mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
+    if (!mounted) return;
+
+    navigator.pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const LoginView()),
       (route) => false,
     );
@@ -183,7 +196,7 @@ class ProfilView extends StatelessWidget {
                                     MaterialPageRoute(
                                       builder: (_) => PengaturanAkunView(
                                         namaAwal: _nama,
-                                        layananProfil: layananProfil,
+                                        layananProfil: widget.layananProfil,
                                       ),
                                     ),
                                   ),

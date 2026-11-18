@@ -7,6 +7,7 @@ import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 
 /// Halaman Buka Materi.
 ///
@@ -42,10 +43,18 @@ class _BukaMateriViewState extends State<BukaMateriView> {
   late ModelMateri _materi;
   bool _memuatDetail = true;
   String? _pesanGalat;
+  bool _sedangMenyimpan = false;
 
   int get _totalHalaman => _materi.totalHalaman == 0 ? 1 : _materi.totalHalaman;
   bool get _adalahPertama => _halamanSaatIni == 0;
   bool get _adalahTerakhir => _halamanSaatIni == _totalHalaman - 1;
+  String get _kontenHalamanIni {
+    if (_materi.halamanKonten.isNotEmpty &&
+        _halamanSaatIni < _materi.halamanKonten.length) {
+      return _materi.halamanKonten[_halamanSaatIni];
+    }
+    return _materi.deskripsi;
+  }
 
   @override
   void initState() {
@@ -104,34 +113,55 @@ class _BukaMateriViewState extends State<BukaMateriView> {
       ..showSnackBar(SnackBar(content: Text(pesan)));
   }
 
-  void _halamanSebelumnya() {
+  void halamanSebelumnya() {
     if (_adalahPertama) return;
     setState(() => _halamanSaatIni--);
   }
 
-  void _halamanBerikutnya() {
+  void halamanBerikutnya() {
     if (_adalahTerakhir) return;
     setState(() => _halamanSaatIni++);
   }
 
-  void _selesai() {
-    Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${_materi.judul} selesai dipelajari!'),
-        backgroundColor: WarnaAplikasi.utama,
-      ),
-    );
+  Future<void> selesai() async {
+    if (_sedangMenyimpan) return;
+    setState(() => _sedangMenyimpan = true);
+
+    try {
+      final isSelesai = await _layananMateri.tandaiSelesai(_materi.id);
+      if (!mounted) return;
+      Navigator.of(context).pop(isSelesai);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isSelesai
+                ? '${_materi.judul} selesai dipelajari!'
+                : 'Status selesai pada ${_materi.judul} dibatalkan.',
+          ),
+          backgroundColor: WarnaAplikasi.utama,
+        ),
+      );
+    } on KesalahanApi catch (error) {
+      if (!mounted) return;
+      setState(() => _sedangMenyimpan = false);
+      _tampilkanPesan(error.pesan);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _sedangMenyimpan = false);
+      _tampilkanPesan('Gagal memperbarui status materi.');
+    }
   }
 
-  Future<void> _saatFooterDiketuk(int idx) async {
+  Future<void> saatFooterDiketuk(int idx) async {
     if (idx == 0) {
       Navigator.of(context).pop();
     } else if (idx == 1) {
       setState(() => _indeksFooter = idx);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Halaman Peringkat (coming soon)')),
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const LeaderboardView()),
       );
+      if (!mounted) return;
+      setState(() => _indeksFooter = 0);
     } else if (idx == 2) {
       setState(() => _indeksFooter = idx);
       await Navigator.of(context).push(
@@ -148,7 +178,7 @@ class _BukaMateriViewState extends State<BukaMateriView> {
       backgroundColor: Colors.white,
       bottomNavigationBar: NavigasiBawah(
         indeksSaatIni: _indeksFooter,
-        saatDiketuk: _saatFooterDiketuk,
+        saatDiketuk: saatFooterDiketuk,
       ),
       // SafeArea top: false agar HeaderTes full-bleed ke atas layar di belakang status bar
       body: SafeArea(
@@ -222,9 +252,7 @@ class _BukaMateriViewState extends State<BukaMateriView> {
 
                         _KotakKontainerPdf(
                           tinggi: tinggiA4,
-                          konten: _materi.halamanKonten.isEmpty
-                              ? _materi.deskripsi
-                              : _materi.halamanKonten[_halamanSaatIni],
+                          konten: _kontenHalamanIni,
                         ),
                       ],
                     ),
@@ -243,13 +271,13 @@ class _BukaMateriViewState extends State<BukaMateriView> {
                         totalHalaman: _totalHalaman,
                         adalahPertama: _adalahPertama,
                         adalahTerakhir: _adalahTerakhir,
-                        saatSebelumnya: _halamanSebelumnya,
-                        saatBerikutnya: _halamanBerikutnya,
+                        saatSebelumnya: halamanSebelumnya,
+                        saatBerikutnya: halamanBerikutnya,
                       ),
                       const SizedBox(height: 10),
 
                       // Tombol Selesai maroon
-                      _TombolSelesai(saatDitekan: _selesai),
+                      _TombolSelesai(saatDitekan: selesai),
                     ],
                   ),
                 ),
@@ -379,6 +407,7 @@ class _KotakKontainerPdf extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: tinggi,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -393,7 +422,15 @@ class _KotakKontainerPdf extends StatelessWidget {
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: SelectableText(konten),
+        physics: const BouncingScrollPhysics(),
+        child: SelectableText(
+          konten.isEmpty ? 'Konten materi tidak tersedia.' : konten,
+          style: TextStyle(
+            fontSize: 13.5,
+            color: Colors.grey.shade800,
+            height: 1.6,
+          ),
+        ),
       ),
     );
   }

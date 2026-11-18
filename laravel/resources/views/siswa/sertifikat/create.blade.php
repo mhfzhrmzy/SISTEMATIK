@@ -103,10 +103,7 @@
                 </label>
                 <div class="relative">
                     <label for="file_sertifikat" class="flex items-center gap-3 w-full p-2 bg-gray-50 hover:bg-gray-100/70 border border-gray-200 rounded-xl cursor-pointer hover:border-[#7B1038] transition group shadow-xs">
-                        <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#7B1038] group-hover:bg-[#5E0C2B] text-white text-xs font-bold rounded-lg transition duration-150 shadow-xs shrink-0 select-none">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
+                        <span class="inline-flex items-center px-4 py-2 bg-[#7B1038] group-hover:bg-[#5E0C2B] text-white text-xs font-bold rounded-lg transition duration-150 shadow-xs shrink-0 select-none">
                             Pilih File
                         </span>
                         <span id="file-chosen-text" class="text-xs text-[#6B7280] truncate font-medium flex-1">
@@ -122,7 +119,7 @@
                         id="file_sertifikat" 
                         accept=".pdf,.jpg,.jpeg,.png"
                         class="sr-only"
-                        onchange="const f = this.files[0]; const t = document.getElementById('file-chosen-text'); if(f) { t.innerHTML = '<span class=\'text-emerald-700 font-bold\'>✓ ' + f.name + '</span> <span class=\'text-slate-400 font-normal\'>(' + (f.size/1024/1024).toFixed(2) + ' MB)</span>'; } else { t.textContent = 'Belum ada berkas dipilih'; }"
+                        onchange="const f = this.files[0]; const t = document.getElementById('file-chosen-text'); if(f) { t.innerHTML = '<span class=\'inline-flex items-center text-emerald-700 font-bold\'><span>' + f.name + '</span></span> <span class=\'text-slate-400 font-normal\'>(' + (f.size/1024/1024).toFixed(2) + ' MB)</span>'; } else { t.textContent = 'Belum ada berkas dipilih'; }"
                         required
                     >
                 </div>

@@ -7,10 +7,10 @@ import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/views/buka_materi_view.dart';
-import 'package:pretest_posttest_app/fitur/pretest/pretest_view.dart';
-import 'package:pretest_posttest_app/fitur/posttest/posttest_view.dart';
+import 'package:pretest_posttest_app/fitur/pretest/views/pretest_view.dart';
+import 'package:pretest_posttest_app/fitur/posttest/views/posttest_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
-import 'package:pretest_posttest_app/fitur/papan_peringkat/views/papan_peringkat_view.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 
 /// Halaman Beranda / Dashboard utama setelah pengguna login.
 ///
@@ -45,14 +45,14 @@ class _BerandaViewState extends State<BerandaView> {
 
   String get _namaPengguna => SesiPengguna.nama ?? widget.nama ?? 'Siswa';
 
-  String get _kelasPengguna => SesiPengguna.kelas ?? widget.kelas ?? 'Kelas -';
-
   @override
   void initState() {
     super.initState();
     _layananMateri = widget.layananMateri ?? LayananMateri();
     _materiFuture = _layananMateri.daftar();
   }
+
+  String get _kelasPengguna => SesiPengguna.kelas ?? widget.kelas ?? 'Kelas -';
 
   void _muatUlangMateri() {
     setState(() => _materiFuture = _layananMateri.daftar());
@@ -63,7 +63,7 @@ class _BerandaViewState extends State<BerandaView> {
 
     setState(() => _indeksFooter = idx);
     final Widget tujuan = idx == 1
-        ? const PapanPeringkatView()
+        ? const LeaderboardView()
         : ProfilView(nama: _namaPengguna, kelas: _kelasPengguna);
 
     await Navigator.of(context).push(
@@ -88,10 +88,11 @@ class _BerandaViewState extends State<BerandaView> {
             ),
           );
         },
-        saatBukaMateri: () {
-          Navigator.of(ctx).push(
+        saatBukaMateri: () async {
+          await Navigator.of(ctx).push(
             MaterialPageRoute(builder: (_) => BukaMateriView(materi: materi)),
           );
+          if (mounted) _muatUlangMateri();
         },
         saatPostTest: () {
           Navigator.of(ctx).push(
@@ -497,7 +498,7 @@ class _KartuMateri extends StatelessWidget {
                 ),
               ),
               child: Text(
-                materi.kelas,
+                materi.labelTampilanKelas,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
