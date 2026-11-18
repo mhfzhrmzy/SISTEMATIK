@@ -179,6 +179,57 @@ class SertifikatApiTest extends TestCase
             ->assertJsonPath('message', 'Anda tidak memiliki akses ke sertifikat ini.');
     }
 
+    public function test_upload_sertifikat_menolak_file_bukan_pdf(): void
+    {
+        Storage::fake('public');
+        $jurusan = Jurusan::firstOrCreate(['nama_jurusan' => 'Teknik Komputer & Jaringan']);
+        $kelas = Kelas::create([
+            'id_jurusan' => $jurusan->id_jurusan,
+            'tingkat' => 10,
+            'rombel' => 1,
+            'tahun' => '2026',
+        ]);
+        $siswa = $this->buatSiswa($kelas, '0051234561', 'Andi Pratama');
+
+        $response = $this->withToken($this->tokenSiswa($siswa))
+            ->postJson('/api/siswa/sertifikat', [
+                'judul_sertifikat' => 'Sertifikat Gambar',
+                'file_sertifikat' => \Illuminate\Http\UploadedFile::fake()->image('foto.jpg'),
+            ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['file_sertifikat']);
+        $this->assertDatabaseCount('sertifikat', 0);
+    }
+
+    public function test_upload_sertifikat_dengan_pdf_berhasil(): void
+    {
+        Storage::fake('public');
+        $jurusan = Jurusan::firstOrCreate(['nama_jurusan' => 'Teknik Komputer & Jaringan']);
+        $kelas = Kelas::create([
+            'id_jurusan' => $jurusan->id_jurusan,
+            'tingkat' => 10,
+            'rombel' => 1,
+            'tahun' => '2026',
+        ]);
+        $siswa = $this->buatSiswa($kelas, '0051234561', 'Andi Pratama');
+
+        $response = $this->withToken($this->tokenSiswa($siswa))
+            ->postJson('/api/siswa/sertifikat', [
+                'judul_sertifikat' => 'Sertifikat PDF',
+                'file_sertifikat' => \Illuminate\Http\UploadedFile::fake()
+                    ->create('sertifikat.pdf', 'application/pdf'),
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseCount('sertifikat', 1);
+        $this->assertDatabaseHas('sertifikat', [
+            'nisn' => $siswa->nisn,
+            'judul_sertifikat' => 'Sertifikat PDF',
+            'tipe_sertifikat' => 'mandiri',
+        ]);
+    }
+
     private function buatSiswa(Kelas $kelas, string $nisn, string $nama): PenggunaSiswa
     {
         return PenggunaSiswa::create([

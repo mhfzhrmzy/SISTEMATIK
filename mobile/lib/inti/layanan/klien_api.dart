@@ -76,9 +76,11 @@ class KlienApi {
     required String field,
     required String filename,
     required Uint8List bytes,
+    Map<String, String> fields = const {},
   }) async {
     final request = http.MultipartRequest('POST', _uri(path))
       ..headers.addAll(_headers())
+      ..fields.addAll(fields)
       ..files
           .add(http.MultipartFile.fromBytes(field, bytes, filename: filename));
 
@@ -86,6 +88,13 @@ class KlienApi {
       final streamed = await _client.send(request);
       return http.Response.fromStream(streamed);
     });
+    return _decodeJson(response);
+  }
+
+  Future<Map<String, dynamic>> delete(String path) async {
+    final response = await _request(
+      () => _client.delete(_uri(path), headers: _headers()),
+    );
     return _decodeJson(response);
   }
 

@@ -5,6 +5,7 @@ import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/views/upload_sertifikat_view.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
@@ -143,10 +144,80 @@ class _SertifikatViewState extends State<SertifikatView> {
     }
   }
 
+  Future<void> _hapusSertifikat(ItemSertifikat item) async {
+    if (item.id == null) {
+      _tampilkanPesan('ID sertifikat tidak tersedia.');
+      return;
+    }
+    final konfirmasi = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20))),
+        title: const Text('Hapus Sertifikat?',
+            style: TextStyle(
+                color: WarnaAplikasi.utama,
+                fontSize: 16,
+                fontWeight: FontWeight.bold)),
+        content: Text(
+            'Sertifikat "${item.judul}" akan dihapus secara permanen.',
+            style: const TextStyle(fontSize: 13)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Batal',
+                style: TextStyle(color: Colors.grey.shade600)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              'Hapus',
+              style: TextStyle(
+                  color: WarnaAplikasi.utama,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (konfirmasi != true) return;
+
+    try {
+      await _layananSertifikat.hapus(item.id!);
+      if (!mounted) return;
+      setState(() {
+        _daftarSertifikat
+            .removeWhere((s) => s.id == item.id);
+      });
+      _tampilkanPesan('Sertifikat berhasil dihapus.');
+    } on KesalahanApi catch (error) {
+      if (!mounted) return;
+      _tampilkanPesan(error.pesan);
+    } catch (_) {
+      if (!mounted) return;
+      _tampilkanPesan('Sertifikat gagal dihapus.');
+    }
+  }
+
   void _tampilkanPesan(String pesan) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(pesan)));
+  }
+
+  void _navigasiUpload() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => UploadSertifikatView(
+          daftarSertifikat: List.from(_daftarSertifikat),
+          saatDaftarBerubah: (updated) {
+            setState(() => _daftarSertifikat = updated);
+          },
+        ),
+      ),
+    );
   }
 
   Widget _temaPemilihTanggal(BuildContext context, Widget? child) {
@@ -617,7 +688,27 @@ class _SertifikatViewState extends State<SertifikatView> {
 
                           const SizedBox(height: 14),
 
-                          const SizedBox(height: 20),
+                          // ── 2. Tombol "Upload Sertifikat Baru" ───────────────
+                          SizedBox(
+                            width: double.infinity,
+                            height: 46,
+                            child: ElevatedButton(
+                              onPressed: _navigasiUpload,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: WarnaAplikasi.utama,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                              ),
+                              child: const Text('Upload Sertifikat Baru',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
 
                           // ── 3. Heading "Daftar sertifikat" + Tombol Filter ──
                           Row(
@@ -797,28 +888,68 @@ class _SertifikatViewState extends State<SertifikatView> {
                                                   .withValues(alpha: 0.7),
                                               fontSize: 11,
                                               fontWeight: FontWeight.w500)),
-                                      const SizedBox(height: 12),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        height: 38,
-                                        child: ElevatedButton(
-                                          onPressed: () =>
-                                              _unduhSertifikat(item),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                WarnaAplikasi.utama,
-                                            foregroundColor: Colors.white,
-                                            elevation: 0,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                          ),
-                                          child: const Text('Unduh Sertifikat',
-                                              style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                      ),
+                                       const SizedBox(height: 12),
+                                       Row(
+                                         children: [
+                                           Expanded(
+                                             child: SizedBox(
+                                               height: 38,
+                                               child: ElevatedButton(
+                                                 onPressed: () =>
+                                                     _unduhSertifikat(item),
+                                                 style:
+                                                     ElevatedButton.styleFrom(
+                                                   backgroundColor:
+                                                       WarnaAplikasi.utama,
+                                                   foregroundColor:
+                                                       Colors.white,
+                                                   elevation: 0,
+                                                   shape: RoundedRectangleBorder(
+                                                       borderRadius:
+                                                           BorderRadius.circular(
+                                                               8)),
+                                                 ),
+                                                 child: const Text(
+                                                   'Unduh',
+                                                   style: TextStyle(
+                                                       fontSize: 13,
+                                                       fontWeight:
+                                                           FontWeight.bold),
+                                                 ),
+                                               ),
+                                             ),
+                                           ),
+                                           const SizedBox(width: 10),
+                                           Expanded(
+                                             child: SizedBox(
+                                               height: 38,
+                                               child: OutlinedButton(
+                                                 onPressed: () =>
+                                                     _hapusSertifikat(item),
+                                                 style: OutlinedButton.styleFrom(
+                                                   foregroundColor: Colors.red.shade700,
+                                                   side: BorderSide(
+                                                       color:
+                                                           Colors.red.shade300,
+                                                       width: 1.2),
+                                                   elevation: 0,
+                                                   shape: RoundedRectangleBorder(
+                                                       borderRadius:
+                                                           BorderRadius.circular(
+                                                               8)),
+                                                 ),
+                                                 child: const Text(
+                                                   'Hapus',
+                                                   style: TextStyle(
+                                                       fontSize: 13,
+                                                       fontWeight:
+                                                           FontWeight.bold),
+                                                 ),
+                                               ),
+                                             ),
+                                           ),
+                                         ],
+                                       ),
                                     ],
                                   ),
                                 );

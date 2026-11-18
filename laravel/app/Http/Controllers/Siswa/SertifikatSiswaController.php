@@ -65,7 +65,7 @@ class SertifikatSiswaController extends Controller
             'penerbit' => ['nullable', 'string', 'max:255'],
             'tanggal_terbit' => ['nullable', 'date'],
             'deskripsi' => ['nullable', 'string'],
-            'file_sertifikat' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+            'file_sertifikat' => ['required', 'file', 'mimetypes:application/pdf', 'max:2048'],
         ]);
 
         $path = $request->file('file_sertifikat')->store('sertifikat/siswa', 'public');

@@ -41,5 +41,7 @@ Route::middleware('auth:sanctum')->prefix('siswa')->group(function () {
     // Sertifikat
     Route::get('/sertifikat', [SertifikatApiController::class, 'index']);
     Route::get('/sertifikat/{sertifikat}/download', [SertifikatApiController::class, 'download']);
+    Route::post('/sertifikat', [SertifikatApiController::class, 'upload']);
+    Route::delete('/sertifikat/{sertifikat}', [SertifikatApiController::class, 'destroy']);
 
 });

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:pretest_posttest_app/inti/layanan/cache_lokal.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
+import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/klien_api.dart';
 
 class HasilSertifikat {
@@ -68,4 +69,54 @@ class LayananSertifikat {
 
   Future<Uint8List> unduh(int idSertifikat) =>
       _api.getBytes('siswa/sertifikat/$idSertifikat/download');
+
+  Future<ItemSertifikat> unggah({
+    required String judul,
+    String? penerbit,
+    DateTime? tanggalTerbit,
+    String? deskripsi,
+    required String namaFile,
+    required Uint8List bytes,
+  }) async {
+    final fields = <String, String>{'judul_sertifikat': judul};
+    if (penerbit != null && penerbit.isNotEmpty) {
+      fields['penerbit'] = penerbit;
+    }
+    if (tanggalTerbit != null) {
+      fields['tanggal_terbit'] =
+          '${tanggalTerbit.year.toString().padLeft(4, '0')}-'
+              '${tanggalTerbit.month.toString().padLeft(2, '0')}-'
+              '${tanggalTerbit.day.toString().padLeft(2, '0')}';
+    }
+    if (deskripsi != null && deskripsi.isNotEmpty) {
+      fields['deskripsi'] = deskripsi;
+    }
+
+    final response = await _api.postFile(
+      'siswa/sertifikat',
+      field: 'file_sertifikat',
+      filename: namaFile,
+      bytes: bytes,
+      fields: fields,
+    );
+
+    final data = response['data'] as Map<String, dynamic>?;
+    if (data == null) {
+      throw const KesalahanApi('Respons upload tidak valid.');
+    }
+
+    return ItemSertifikat(
+      id: data['id_sertifikat'] is num ? data['id_sertifikat'].toInt() : null,
+      label: data['penerbit']?.toString() ?? 'Sertifikat',
+      judul: data['judul_sertifikat']?.toString() ?? judul,
+      tanggalTerbit:
+          'Diterbitkan pada: ${data['tanggal_terbit']?.toString() ?? ''}',
+      tanggal: tanggalTerbit ?? DateTime.now(),
+      urlFile: data['file_url']?.toString(),
+    );
+  }
+
+  Future<void> hapus(int idSertifikat) async {
+    await _api.delete('siswa/sertifikat/$idSertifikat');
+  }
 }
