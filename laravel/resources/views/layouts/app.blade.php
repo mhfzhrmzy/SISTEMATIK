@@ -42,12 +42,12 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-[#F3F4F6] min-h-screen text-[#1F2937] antialiased font-sans selection:bg-[#7B1038] selection:text-white">
+<body class="bg-[#F3F4F6] min-h-screen text-[#1F2937] antialiased font-sans selection:bg-[#7B1038] selection:text-white {{ request()->routeIs('portal.quiz.kerjakan') ? 'h-screen overflow-hidden' : (request()->routeIs('portal.quiz.submit') ? 'h-screen overflow-hidden flex flex-col' : '') }}">
     @if (request()->routeIs('superadmin.*'))
         @yield('content')
     @else
-        {{-- Navbar atas: tidak dipakai untuk guru (guru pakai sidebar) --}}
-        @if (!request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register') && !auth('admin')->check())
+        {{-- Navbar atas: tidak dipakai untuk guru (guru pakai sidebar) atau saat siswa sedang mengerjakan kuis (fokus ujian) --}}
+        @if (!request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register', 'portal.quiz.kerjakan') && !auth('admin')->check())
         <header class="sticky top-0 z-50 bg-white shadow-[0_2px_8px_rgba(123,16,56,0.10)]">
             <div class="w-full px-4 sm:px-6 lg:px-8 h-16 sm:h-[70px] flex items-center justify-between">
                 <!-- Brand / Data Diri Siswa -->
@@ -177,7 +177,7 @@
                 @include('layouts.partials.sidebar-admin')
             @endif
 
-            <main class="w-full px-4 sm:px-6 lg:px-8 py-5 sm:py-6 {{ auth('admin')->check() ? 'lg:ml-64 lg:w-[calc(100%-16rem)]' : '' }}">
+            <main class="w-full px-4 sm:px-6 lg:px-8 {{ request()->routeIs('portal.quiz.kerjakan') ? 'h-screen max-h-screen overflow-hidden flex flex-col py-3 sm:py-4' : (request()->routeIs('portal.quiz.submit') ? 'flex-1 min-h-0 overflow-hidden flex flex-col justify-center items-center py-2 sm:py-3' : 'py-5 sm:py-6') }} {{ auth('admin')->check() ? 'lg:ml-64 lg:w-[calc(100%-16rem)]' : '' }}">
                 @if (session('success'))
                     <div class="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm flex items-center gap-2">
                         <span>{{ session('success') }}</span>
@@ -196,7 +196,7 @@
                 @endif
 
                 @if (auth('siswa')->check() || request()->routeIs('portal.*', 'siswa.*', 'leaderboard.*', 'admin.profil*'))
-                    <div class="w-full">
+                    <div class="w-full {{ request()->routeIs('portal.quiz.kerjakan') ? 'flex-1 flex flex-col min-h-0' : (request()->routeIs('portal.quiz.submit') ? 'flex-1 min-h-0 flex flex-col justify-center items-center' : '') }}">
                         @yield('content')
                     </div>
                 @else

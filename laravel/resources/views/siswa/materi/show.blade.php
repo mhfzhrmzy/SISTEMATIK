@@ -53,21 +53,15 @@
                     $isPdf = str_ends_with(strtolower($materi->upload_file), '.pdf');
                 @endphp
 
-                <div class="flex items-center justify-between flex-wrap gap-3 pb-1">
-                    <div>
-                        <h2 class="text-xs font-bold text-[#5E0C2B] uppercase tracking-wider">Berkas Modul Pembelajaran</h2>
-                        <p class="text-xs text-slate-500 mt-0.5">Tampilan disetel otomatis <strong>Pas 1 Halaman</strong> agar seluruh isi terbaca langsung tanpa scroll ganda.</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <a href="{{ $pdfFitPageUrl }}" target="_blank"
-                           class="inline-flex items-center text-xs font-semibold bg-slate-100 hover:bg-[#7B1038] hover:text-white text-[#7B1038] border border-slate-200 px-3.5 py-2 rounded-xl transition">
-                            <span>Buka di Tab Baru</span>
-                        </a>
-                        <a href="{{ $fileBaseUrl }}" download
-                           class="inline-flex items-center text-xs font-semibold bg-[#7B1038] hover:bg-[#5E0C2B] text-white px-3.5 py-2 rounded-xl transition shadow-2xs">
-                            <span>Unduh Berkas</span>
-                        </a>
-                    </div>
+                <div class="flex items-center justify-end flex-wrap gap-2 pb-1">
+                    <a href="{{ $pdfFitPageUrl }}" target="_blank"
+                       class="inline-flex items-center text-xs font-semibold bg-slate-100 hover:bg-[#7B1038] hover:text-white text-[#7B1038] border border-slate-200 px-3.5 py-2 rounded-xl transition">
+                        <span>Buka di Tab Baru</span>
+                    </a>
+                    <a href="{{ $fileBaseUrl }}" download
+                       class="inline-flex items-center text-xs font-semibold bg-[#7B1038] hover:bg-[#5E0C2B] text-white px-3.5 py-2 rounded-xl transition shadow-2xs">
+                        <span>Unduh Berkas</span>
+                    </a>
                 </div>
 
                 @if ($isPdf)
@@ -198,7 +192,7 @@
                 </h3>
                 <p class="text-xs sm:text-sm text-[#6B7280]">
                     @if ($materiSiswaRecord && $materiSiswaRecord->is_selesai)
-                        Modul telah ditandai selesai{{ $materiSiswaRecord->selesai_at ? ' pada ' . $materiSiswaRecord->selesai_at->translatedFormat('d F Y H:i') : '' }}. Status kemajuan membaca bahan ajar telah tercatat selesai.
+                        Bahan ajar telah ditandai selesai.
                     @else
                         Tandai selesai setelah Anda memahami modul untuk memperbarui kemajuan belajar dan membuka evaluasi akhir.
                     @endif
@@ -220,27 +214,6 @@
                     </button>
                 @endif
             </form>
-        </div>
-    @endif
-
-    {{-- Uji Pemahaman Quick Info --}}
-    @php
-        $pretestCount  = $materi->quiz->where('tipe_test', 'pretest')->count();
-        $posttestCount = $materi->quiz->where('tipe_test', 'posttest')->count();
-        $totalQuiz     = $materi->quiz->count();
-    @endphp
-    @if ($totalQuiz > 0)
-        <div class="bg-white rounded-2xl p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="space-y-1">
-                <h3 class="text-xs font-bold text-[#5E0C2B] uppercase tracking-wider">Evaluasi &amp; Kuis Terkait</h3>
-                <p class="text-xs text-[#6B7280]">
-                    Modul ini memiliki {{ $pretestCount }} Pre-Test dan {{ $posttestCount }} Post-Test untuk mengukur pemahaman belajar Anda.
-                </p>
-            </div>
-            <a href="{{ route('portal.quiz.index', $materi) }}"
-               class="inline-flex items-center bg-slate-100 hover:bg-[#7B1038] hover:text-white text-[#7B1038] border border-slate-200 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition shrink-0">
-                <span>Lihat Daftar Quiz</span>
-            </a>
         </div>
     @endif
 

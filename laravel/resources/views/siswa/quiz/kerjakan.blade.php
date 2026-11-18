@@ -19,11 +19,11 @@
         color: #1E293B !important;
     }
 
-    /* Selected State (Clean White + Maroon Border, NO Pink Error Background) */
+    /* Selected State (Clean White + Neutral Slate/Gray Border, Tanpa Stroke Maroon) */
     .answer-label.is-selected {
         background-color: #FFFFFF !important;
-        border: 2px solid #7B1038 !important;
-        box-shadow: 0 0 0 1px #7B1038, 0 2px 8px rgba(123, 16, 56, 0.08) !important;
+        border: 1.5px solid #94A3B8 !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
     }
     .answer-label.is-selected .choice-circle {
         background-color: #7B1038 !important;
@@ -31,10 +31,10 @@
         color: #FFFFFF !important;
     }
 
-    /* Saat kursor hover ke jawaban yang sedang dipilih, teks ABCD TETAP PUTIH */
+    /* Saat kursor hover ke jawaban yang sedang dipilih */
     .answer-label.is-selected:hover {
         background-color: #FFFFFF !important;
-        border-color: #7B1038 !important;
+        border-color: #64748B !important;
     }
     .answer-label.is-selected:hover .choice-circle {
         background-color: #7B1038 !important;
@@ -49,66 +49,54 @@
 @endpush
 
 @section('content')
-<div class="w-full space-y-6">
+<div class="w-full h-full flex-1 flex flex-col min-h-0 gap-3 sm:gap-3.5">
 
-    {{-- Header Quiz (Clean & Minimalis) --}}
-    <div class="bg-white rounded-2xl shadow-xs p-6 sm:p-7">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
-            <div>
+    {{-- Header Quiz (Compact & Clean) --}}
+    <div class="bg-white rounded-2xl shadow-xs px-5 py-3 sm:px-6 sm:py-3.5 shrink-0">
+        <div class="flex items-center justify-between gap-4">
+            <div class="min-w-0">
                 <div class="flex items-center gap-2 flex-wrap mb-1">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#7B1038] text-white shadow-2xs">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#7B1038] text-white shadow-2xs">
                         {{ ucfirst($quiz->tipe_test) }}
                     </span>
                     @if($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap())
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#E8F8F0] text-[#1F9254]">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#1F9254]"></span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#E8F8F0] text-[#1F9254]">
                             Sedang Berlangsung
                         </span>
                     @endif
                 </div>
-                <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937] mt-1">{{ $quiz->materi->judul_materi ?? 'Quiz' }}</h1>
+                <h1 class="text-base sm:text-lg lg:text-xl font-bold text-[#1F2937] leading-tight truncate">
+                    {{ $quiz->materi->judul_materi ?? 'Quiz' }}
+                </h1>
                 @if($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap())
-                    <p class="text-xs text-[#6B7280] mt-1 flex items-center gap-1.5">
-                        <span class="font-medium">Waktu Pengerjaan:</span>
-                        <strong>{{ $quiz->waktuMulai()->format('H:i') }} – {{ $quiz->waktuSelesai()->format('H:i') }} WIB</strong>
+                    <p class="text-xs text-[#6B7280] flex items-center gap-1.5 pt-0.5">
+                        <span class="font-medium">Waktu:</span>
+                        <strong class="text-[#1F2937]">{{ $quiz->waktuMulai()->format('H:i') }} – {{ $quiz->waktuSelesai()->format('H:i') }} WIB</strong>
                     </p>
                 @endif
             </div>
 
-            <div class="text-left sm:text-right shrink-0">
-                <div class="text-[11px] text-[#6B7280] font-semibold uppercase tracking-wider mb-0.5">Total Bobot Nilai</div>
-                <div class="text-2xl font-black text-[#7B1038]">100 <span class="text-xs font-semibold text-[#6B7280]">Poin</span></div>
-                @if($quiz->soal->count() > 0)
-                    <div class="text-[11px] text-[#6B7280]">±{{ round(100 / $quiz->soal->count(), 2) }} poin / soal</div>
-                @endif
-            </div>
-        </div>
-
-        {{-- Progress Counter & Timer --}}
-        <div class="mt-5 flex items-center justify-between gap-4 flex-wrap">
-            <div class="text-xs sm:text-sm font-semibold text-[#1F2937]">
-                Pertanyaan <span id="current-question-num" class="text-[#7B1038] font-bold text-base">1</span>
-                <span class="text-[#6B7280]">/ {{ $quiz->soal->count() }}</span>
-            </div>
-
-            <div class="flex items-center gap-3">
-                {{-- Timer absolut posttest --}}
+            {{-- Pojok Kanan: Timer & Counter Pertanyaan --}}
+            <div class="flex items-end flex-col gap-1 shrink-0">
                 @if(isset($sisaDetik) && $sisaDetik !== null)
                     <div id="absolute-timer-box"
-                         class="flex items-center gap-2 bg-slate-50 border-2 border-[#7B1038] text-[#7B1038] px-4 py-2 rounded-xl font-mono text-sm font-bold shadow-2xs transition-colors"
+                         class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1 rounded-xl font-mono text-xs sm:text-sm font-bold shadow-2xs transition-colors"
                          data-sisa-detik="{{ $sisaDetik }}">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                         </svg>
                         <span id="absolute-countdown">{{ gmdate('H:i:s', $sisaDetik) }}</span>
-                        <span class="text-[10px] font-semibold uppercase opacity-75">sisa</span>
+                        <span class="text-[10px] font-semibold uppercase text-slate-400">sisa</span>
                     </div>
                 @endif
+                <div class="text-xs sm:text-sm font-normal text-[#6B7280]">
+                    Pertanyaan <span id="current-question-num">1</span> dari {{ $quiz->soal->count() }}
+                </div>
             </div>
         </div>
 
         {{-- Progress Bar --}}
-        <div class="w-full bg-gray-100 h-2 rounded-full mt-3 overflow-hidden">
+        <div class="w-full bg-gray-100 h-1.5 rounded-full mt-2.5 sm:mt-3 overflow-hidden">
             <div id="quiz-progress-bar"
                  class="bg-[#7B1038] h-full rounded-full transition-all duration-300 ease-out"
                  style="width: 0%;"></div>
@@ -138,30 +126,27 @@
             </div>
             <p class="text-sm font-semibold text-[#1F2937]">Belum ada soal pada quiz ini.</p>
             <a href="{{ route('portal.quiz.index', $quiz->materi) }}"
-               class="inline-flex items-center mt-4 text-xs font-semibold text-[#7B1038] hover:underline">
+               class="inline-flex items-center mt-4 text-xs font-semibold text-slate-700 hover:text-slate-900 hover:underline">
                 <span>Kembali ke daftar quiz</span>
             </a>
         </div>
     @else
-        <form action="{{ route('portal.quiz.submit', $quiz) }}" method="POST" id="quiz-form">
+        <form action="{{ route('portal.quiz.submit', $quiz) }}" method="POST" id="quiz-form" class="flex-1 flex flex-col min-h-0">
             @csrf
 
             @foreach ($quiz->soal as $index => $soal)
-                <div class="soal-slide bg-white rounded-2xl shadow-xs p-6 sm:p-7 {{ $index > 0 ? 'hidden' : '' }}"
+                <div class="soal-slide bg-white rounded-2xl shadow-xs p-5 sm:p-6 flex-1 flex flex-col justify-between min-h-0 {{ $index > 0 ? 'hidden' : '' }}"
                      data-index="{{ $index }}">
 
-                    {{-- Question number + text + tombol TTS --}}
-                    <div class="mb-5">
-                        <span class="text-xs font-bold text-[#7B1038] uppercase tracking-wider">
-                            Pertanyaan {{ $index + 1 }} dari {{ $quiz->soal->count() }}
-                        </span>
-                        <div class="flex items-start gap-2 mt-2">
-                            <p class="text-base sm:text-lg font-semibold text-[#1F2937] leading-relaxed flex-1" id="question-text-{{ $index }}">
+                    {{-- Question text + tombol TTS --}}
+                    <div class="shrink-0 mb-3.5 sm:mb-4">
+                        <div class="flex items-start gap-3">
+                            <p class="text-sm sm:text-base lg:text-lg font-semibold text-[#1F2937] leading-relaxed flex-1" id="question-text-{{ $index }}">
                                 {{ $soal->pertanyaan }}
                             </p>
                             <button type="button"
                                     onclick="playTTS(this, @js($soal->pertanyaan), {{ $index }})"
-                                    class="tts-btn shrink-0 w-8 h-8 rounded-full border border-[#7B1038]/30 hover:bg-[#7B1038] hover:text-white text-[#7B1038] flex items-center justify-center transition"
+                                    class="tts-btn shrink-0 w-8 h-8 rounded-full border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition mt-0.5"
                                     id="tts-btn-{{ $index }}"
                                     title="Dengarkan soal">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -172,8 +157,8 @@
                         </div>
                     </div>
 
-                    {{-- Answer choices --}}
-                    <div class="space-y-3 mb-6" id="choices-{{ $index }}">
+                    {{-- Answer choices (Fit screen, scroll inside if exceptionally tall) --}}
+                    <div class="space-y-2 sm:space-y-2.5 flex-1 min-h-0 overflow-y-auto pr-1 py-1" id="choices-{{ $index }}">
                         @php
                             $optionLabels = ['A', 'B', 'C', 'D'];
                             $optIdx = 0;
@@ -189,7 +174,7 @@
                                 $displayLetter = $optionLabels[$optIdx] ?? strtoupper($origKey);
                                 $optIdx++;
                             @endphp
-                            <label class="answer-label flex items-start gap-3.5 p-4 rounded-xl cursor-pointer transition-all duration-150 {{ old('jawaban.'.$soal->id_soal) === $origKey ? 'is-selected' : '' }}"
+                            <label class="answer-label flex items-start gap-3 p-3 sm:p-3.5 rounded-xl cursor-pointer transition-all duration-150 {{ old('jawaban.'.$soal->id_soal) === $origKey ? 'is-selected' : '' }}"
                                    id="label-{{ $index }}-{{ $origKey }}">
                                 <input type="radio"
                                        name="jawaban[{{ $soal->id_soal }}]"
@@ -197,22 +182,22 @@
                                        class="hidden answer-radio"
                                        id="radio-{{ $index }}-{{ $origKey }}"
                                        {{ old('jawaban.'.$soal->id_soal) === $origKey ? 'checked' : '' }}>
-                                <span class="choice-circle shrink-0 w-8 h-8 rounded-xl bg-white text-[#6B7280] border border-gray-200 flex items-center justify-center text-xs font-bold shadow-xs transition-all"
+                                <span class="choice-circle shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white text-[#6B7280] border border-gray-200 flex items-center justify-center text-xs font-bold shadow-xs transition-all mt-0.5"
                                       id="circle-{{ $index }}-{{ $origKey }}">
                                     {{ $displayLetter }}
                                 </span>
-                                <span class="choice-text text-sm font-medium text-[#1F2937] pt-1 leading-relaxed flex-1">
+                                <span class="choice-text text-xs sm:text-sm font-medium text-[#1F2937] leading-relaxed flex-1 pt-0.5">
                                     {{ $choiceText }}
                                 </span>
                             </label>
                         @endforeach
                     </div>
 
-                    {{-- Navigation buttons --}}
-                    <div class="flex justify-between items-center pt-4 border-t border-gray-100 gap-3">
+                    {{-- Navigation buttons (Always pinned at bottom, ZERO scroll needed!) --}}
+                    <div class="shrink-0 flex justify-between items-center pt-3 border-t border-gray-100 gap-3 mt-auto">
                         @if ($index > 0)
                             <button type="button" onclick="prevSoal()"
-                                    class="nav-btn flex items-center bg-gray-100 hover:bg-gray-200 text-[#5E0C2B] text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition">
+                                    class="nav-btn flex items-center bg-gray-100 hover:bg-gray-200 text-slate-700 hover:text-slate-900 text-xs sm:text-sm font-semibold px-4 py-2 sm:py-2.5 rounded-xl transition">
                                 <span>Sebelumnya</span>
                             </button>
                         @else
@@ -221,12 +206,12 @@
 
                         @if ($index < $quiz->soal->count() - 1)
                             <button type="button" onclick="nextSoal()"
-                                    class="nav-btn flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
+                                    class="nav-btn flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-xs sm:text-sm font-semibold px-5 py-2 sm:py-2.5 rounded-xl shadow-xs transition">
                                 <span>Selanjutnya</span>
                             </button>
                         @else
                             <button type="submit"
-                                    class="nav-btn flex items-center bg-[#1F9254] hover:bg-[#167442] text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-xl shadow-xs transition">
+                                    class="nav-btn flex items-center bg-[#1F9254] hover:bg-[#167442] text-white text-xs sm:text-sm font-bold px-6 py-2 sm:py-2.5 rounded-xl shadow-xs transition">
                                 <span>Kumpulkan Jawaban</span>
                             </button>
                         @endif
@@ -250,7 +235,7 @@ let quizLocked = false;
 const ttsCache = new Map();
 let currentAudio = null;
 let currentTtsBtn = null;
-const TTS_ACTIVE_CLASSES = ['bg-[#7B1038]', 'text-white', 'border-[#7B1038]'];
+const TTS_ACTIVE_CLASSES = ['bg-slate-700', 'text-white', 'border-slate-700'];
 
 function resetTtsBtn(btn) {
     if (!btn) return;
@@ -432,7 +417,7 @@ function updateAbsoluteDisplay() {
     const ss = String(s % 60).padStart(2, '0');
     el.innerText = hh + ':' + mm + ':' + ss;
 
-    box.classList.remove('bg-slate-50', 'text-[#7B1038]', 'border-2', 'border-[#7B1038]',
+    box.classList.remove('bg-slate-50', 'text-slate-700', 'border', 'border-slate-200',
                          'bg-red-50', 'text-red-700',
                          'bg-amber-50', 'text-amber-800');
     if (s <= 60) {
@@ -440,7 +425,7 @@ function updateAbsoluteDisplay() {
     } else if (s <= 300) {
         box.classList.add('bg-amber-50', 'text-amber-800');
     } else {
-        box.classList.add('bg-slate-50', 'text-[#7B1038]', 'border-2', 'border-[#7B1038]');
+        box.classList.add('bg-slate-50', 'text-slate-700', 'border', 'border-slate-200');
     }
 }
 
