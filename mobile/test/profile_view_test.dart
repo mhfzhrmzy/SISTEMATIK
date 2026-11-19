@@ -10,7 +10,10 @@ class _LayananProfilPalsu extends LayananProfil {
   Future<PenggunaSiswa> ambil() async => _pengguna('Seto Son Horeg');
 
   @override
-  Future<PenggunaSiswa> ubahNama(String nama) async => _pengguna(nama);
+  Future<void> ubahPassword({
+    required String lama,
+    required String baru,
+  }) async {}
 
   PenggunaSiswa _pengguna(String nama) => PenggunaSiswa(
         nisn: '0084729103',
@@ -54,13 +57,29 @@ void main() {
     expect(find.text('Password saat ini'), findsOneWidget);
     expect(find.text('Password baru'), findsOneWidget);
 
-    // Scroll sampai tombol terlihat dan tap Simpan Perubahan
+    // Scroll sampai tombol terlihat dan tap Simpan Perubahan tanpa password
     final tombolSimpan = find.text('Simpan Perubahan');
     await tester.ensureVisible(tombolSimpan);
     await tester.pumpAndSettle();
     await tester.tap(tombolSimpan);
     await tester.pump();
 
-    expect(find.text('Perubahan data akun berhasil disimpan.'), findsOneWidget);
+    expect(
+      find.text(
+          'Masukkan password saat ini dan password baru untuk mengubah kata sandi.'),
+      findsOneWidget,
+    );
+
+    // Isi password saat ini dan baru
+    final passwordFields = find.byType(TextFormField);
+    await tester.enterText(passwordFields.at(4), 'passwordLama');
+    await tester.enterText(passwordFields.at(5), 'passwordBaru123');
+    await tester.pump();
+
+    await tester.tap(tombolSimpan);
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Password berhasil diubah.'), findsOneWidget);
   });
 }

@@ -49,6 +49,10 @@ class LayananProfil {
     return url;
   }
 
+  Future<void> hapusFoto() async {
+    await _api.delete('siswa/profil/foto');
+  }
+
   Future<void> keluar() async {
     await _api.postJson('siswa/logout', const {});
   }

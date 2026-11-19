@@ -137,38 +137,35 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
   Future<void> _simpanPerubahan() async {
     FocusScope.of(context).unfocus();
 
-    final nama = _kontrolerNama.text.trim();
     final passwordLama = _kontrolerPasswordSaatIni.text;
     final passwordBaru = _kontrolerPasswordBaru.text;
-    if (nama.isEmpty) {
-      _tampilkanPesan('Nama lengkap wajib diisi.');
+
+    if (passwordLama.isEmpty && passwordBaru.isEmpty) {
+      _tampilkanPesan(
+          'Masukkan password saat ini dan password baru untuk mengubah kata sandi.');
       return;
     }
-    if (passwordLama.isNotEmpty != passwordBaru.isNotEmpty) {
+    if (passwordLama.isEmpty || passwordBaru.isEmpty) {
       _tampilkanPesan(
-          'Isi password lama dan password baru untuk menggantinya.');
+          'Isi password saat ini dan password baru secara lengkap.');
+      return;
+    }
+    if (passwordBaru.length < 6) {
+      _tampilkanPesan('Password baru minimal 6 karakter.');
       return;
     }
 
     setState(() => _sedangMenyimpan = true);
     try {
-      if (passwordLama.isNotEmpty) {
-        await _layananProfil.ubahPassword(
-          lama: passwordLama,
-          baru: passwordBaru,
-        );
-      }
-      final pengguna = await _layananProfil.ubahNama(nama);
-      if (!mounted) return;
-      await SesiPengguna.perbaruiProfil(
-        nama: pengguna.namaLengkap,
-        kelas: pengguna.labelKelas,
-        jurusan: pengguna.jurusan,
+      await _layananProfil.ubahPassword(
+        lama: passwordLama,
+        baru: passwordBaru,
       );
+      if (!mounted) return;
       _kontrolerPasswordSaatIni.clear();
       _kontrolerPasswordBaru.clear();
       setState(() => _sedangMenyimpan = false);
-      _tampilkanPesan('Perubahan data akun berhasil disimpan.');
+      _tampilkanPesan('Password berhasil diubah.');
     } on KesalahanApi catch (error) {
       if (!mounted) return;
       setState(() => _sedangMenyimpan = false);
@@ -176,7 +173,67 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _sedangMenyimpan = false);
-      _tampilkanPesan('Gagal menyimpan perubahan akun.');
+      _tampilkanPesan('Gagal mengubah password.');
+    }
+  }
+
+  Future<void> _kelolaFotoProfil() async {
+    if (_fotoProfil == null || _fotoProfil!.isEmpty) {
+      await _pilihFotoAvatar();
+      return;
+    }
+
+    await showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.photo_camera_outlined,
+                      color: WarnaAplikasi.utama),
+                  title: const Text('Ubah Foto Profil',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                    _pilihFotoAvatar();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: Colors.red),
+                  title: const Text('Hapus Foto Profil',
+                      style: TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.w600)),
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                    _hapusFotoAvatar();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _hapusFotoAvatar() async {
+    try {
+      await _layananProfil.hapusFoto();
+      if (!mounted) return;
+      setState(() => _fotoProfil = null);
+      await SesiPengguna.perbaruiProfil(fotoProfil: null);
+      _tampilkanPesan('Foto profil berhasil dihapus.');
+    } on KesalahanApi catch (error) {
+      if (mounted) _tampilkanPesan(error.pesan);
+    } catch (_) {
+      if (mounted) _tampilkanPesan('Gagal menghapus foto profil.');
     }
   }
 
@@ -258,7 +315,7 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
                           Center(
                             child: _AvatarSiswa(
                               fotoUrl: _fotoProfil,
-                              saatDiketuk: _pilihFotoAvatar,
+                              saatDiketuk: _kelolaFotoProfil,
                             ),
                           ),
                           const SizedBox(height: 18),
@@ -292,22 +349,25 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
                                   label: 'NISN',
                                   kontroler: _kontrolerNisn,
                                   tipeKeyboard: TextInputType.number,
+                                  hanyaBaca: true,
                                 ),
                                 const SizedBox(height: 12),
                                 _KolomInput(
                                   label: 'Nama Lengkap',
                                   kontroler: _kontrolerNama,
-                                  petunjuk: 'Masukkan nama lengkap baru',
+                                  hanyaBaca: true,
                                 ),
                                 const SizedBox(height: 12),
                                 _KolomInput(
                                   label: 'Kelas',
                                   kontroler: _kontrolerKelas,
+                                  hanyaBaca: true,
                                 ),
                                 const SizedBox(height: 12),
                                 _KolomInput(
                                   label: 'Jurusan',
                                   kontroler: _kontrolerJurusan,
+                                  hanyaBaca: true,
                                 ),
                                 const SizedBox(height: 12),
                                 _KolomInput(
@@ -568,6 +628,7 @@ class _KolomInput extends StatelessWidget {
   final bool sembunyikanTeks;
   final VoidCallback? saatIkonDiketuk;
   final TextInputType tipeKeyboard;
+  final bool hanyaBaca;
 
   const _KolomInput({
     required this.label,
@@ -576,6 +637,7 @@ class _KolomInput extends StatelessWidget {
     this.sembunyikanTeks = false,
     this.saatIkonDiketuk,
     this.tipeKeyboard = TextInputType.text,
+    this.hanyaBaca = false,
   });
 
   @override
@@ -604,15 +666,20 @@ class _KolomInput extends StatelessWidget {
           height: 38,
           child: TextFormField(
             controller: kontroler,
+            readOnly: hanyaBaca,
+            canRequestFocus: !hanyaBaca,
             obscureText: sembunyikanTeks,
             keyboardType: tipeKeyboard,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: Colors.black87,
+              color: hanyaBaca ? const Color(0xFF4B5563) : Colors.black87,
             ),
             decoration: InputDecoration(
               isDense: true,
+              filled: hanyaBaca,
+              fillColor:
+                  hanyaBaca ? const Color(0xFFF9FAFB) : Colors.transparent,
               hintText: petunjuk,
               hintStyle: TextStyle(
                 color: Colors.grey.shade400,
@@ -624,12 +691,14 @@ class _KolomInput extends StatelessWidget {
                 vertical: 9,
               ),
               enabledBorder: borderStyle,
-              focusedBorder: borderStyle.copyWith(
-                borderSide: const BorderSide(
-                  color: WarnaAplikasi.utama,
-                  width: 1.6,
-                ),
-              ),
+              focusedBorder: hanyaBaca
+                  ? borderStyle
+                  : borderStyle.copyWith(
+                      borderSide: const BorderSide(
+                        color: WarnaAplikasi.utama,
+                        width: 1.6,
+                      ),
+                    ),
               suffixIcon: saatIkonDiketuk != null
                   ? IconButton(
                       icon: Icon(

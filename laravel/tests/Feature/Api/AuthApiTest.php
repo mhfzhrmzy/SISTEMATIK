@@ -248,6 +248,31 @@ class AuthApiTest extends TestCase
             ->assertHeader('Access-Control-Allow-Origin', '*');
     }
 
+    public function test_hapus_foto_siswa_berhasil(): void
+    {
+        Storage::fake('public');
+        $siswa = $this->buatSiswa();
+        $token = $siswa->createToken('tes')->plainTextToken;
+        $foto = UploadedFile::fake()->create('foto.jpg', 100, 'image/jpeg');
+
+        $this->withToken($token)
+            ->post('/api/siswa/profil/foto', ['foto' => $foto])
+            ->assertOk();
+
+        $pathLama = $siswa->fresh()->foto_profile;
+        Storage::disk('public')->assertExists($pathLama);
+
+        $response = $this->withToken($token)
+            ->deleteJson('/api/siswa/profil/foto');
+
+        $response->assertOk()
+            ->assertJsonPath('message', 'Foto profil berhasil dihapus.')
+            ->assertJsonPath('user.foto_profile', null);
+
+        $this->assertNull($siswa->fresh()->foto_profile);
+        Storage::disk('public')->assertMissing($pathLama);
+    }
+
     public function test_login_guru_dengan_nip(): void
     {
         $guru = AdminGuru::create([

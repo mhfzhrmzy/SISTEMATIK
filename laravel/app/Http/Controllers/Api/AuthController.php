@@ -178,6 +178,22 @@ class AuthController extends Controller
         ]);
     }
 
+    public function hapusFotoSiswa(Request $request): JsonResponse
+    {
+        $siswa = $request->user();
+
+        if ($siswa->foto_profile && Storage::disk('public')->exists($siswa->foto_profile)) {
+            Storage::disk('public')->delete($siswa->foto_profile);
+        }
+
+        $siswa->update(['foto_profile' => null]);
+
+        return response()->json([
+            'message' => 'Foto profil berhasil dihapus.',
+            'user' => $this->dataPenggunaSiswa($siswa->refresh(), $request),
+        ]);
+    }
+
     /**
      * Menyajikan foto profil siswa dengan header CORS penuh untuk mobile & web.
      */
