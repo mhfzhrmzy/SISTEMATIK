@@ -42,7 +42,7 @@ class MateriSeeder extends Seeder
         ];
 
         foreach ($materis as $data) {
-            Materi::firstOrCreate(
+            Materi::updateOrCreate(
                 ['judul_materi' => $data['judul_materi']],
                 $data
             );

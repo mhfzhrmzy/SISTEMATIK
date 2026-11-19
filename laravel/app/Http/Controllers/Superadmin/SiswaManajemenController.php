@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class SiswaManajemenController extends Controller
 {
     /** Daftar kelas yang tersedia di SMK. */
-    private const DAFTAR_KELAS = ['10 1', '10 2'];
+    private const DAFTAR_KELAS = ['10-1', '10-2', '10 1', '10 2'];
 
     /** Daftar jurusan yang tersedia di SMK. */
     private const DAFTAR_JURUSAN = [
@@ -68,7 +68,7 @@ class SiswaManajemenController extends Controller
             'foto_profile.max' => 'Ukuran foto profil tidak boleh lebih dari 5 MB.',
         ]);
 
-        $parts = explode(' ', $validated['kelas']);
+        $parts = preg_split('/[\s\-]+/', (string) $validated['kelas']);
         $tingkat = (int) ($parts[0] ?? 10);
         $rombel = (int) ($parts[1] ?? 1);
 
@@ -116,7 +116,7 @@ class SiswaManajemenController extends Controller
             'foto_profile.max' => 'Ukuran foto profil tidak boleh lebih dari 5 MB.',
         ]);
 
-        $parts = explode(' ', $validated['kelas']);
+        $parts = preg_split('/[\s\-]+/', (string) $validated['kelas']);
         $tingkat = (int) ($parts[0] ?? 10);
         $rombel = (int) ($parts[1] ?? 1);
 

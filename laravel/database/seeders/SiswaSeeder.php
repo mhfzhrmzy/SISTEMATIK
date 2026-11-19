@@ -29,7 +29,7 @@ class SiswaSeeder extends Seeder
                 ->where('tahun', $data['tahun'])
                 ->firstOrFail();
 
-            PenggunaSiswa::firstOrCreate(
+            PenggunaSiswa::updateOrCreate(
                 ['nisn' => $data['nisn']],
                 [
                     'nama_lengkap' => $data['nama_lengkap'],

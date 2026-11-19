@@ -27,12 +27,12 @@ class Kelas extends Model
 
     public function getNamaKelasAttribute(): string
     {
-        return "{$this->tingkat} {$this->rombel}";
+        return "{$this->tingkat}-{$this->rombel}";
     }
 
     public function __toString(): string
     {
-        return "{$this->tingkat} {$this->rombel}";
+        return "{$this->tingkat}-{$this->rombel}";
     }
 
     public static function findOrCreateByNama(string $namaJurusan, int $tingkat, int $rombel, string $tahun): self

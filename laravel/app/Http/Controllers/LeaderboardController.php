@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class LeaderboardController extends Controller
 {
-    public const DAFTAR_KELAS = ['10 1', '10 2'];
+    public const DAFTAR_KELAS = ['10-1', '10-2'];
 
     public const DAFTAR_JURUSAN = [
         'Teknik Alat Berat',
@@ -53,6 +53,10 @@ class LeaderboardController extends Controller
             $kelas = $request->query('kelas');
             $jurusan = $request->query('jurusan');
 
+            if ($kelas) {
+                $kelas = str_replace(' ', '-', (string) $kelas);
+            }
+
             if ($kelas && ! in_array($kelas, self::DAFTAR_KELAS)) {
                 $kelas = null;
             }
@@ -68,7 +72,7 @@ class LeaderboardController extends Controller
             // Daftar Materi untuk Guru (disaring berdasarkan kelas dan jurusan jika dipilih)
             $materiQuery = Materi::with(['quiz', 'kelas.jurusan']);
             if ($kelas) {
-                $parts = explode(' ', $kelas);
+                $parts = preg_split('/[\s\-]+/', (string) $kelas);
                 $tingkat = (int) ($parts[0] ?? 0);
                 $rombel = (int) ($parts[1] ?? 0);
                 $materiQuery->where(function ($q) use ($tingkat, $rombel) {
@@ -93,7 +97,7 @@ class LeaderboardController extends Controller
         // Helper closure untuk filter pengguna siswa berdasarkan kelas dan jurusan
         $filterPengguna = function ($q) use ($kelas, $jurusan) {
             if ($kelas) {
-                $parts = explode(' ', $kelas);
+                $parts = preg_split('/[\s\-]+/', (string) $kelas);
                 $tingkat = (int) ($parts[0] ?? 0);
                 $rombel = (int) ($parts[1] ?? 0);
                 $q->whereHas('kelas', function ($kq) use ($tingkat, $rombel) {

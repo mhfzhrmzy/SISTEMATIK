@@ -63,7 +63,7 @@
                         </span>
                         <span class="text-sm text-gray-400 font-normal select-none">|</span>
                         <span class="text-sm font-medium text-gray-600 whitespace-nowrap">
-                            Kelas {{ $navKelas }}
+                            Kelas {{ str_replace(' ', '-', (string)$navKelas) }}
                         </span>
                         <span class="text-sm text-gray-400 font-normal select-none hidden sm:inline">|</span>
                         <span class="text-sm font-medium text-gray-600 truncate max-w-[140px] sm:max-w-[200px] md:max-w-xs hidden sm:inline">
