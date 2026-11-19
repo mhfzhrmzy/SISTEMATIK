@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/data/layanan_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/models/soal.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/views/hasil_quiz_view.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/views/tes_view.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/baris_timer_audio.dart';
+
+const _soalContoh = Soal(
+  idSoal: 1,
+  pertanyaan: 'Apa itu variabel?',
+  pilihan: ['A', 'B', 'C', 'D'],
+);
 
 void main() {
   testWidgets('TesView handles quizzes without questions', (
@@ -21,7 +29,84 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('HasilQuizView renders stats accurately and excludes rata-rata waktu', (
+  testWidgets('Pre-Test tidak menampilkan timer (mengikuti Laravel)', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: TesView(
+          judul: 'Pre-Test',
+          tipeTest: 'pretest',
+          daftarSoal: [_soalContoh],
+          timerMenit: 30,
+        ),
+      ),
+    );
+
+    expect(find.byType(BarisTimerAudio), findsOneWidget);
+    expect(find.text('sisa'), findsNothing);
+    expect(find.textContaining('30 Menit'), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('Timer post-test menghitung mundur dari sisaDetik server', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: TesView(
+          judul: 'Post-Test',
+          tipeTest: 'posttest',
+          daftarSoal: [_soalContoh],
+          timerMenit: 30,
+          sisaDetik: 65,
+        ),
+      ),
+    );
+
+    expect(find.text('00:01:05'), findsOneWidget);
+    expect(find.text('sisa'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('00:01:04'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('00:01:03'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('Waktu habis mengunci jawaban dan mengirim otomatis', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: TesView(
+          judul: 'Post-Test',
+          tipeTest: 'posttest',
+          daftarSoal: [_soalContoh],
+          timerMenit: 30,
+          sisaDetik: 1,
+        ),
+      ),
+    );
+
+    expect(find.text('00:00:01'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('00:00:00'), findsOneWidget);
+    expect(find.text('Waktu Habis'), findsOneWidget);
+
+    // Menunggu jeda 500 ms sebelum pengiriman otomatis dijalankan.
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('Waktu Habis'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets(
+      'HasilQuizView renders stats accurately and excludes rata-rata waktu', (
     WidgetTester tester,
   ) async {
     const hasil = HasilQuiz(
@@ -58,7 +143,8 @@ void main() {
     expect(find.text('Kembali ke Beranda'), findsOneWidget);
 
     // Memastikan kolom rata rata waktu tidak ada
-    expect(find.textContaining('Rata rata waktu', findRichText: true), findsNothing);
+    expect(find.textContaining('Rata rata waktu', findRichText: true),
+        findsNothing);
     expect(find.textContaining('rata rata', findRichText: true), findsNothing);
   });
 }

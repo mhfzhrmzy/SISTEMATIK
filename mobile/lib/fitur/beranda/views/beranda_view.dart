@@ -56,7 +56,11 @@ class _BerandaViewState extends State<BerandaView> {
   String get _kelasPengguna => SesiPengguna.kelas ?? widget.kelas ?? 'Kelas -';
 
   void _muatUlangMateri() {
-    setState(() => _materiFuture = _layananMateri.daftar());
+    // Jangan pakai closure panah: nilainya Future dan setState() di mode
+    // debug menolak callback yang mengembalikan Future.
+    setState(() {
+      _materiFuture = _layananMateri.daftar();
+    });
   }
 
   Future<void> _saatFooterDiketuk(int idx) async {
@@ -655,9 +659,8 @@ class _LembarAksiMateri extends StatelessWidget {
               ikon: materi.pretestCompleted
                   ? Icons.check_circle_outline_rounded
                   : Icons.quiz_outlined,
-              warnaIkon: materi.pretestCompleted
-                  ? const Color(0xFF1F9254)
-                  : null,
+              warnaIkon:
+                  materi.pretestCompleted ? const Color(0xFF1F9254) : null,
               label: 'Pre-Test',
               sublabel: materi.hasPretest
                   ? (materi.pretestCompleted
