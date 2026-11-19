@@ -8,8 +8,7 @@
     {{-- Header Halaman --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1">Kelola Bahan Ajar</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Unggah modul pembelajaran baru dan kelola daftar materi berdasarkan kelas, jurusan, serta tahun ajaran.</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Kelola Bahan Ajar</h1>
         </div>
         <div class="flex items-center gap-2 self-start sm:self-auto">
             <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/90 shadow-2xs">
