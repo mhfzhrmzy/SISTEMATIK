@@ -273,7 +273,6 @@
                 <h2 class="text-base font-bold text-slate-900 tracking-tight">
                     Daftar Quiz Pembelajaran
                 </h2>
-                <p class="text-xs text-slate-500 mt-0.5">Daftar semua kuis materi yang tersedia beserta jadwal dan jumlah butir soal.</p>
             </div>
 
             {{-- Input Pencarian Realtime --}}
