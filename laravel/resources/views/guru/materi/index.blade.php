@@ -216,7 +216,6 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                     <h2 class="text-base font-bold text-slate-900 tracking-tight">Daftar Bahan Ajar</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Daftar semua materi pelajaran yang telah diunggah ke sistem.</p>
                 </div>
 
                 {{-- Input Pencarian Real-time --}}
