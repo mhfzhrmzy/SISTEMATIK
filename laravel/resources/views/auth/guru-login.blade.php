@@ -1,10 +1,12 @@
 @extends('layouts.app')
 @section('title', 'Login Guru')
 @section('content')
-<div class="min-h-screen w-full flex flex-col md:flex-row bg-[#6D1837] relative overflow-hidden font-sans">
+<div class="min-h-screen w-full flex flex-col md:flex-row bg-white relative overflow-hidden font-sans">
 
-    <!-- LEFT AREA: Deep Blue Branding & Title Section -->
-    <div class="hidden md:flex md:w-[52%] lg:w-[56%] min-h-screen bg-gradient-to-br from-[#7E2043] via-[#6D1837] to-[#551229] flex-col justify-center px-12 lg:px-20 text-white relative">
+    <!-- LEFT AREA: School Photo Branding & Title Section -->
+    <div class="hidden md:flex md:w-[52%] lg:w-[56%] min-h-screen flex-col justify-center px-12 lg:px-20 text-white relative overflow-hidden">
+        <!-- School Photo Background -->
+        <img src="{{ asset('smkn2-jember.png') }}" alt="SMKN 2 Jember" class="absolute inset-0 w-full h-full object-cover z-0">
         <div class="max-w-xl relative z-10">
         </div>
     </div>
