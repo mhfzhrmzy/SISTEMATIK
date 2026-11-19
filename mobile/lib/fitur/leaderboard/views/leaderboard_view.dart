@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +11,8 @@ import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/data/layanan_leaderboard.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/models/model_leaderboard.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/widgets/batang_podium.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/widgets/batang_podium.dart'
+    show BatangPodium, BatangPodiumKosong, AvatarSiswa;
 
 /// Halaman Leaderboard (papan peringkat).
 ///
@@ -184,7 +185,7 @@ class _LeaderboardViewState extends State<LeaderboardView> {
           bottom: false,
           child: Column(
             children: [
-              // ── Header Maroon ─────────────────────────────────────
+              // â”€â”€ Header Maroon â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               Container(
                 width: double.infinity,
                 color: WarnaAplikasi.utama,
@@ -216,7 +217,7 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                                       _hasil!.kelas!.isNotEmpty
                                   ? (_hasil!.jurusan != null &&
                                           _hasil!.jurusan!.isNotEmpty
-                                      ? 'Kelas ${_hasil!.kelas} • ${_hasil!.jurusan}'
+                                      ? 'Kelas ${_hasil!.kelas} â€¢ ${_hasil!.jurusan}'
                                       : 'Kelas ${_hasil!.kelas}')
                                   : ''),
                           style: const TextStyle(
@@ -277,7 +278,7 @@ class _LeaderboardViewState extends State<LeaderboardView> {
 
   Widget _isiKonten({required double panHorizontal}) {
     final children = <Widget>[
-      // ── Toggle Keseluruhan / Permateri ───────────────────────
+      // â”€â”€ Toggle Keseluruhan / Permateri â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       _toggleMode(),
 
       if (_tabTerpilih == _tabPermateri) ...[
@@ -353,25 +354,110 @@ class _LeaderboardViewState extends State<LeaderboardView> {
 
     final daftar = hasil.data;
     if (daftar.isEmpty) {
-      children.add(
-        const Expanded(
-          child: Center(
-            child: Text(
-              'Belum ada siswa di leaderboard kelas ini.',
-              style: TextStyle(
-                color: WarnaAplikasi.utama,
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ),
-      );
+      // Tampilkan podium kosong + tabel placeholder 10 baris
+      children.add(_podiumKosong());
+      children.add(const SizedBox(height: 16));
+      children.add(_tabelPlaceholder(7));
       return Column(children: children);
     }
 
     children.addAll(_kontenLeaderboard(daftar));
 
     return Column(children: children);
+  }
+
+  /// Tabel placeholder (N baris kosong, angka 4-10) — dipakai saat data kosong.
+  Widget _tabelPlaceholder(int jumlah) {
+    final daftarPlaceholder = List<ModelLeaderboard>.generate(
+      jumlah,
+      (i) => ModelLeaderboard(
+        peringkat: i + 4,
+        nisn: '',
+        nama: '-',
+        skor: 0,
+      ),
+    );
+    return Expanded(
+      child: ListView.separated(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 12),
+        itemCount: daftarPlaceholder.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        itemBuilder: (ctx, idx) {
+          final item = daftarPlaceholder[idx];
+          return Container(
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: WarnaAplikasi.utama,
+                width: 1.2,
+              ),
+            ),
+            child: Row(
+              children: [
+                // Peringkat (kiri)
+                SizedBox(
+                  width: 28,
+                  child: Text(
+                    '${item.peringkat}',
+                    style: TextStyle(
+                      color: WarnaAplikasi.utama.withValues(alpha: 0.4),
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                // Avatar
+                AvatarSiswa(
+                  pengguna: item,
+                  ukuran: 36,
+                  placeholder: true,
+                ),
+                const SizedBox(width: 10),
+                // Nama (tengah)
+                Expanded(
+                  child: Text(
+                    item.nama,
+                    style: TextStyle(
+                      color: WarnaAplikasi.utama.withValues(alpha: 0.4),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// Podium kosong (placeholder) untuk Top 3.
+  Widget _podiumKosong() {
+    return Center(
+      child: SizedBox(
+        height: 160,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            BatangPodiumKosong(peringkat: 2, tinggiBatang: 60, lebar: 92),
+            const SizedBox(width: 12),
+            BatangPodiumKosong(peringkat: 1, tinggiBatang: 90, lebar: 100),
+            const SizedBox(width: 12),
+            BatangPodiumKosong(peringkat: 3, tinggiBatang: 44, lebar: 92),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _toggleMode() {
@@ -526,10 +612,6 @@ class _LeaderboardViewState extends State<LeaderboardView> {
         ? topTiga[2]
         : const ModelLeaderboard(peringkat: 3, nisn: '', nama: '-');
 
-    // Ranks 4 ke bawah
-    final daftarPeringkat =
-        daftar.length > 3 ? daftar.sublist(3) : <ModelLeaderboard>[];
-
     // Current user (pinned)
     final penggunaSaatIni = daftar.firstWhere((item) => item.saya,
         orElse: () =>
@@ -539,11 +621,9 @@ class _LeaderboardViewState extends State<LeaderboardView> {
 
     if (topTiga.isNotEmpty) {
       widgets.add(
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.center,
+        Center(
           child: SizedBox(
-            height: 130,
+            height: 160,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -551,8 +631,8 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                 // Peringkat 2
                 BatangPodium(
                   pengguna: peringkatKedua,
-                  tinggiBatang: 70,
-                  lebar: 84,
+                  tinggiBatang: 60,
+                  lebar: 92,
                 ),
 
                 const SizedBox(width: 12),
@@ -560,8 +640,8 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                 // Peringkat 1
                 BatangPodium(
                   pengguna: peringkatSatu,
-                  tinggiBatang: 96,
-                  lebar: 90,
+                  tinggiBatang: 90,
+                  lebar: 100,
                 ),
 
                 const SizedBox(width: 12),
@@ -569,9 +649,30 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                 // Peringkat 3
                 BatangPodium(
                   pengguna: peringkatTiga,
-                  tinggiBatang: 52,
-                  lebar: 84,
+                  tinggiBatang: 44,
+                  lebar: 92,
                 ),
+              ],
+            ),
+          ),
+        ),
+      );
+      widgets.add(const SizedBox(height: 16));
+    } else {
+      // Podium kosong: tampilkan 3 batang placeholder
+      widgets.add(
+        Center(
+          child: SizedBox(
+            height: 160,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BatangPodiumKosong(peringkat: 2, tinggiBatang: 60, lebar: 92),
+                const SizedBox(width: 12),
+                BatangPodiumKosong(peringkat: 1, tinggiBatang: 90, lebar: 100),
+                const SizedBox(width: 12),
+                BatangPodiumKosong(peringkat: 3, tinggiBatang: 44, lebar: 92),
               ],
             ),
           ),
@@ -580,85 +681,99 @@ class _LeaderboardViewState extends State<LeaderboardView> {
       widgets.add(const SizedBox(height: 16));
     }
 
+    // Tampilkan Top 10: data asli (maksi) + placeholder sampai peringkat 10
+    final daftarTerisi = daftar.length > 3 ? daftar.sublist(3, daftar.length > 10 ? 10 : daftar.length) : <ModelLeaderboard>[];
+    final jumlahPlaceholder = (10 - daftarTerisi.length - 3).clamp(0, 7);
+    final daftarPlaceholder = List<ModelLeaderboard>.generate(
+      jumlahPlaceholder,
+      (i) => ModelLeaderboard(
+        peringkat: i + 4,
+        nisn: '',
+        nama: '-',
+        skor: 0,
+      ),
+    );
+    final daftarGabungan = [...daftarTerisi, ...daftarPlaceholder];
+
     widgets.add(
       Expanded(
-        child: daftarPeringkat.isEmpty
-            ? const SizedBox.shrink()
-            : ListView.separated(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.only(bottom: 12),
-                itemCount: daftarPeringkat.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
-                itemBuilder: (ctx, idx) {
-                  final item = daftarPeringkat[idx];
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 12),
+          itemCount: daftarGabungan.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          itemBuilder: (ctx, idx) {
+            final item = daftarGabungan[idx];
+            final isPlaceholder = idx >= daftarTerisi.length;
 
-                  return Container(
-                    height: 46,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: WarnaAplikasi.utama,
-                        width: 1.2,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          '${item.peringkat}',
-                          style: const TextStyle(
-                            color: WarnaAplikasi.utama,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            item.nama,
-                            style: const TextStyle(
-                              color: WarnaAplikasi.utama,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          '${item.skor ?? 0}',
-                          style: const TextStyle(
-                            color: WarnaAplikasi.utama,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+            return Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: WarnaAplikasi.utama,
+                  width: 1.2,
+                ),
               ),
+              child: Row(
+                children: [
+                  // Peringkat (kiri)
+                  SizedBox(
+                    width: 28,
+                    child: Text(
+                      '${item.peringkat}',
+                      style: TextStyle(
+                        color: isPlaceholder
+                            ? WarnaAplikasi.utama.withValues(alpha: 0.4)
+                            : WarnaAplikasi.utama,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  // Nama (tengah)
+                  Expanded(
+                    child: Text(
+                      item.nama,
+                      style: TextStyle(
+                        color: isPlaceholder
+                            ? WarnaAplikasi.utama.withValues(alpha: 0.4)
+                            : WarnaAplikasi.utama,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  // Profil circle (kanan)
+                  AvatarSiswa(
+                    pengguna: item,
+                    ukuran: 36,
+                    placeholder: isPlaceholder,
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
 
     if (penggunaSaatIni.peringkat > 0) {
       widgets.add(
         Container(
-          margin: const EdgeInsets.only(
-            bottom: 12,
-            top: 4,
-          ),
-          height: 48,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 18,
-          ),
+          margin: const EdgeInsets.only(bottom: 12, top: 4),
+          height: 58,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             color: WarnaAplikasi.utama,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
                 color: WarnaAplikasi.utama.withValues(alpha: 0.3),
@@ -669,36 +784,36 @@ class _LeaderboardViewState extends State<LeaderboardView> {
           ),
           child: Row(
             children: [
-              Text(
-                '${penggunaSaatIni.peringkat}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              // Peringkat
+              SizedBox(
+                width: 28,
+                child: Text(
+                  '${penggunaSaatIni.peringkat}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(width: 18),
+              const SizedBox(width: 10),
+              // Nama
               Expanded(
                 child: Text(
                   penggunaSaatIni.nama,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width: 12),
-              Text(
-                '${penggunaSaatIni.skor ?? 0}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              const SizedBox(width: 10),
+              // Avatar
+              AvatarSiswa(pengguna: penggunaSaatIni, ukuran: 36),
             ],
           ),
         ),

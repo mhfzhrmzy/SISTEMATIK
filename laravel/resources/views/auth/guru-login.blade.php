@@ -37,12 +37,6 @@
                 </div>
 
                 <!-- Alerts -->
-                @if (session('success'))
-                    <div class="mb-4 p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
                 @if ($errors->any())
                     <div class="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs space-y-1">
                         @foreach ($errors->all() as $error)

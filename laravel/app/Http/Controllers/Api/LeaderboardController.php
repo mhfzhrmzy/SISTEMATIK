@@ -49,13 +49,20 @@ class LeaderboardController extends Controller
             ->orderBy('updated_at')
             ->get();
 
-        $data = $leaderboards->map(function (Leaderboard $lb, $index) use ($siswa) {
+        $baseUrl = $request->getSchemeAndHttpHost();
+
+        $data = $leaderboards->map(function (Leaderboard $lb, $index) use ($siswa, $baseUrl) {
+            $foto = $lb->pengguna?->foto_profile;
+
             return [
                 'nisn' => $lb->nisn,
                 'nama_lengkap' => $lb->pengguna->nama_lengkap ?? '',
                 'total_poin' => (int) $lb->total_poin,
                 'peringkat' => $index + 1,
                 'is_me' => $lb->nisn === $siswa->nisn,
+                'foto_profile' => $foto
+                    ? $baseUrl.'/api/siswa/foto/'.ltrim($foto, '/')
+                    : null,
             ];
         });
 
