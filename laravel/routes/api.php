@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->prefix('siswa')->group(function () {
     Route::get('/profil', [AuthController::class, 'profilSiswa']);
     Route::put('/profil', [AuthController::class, 'updateProfilSiswa']);
     Route::post('/profil/foto', [AuthController::class, 'updateFotoSiswa']);
+    Route::delete('/profil/foto', [AuthController::class, 'hapusFotoSiswa']);
     Route::put('/profil/password', [AuthController::class, 'updatePasswordSiswa']);
 
     // Materi

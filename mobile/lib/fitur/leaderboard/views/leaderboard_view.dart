@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -442,7 +442,7 @@ class _LeaderboardViewState extends State<LeaderboardView> {
 
   /// Podium kosong (placeholder) untuk Top 3.
   Widget _podiumKosong() {
-    return Center(
+    return const Center(
       child: SizedBox(
         height: 160,
         child: Row(
@@ -450,9 +450,9 @@ class _LeaderboardViewState extends State<LeaderboardView> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             BatangPodiumKosong(peringkat: 2, tinggiBatang: 60, lebar: 92),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             BatangPodiumKosong(peringkat: 1, tinggiBatang: 90, lebar: 100),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             BatangPodiumKosong(peringkat: 3, tinggiBatang: 44, lebar: 92),
           ],
         ),
@@ -661,7 +661,7 @@ class _LeaderboardViewState extends State<LeaderboardView> {
     } else {
       // Podium kosong: tampilkan 3 batang placeholder
       widgets.add(
-        Center(
+        const Center(
           child: SizedBox(
             height: 160,
             child: Row(
@@ -669,9 +669,9 @@ class _LeaderboardViewState extends State<LeaderboardView> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 BatangPodiumKosong(peringkat: 2, tinggiBatang: 60, lebar: 92),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 BatangPodiumKosong(peringkat: 1, tinggiBatang: 90, lebar: 100),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 BatangPodiumKosong(peringkat: 3, tinggiBatang: 44, lebar: 92),
               ],
             ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:characters/characters.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/konstanta/konfigurasi_api.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/models/model_leaderboard.dart';
@@ -168,7 +167,7 @@ class BatangPodiumKosong extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        AvatarSiswa(pengguna: _placeholder, ukuran: 40, placeholder: true),
+        const AvatarSiswa(pengguna: _placeholder, ukuran: 40, placeholder: true),
         const SizedBox(height: 6),
         SizedBox(
           width: lebar,

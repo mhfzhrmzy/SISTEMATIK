@@ -5,6 +5,7 @@ import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/layanan_tts.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/models/soal.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/data/layanan_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/views/hasil_quiz_view.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/opsi_jawaban.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/baris_timer_audio.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/kartu_soal.dart';
@@ -19,6 +20,8 @@ import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 /// navigasi antar soal, pemilihan jawaban, validasi, serta dialog konfirmasi.
 class TesView extends StatefulWidget {
   final String judul;
+  final String? judulMateri;
+  final String? tipeTest;
   final List<Soal> daftarSoal;
   final int? idQuiz;
   final int timerMenit;
@@ -28,6 +31,8 @@ class TesView extends StatefulWidget {
   const TesView({
     super.key,
     required this.judul,
+    this.judulMateri,
+    this.tipeTest,
     required this.daftarSoal,
     this.idQuiz,
     this.timerMenit = 30,
@@ -110,39 +115,19 @@ class _TesViewState extends State<TesView> {
       );
       if (!mounted) return;
       setState(() => _sedangMengirim = false);
-      final selesai = await showDialog<bool>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      await Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(
+          builder: (_) => HasilQuizView(
+            judulMateri: (widget.judulMateri != null && widget.judulMateri!.trim().isNotEmpty)
+                ? widget.judulMateri!
+                : widget.judul,
+            tipeTest: (widget.tipeTest != null && widget.tipeTest!.trim().isNotEmpty)
+                ? widget.tipeTest!
+                : widget.judul,
+            hasil: hasil,
           ),
-          title: const Text(
-            'Berhasil',
-            style: TextStyle(
-              color: WarnaAplikasi.utama,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Text(
-            'Jawaban berhasil dikirim.\n'
-            'Benar: ${hasil.benar}/${hasil.total}\n'
-            'Nilai: ${hasil.totalPoin}',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text(
-                'OK',
-                style: TextStyle(
-                  color: WarnaAplikasi.utama,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
         ),
       );
-      if (selesai == true && mounted) Navigator.of(context).pop();
     } on KesalahanApi catch (error) {
       if (!mounted) return;
       setState(() => _sedangMengirim = false);

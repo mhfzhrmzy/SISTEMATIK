@@ -156,6 +156,8 @@ class _HalamanKerjakanQuizState extends State<_HalamanKerjakanQuiz> {
         return TesView(
           key: ValueKey(detail.id),
           judul: detail.tipe == 'pretest' ? 'Pre-Test' : 'Post-Test',
+          tipeTest: detail.tipe,
+          judulMateri: detail.judulMateri,
           daftarSoal: detail.soal,
           idQuiz: detail.id,
           timerMenit: detail.timerMenit,
