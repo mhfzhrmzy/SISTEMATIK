@@ -226,6 +226,27 @@ class QuizApiTest extends TestCase
             ->assertJsonPath('message', 'Anda sudah mengerjakan post-test ini dan tidak dapat mengerjakannya kembali.');
     }
 
+    public function test_kerjakan_posttest_ditolak_jika_pretest_belum_selesai(): void
+    {
+        $siswa = $this->buatSiswaAktif();
+        $materi = $this->buatMateri($siswa);
+
+        // Buat pretest untuk materi ini
+        Quiz::create([
+            'id_materi' => $materi->id_materi,
+            'tipe_test' => 'pretest',
+            'tanggal' => now()->toDateString(),
+        ]);
+
+        // Buat posttest aktif
+        $posttest = $this->buatPosttestAktif($materi);
+
+        $this->withToken($this->tokenSiswa($siswa))
+            ->getJson("/api/siswa/quiz/{$posttest->id_quiz}")
+            ->assertForbidden()
+            ->assertJsonPath('message', 'Kamu harus menyelesaikan Pre-Test terlebih dahulu sebelum dapat mengerjakan Post-Test.');
+    }
+
     public function test_submit_menghitung_skor_membuat_leaderboard_dan_menaikkan_poin(): void
     {
         $siswa = $this->buatSiswaAktif();

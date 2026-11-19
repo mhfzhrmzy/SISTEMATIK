@@ -185,6 +185,14 @@ class _BukaMateriViewState extends State<BukaMateriView> {
     try {
       final detail = await _layananMateri.detail(widget.materi.id);
       if (!mounted) return;
+      if (detail.hasPretest && !detail.pretestCompleted) {
+        setState(() {
+          _pesanGalat =
+              'Selesaikan Pre-Test terlebih dahulu sebelum dapat membuka bahan ajar ini.';
+          _memuatDetail = false;
+        });
+        return;
+      }
       setState(() {
         _materi = detail;
         _halamanSaatIni = 0;

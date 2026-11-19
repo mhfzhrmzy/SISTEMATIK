@@ -103,6 +103,22 @@ class QuizController extends Controller
             ], 403);
         }
 
+        // Post-test mensyaratkan pre-test selesai jika materi memiliki pre-test
+        if ($quiz->tipe_test === 'posttest') {
+            $pretests = $quiz->materi->quiz()->where('tipe_test', 'pretest')->get();
+            if ($pretests->isNotEmpty()) {
+                $pretestCompleted = Leaderboard::where('nisn', $siswa->nisn)
+                    ->whereIn('id_quiz', $pretests->pluck('id_quiz'))
+                    ->exists();
+
+                if (! $pretestCompleted) {
+                    return response()->json([
+                        'message' => 'Kamu harus menyelesaikan Pre-Test terlebih dahulu sebelum dapat mengerjakan Post-Test.',
+                    ], 403);
+                }
+            }
+        }
+
         // Penguncian waktu untuk posttest
         if ($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap()) {
             $now = now();
@@ -233,6 +249,22 @@ class QuizController extends Controller
             return response()->json([
                 'message' => 'Kamu tidak memiliki akses ke quiz ini.',
             ], 403);
+        }
+
+        // Post-test mensyaratkan pre-test selesai jika materi memiliki pre-test
+        if ($quiz->tipe_test === 'posttest') {
+            $pretests = $quiz->materi->quiz()->where('tipe_test', 'pretest')->get();
+            if ($pretests->isNotEmpty()) {
+                $pretestCompleted = Leaderboard::where('nisn', $siswa->nisn)
+                    ->whereIn('id_quiz', $pretests->pluck('id_quiz'))
+                    ->exists();
+
+                if (! $pretestCompleted) {
+                    return response()->json([
+                        'message' => 'Kamu harus menyelesaikan Pre-Test terlebih dahulu sebelum dapat mengerjakan Post-Test.',
+                    ], 403);
+                }
+            }
         }
 
         // Penguncian waktu untuk posttest

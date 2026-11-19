@@ -152,7 +152,7 @@ class _PesanSelesai extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
+        const Icon(
           Icons.check_circle_outline_rounded,
           size: 64,
           color: WarnaAplikasi.utama,

@@ -610,6 +610,8 @@ class _LembarAksiMateri extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool butuhPretest = materi.hasPretest && !materi.pretestCompleted;
+
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       child: Material(
@@ -650,8 +652,18 @@ class _LembarAksiMateri extends StatelessWidget {
 
             // Aksi: Kerjakan Pre-Test
             _UbinAksi(
-              ikon: Icons.quiz_outlined,
-              label: 'Kerjakan Pre-Test',
+              ikon: materi.pretestCompleted
+                  ? Icons.check_circle_outline_rounded
+                  : Icons.quiz_outlined,
+              warnaIkon: materi.pretestCompleted
+                  ? const Color(0xFF1F9254)
+                  : null,
+              label: 'Pre-Test',
+              sublabel: materi.hasPretest
+                  ? (materi.pretestCompleted
+                      ? 'Sudah dikerjakan'
+                      : 'Mulai evaluasi awal')
+                  : 'Bebas Akses (Tidak ada pre-test)',
               saatDiketuk: () {
                 Navigator.pop(context);
                 saatPreTest();
@@ -661,22 +673,60 @@ class _LembarAksiMateri extends StatelessWidget {
 
             // Aksi: Buka Materi
             _UbinAksi(
-              ikon: Icons.menu_book_rounded,
+              ikon: butuhPretest
+                  ? Icons.lock_outline_rounded
+                  : Icons.menu_book_rounded,
               label: 'Buka Materi',
+              sublabel: butuhPretest
+                  ? 'Terkunci (Selesaikan Pre-Test dahulu)'
+                  : (materi.isSelesai
+                      ? 'Selesai dipelajari'
+                      : 'Baca bahan ajar modul'),
+              terkunci: butuhPretest,
               saatDiketuk: () {
                 Navigator.pop(context);
-                saatBukaMateri();
+                if (butuhPretest) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Kerjakan Pre-Test terlebih dahulu untuk membuka materi ini.',
+                      ),
+                      backgroundColor: WarnaAplikasi.utama,
+                    ),
+                  );
+                } else {
+                  saatBukaMateri();
+                }
               },
             ),
             const Divider(height: 1),
 
             // Aksi: Post-Test
             _UbinAksi(
-              ikon: Icons.assignment_turned_in_outlined,
+              ikon: butuhPretest
+                  ? Icons.lock_outline_rounded
+                  : Icons.assignment_turned_in_outlined,
               label: 'Post-Test',
+              sublabel: butuhPretest
+                  ? 'Terkunci (Selesaikan Pre-Test dahulu)'
+                  : (materi.posttestCompleted
+                      ? 'Sudah dikerjakan'
+                      : 'Evaluasi akhir modul'),
+              terkunci: butuhPretest,
               saatDiketuk: () {
                 Navigator.pop(context);
-                saatPostTest();
+                if (butuhPretest) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Pre-Test harus diselesaikan sebelum dapat mengikuti Post-Test.',
+                      ),
+                      backgroundColor: WarnaAplikasi.utama,
+                    ),
+                  );
+                } else {
+                  saatPostTest();
+                }
               },
             ),
             const SizedBox(height: 12),
@@ -690,23 +740,50 @@ class _LembarAksiMateri extends StatelessWidget {
 class _UbinAksi extends StatelessWidget {
   final IconData ikon;
   final String label;
+  final String? sublabel;
   final VoidCallback saatDiketuk;
+  final bool terkunci;
+  final Color? warnaIkon;
 
   const _UbinAksi({
     required this.ikon,
     required this.label,
+    this.sublabel,
     required this.saatDiketuk,
+    this.terkunci = false,
+    this.warnaIkon,
   });
 
   @override
   Widget build(BuildContext context) {
+    final warna =
+        terkunci ? Colors.grey.shade400 : (warnaIkon ?? WarnaAplikasi.utama);
+
     return ListTile(
-      leading: Icon(ikon, color: WarnaAplikasi.utama, size: 22),
+      leading: Icon(ikon, color: warna, size: 22),
       title: Text(
         label,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: terkunci ? Colors.grey.shade600 : Colors.black87,
+        ),
       ),
-      trailing: Icon(Icons.chevron_right_rounded, color: Colors.grey.shade400),
+      subtitle: sublabel != null
+          ? Text(
+              sublabel!,
+              style: TextStyle(
+                fontSize: 11.5,
+                color: terkunci ? Colors.red.shade400 : Colors.grey.shade600,
+                fontWeight: terkunci ? FontWeight.w500 : FontWeight.normal,
+              ),
+            )
+          : null,
+      trailing: Icon(
+        terkunci ? Icons.lock_outline_rounded : Icons.chevron_right_rounded,
+        color: terkunci ? Colors.red.shade400 : Colors.grey.shade400,
+        size: terkunci ? 18 : 22,
+      ),
       onTap: saatDiketuk,
     );
   }
