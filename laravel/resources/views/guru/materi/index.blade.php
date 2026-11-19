@@ -59,7 +59,6 @@
         <div class="lg:col-span-4 bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
             <div class="border-b border-slate-200/70 pb-3 mb-4">
                 <h2 class="text-sm font-bold text-slate-900">Tambah Bahan Ajar Baru</h2>
-                <p class="text-[11px] text-slate-500 mt-0.5">Lengkapi formulir modul materi pelajaran</p>
             </div>
 
             <form action="{{ route('materi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3.5">
