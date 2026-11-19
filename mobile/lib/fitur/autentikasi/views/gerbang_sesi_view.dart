@@ -159,11 +159,12 @@ class _HalamanMemuat extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Dasar Python',
+              'SISTEMATIK',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
               ),
             ),
             SizedBox(height: 18),
