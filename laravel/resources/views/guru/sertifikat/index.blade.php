@@ -8,8 +8,7 @@
     {{-- Header Halaman --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1">Penerbitan Sertifikat Siswa</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Filter dan pilih siswa penerima, lalu lanjutkan untuk mengunggah dokumen sertifikat kelulusan / pencapaian.</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Penerbitan Sertifikat Siswa</h1>
         </div>
 
         <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
@@ -42,7 +41,6 @@
     <div class="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs space-y-4">
         <div class="border-b border-slate-200/70 pb-3">
             <h2 class="text-sm font-bold text-slate-900">Pilih Siswa Target</h2>
-            <p class="text-[11px] text-slate-500 mt-0.5">Gunakan filter kelas, jurusan, atau pencarian nama untuk menandai siswa penerima</p>
         </div>
 
         @if ($errors->has('student_ids'))
@@ -225,8 +223,7 @@
             <form action="{{ route('sertifikat.create') }}" method="POST" id="formPilihSiswa">
                 @csrf
                 <div id="hiddenInputsContainer"></div>
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-slate-200">
-                    <p class="text-[11px] text-slate-500">Pilih siswa yang diinginkan di atas, lalu klik tombol untuk melanjutkan ke form berkas.</p>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 pt-3 border-t border-slate-200">
                     <button type="submit"
                             id="btnTambahkanSiswa"
                             class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition duration-150 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
@@ -249,7 +246,6 @@
                 <h3 class="text-base font-bold text-slate-900 tracking-tight">
                     Riwayat Sertifikat yang Diterbitkan
                 </h3>
-                <p class="text-xs text-slate-500 mt-0.5">Daftar sertifikat resmi yang telah diunggah kepada siswa.</p>
             </div>
 
             {{-- Input Pencarian Realtime Riwayat --}}
