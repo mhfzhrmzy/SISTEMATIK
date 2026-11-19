@@ -83,7 +83,7 @@
                         @if ($materi->pretestDone && $materi->hasPretest)
                             {{-- Pre-Test Selesai -> MAROON UTAMA --}}
                             <a href="{{ route('portal.quiz.index', $materi) }}"
-                               class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group"
+                               class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-2xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group"
                                title="Lihat riwayat Pre-Test">
                                 <span class="font-bold text-sm text-white">Pre-test</span>
                                 <span class="text-sm text-white/80 mt-0.5">Selesai</span>
@@ -108,7 +108,7 @@
                             @if ($materi->isMateriSelesai)
                                 {{-- Bahan Ajar Selesai Dibaca -> MAROON UTAMA --}}
                                 <a href="{{ route('portal.materi.show', $materi) }}"
-                                   class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group"
+                                   class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-2xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group"
                                    title="Buka kembali modul materi yang telah dipelajari">
                                     <span class="font-bold text-sm text-white">Bahan Ajar</span>
                                     <span class="text-sm text-white/80 mt-0.5">Selesai</span>
@@ -116,7 +116,7 @@
                             @else
                                 {{-- Bahan Ajar Belum Selesai (Mulai Baca) -> MAROON UTAMA --}}
                                 <a href="{{ route('portal.materi.show', $materi) }}"
-                                   class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group">
+                                   class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-2xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group">
                                     <span class="font-bold text-sm text-white">Bahan Ajar</span>
                                     <span class="text-sm text-white/80 mt-0.5">Baca</span>
                                 </a>
@@ -141,7 +141,7 @@
                         @elseif ($materi->posttestDone)
                             {{-- Post-Test Selesai -> MAROON UTAMA --}}
                             <a href="{{ route('portal.quiz.index', $materi) }}"
-                               class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group"
+                               class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-2xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group"
                                title="Lihat riwayat Post-Test">
                                 <span class="font-bold text-sm text-white">Post-test</span>
                                 <span class="text-sm text-white/80 mt-0.5">Selesai</span>

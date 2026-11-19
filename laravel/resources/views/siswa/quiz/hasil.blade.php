@@ -31,7 +31,7 @@
     <div class="bg-white rounded-2xl shadow-xs overflow-hidden">
 
         {{-- Maroon Accent Header --}}
-        <div class="bg-[#7B1038] px-6 sm:px-8 pt-6 sm:pt-7 pb-11 sm:pb-13 text-center text-white">
+        <div class="bg-[#7B1038] rounded-2xl px-6 sm:px-8 pt-6 sm:pt-7 pb-11 sm:pb-13 text-center text-white">
             <span class="inline-block px-3.5 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-white/20 text-white mb-2 sm:mb-2.5">
                 HASIL {{ strtoupper($quiz->tipe_test) }}
             </span>

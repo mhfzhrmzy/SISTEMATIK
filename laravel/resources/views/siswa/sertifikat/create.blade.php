@@ -103,7 +103,7 @@
                 </label>
                 <div class="relative">
                     <label for="file_sertifikat" class="flex items-center gap-3 w-full p-2 bg-gray-50 hover:bg-gray-100/70 border border-gray-200 rounded-xl cursor-pointer hover:border-[#7B1038] transition group shadow-xs">
-                        <span class="inline-flex items-center px-4 py-2 bg-[#7B1038] group-hover:bg-[#5E0C2B] text-white text-sm font-bold rounded-lg transition duration-150 shadow-xs shrink-0 select-none">
+                        <span class="inline-flex items-center px-4 py-2 bg-[#7B1038] group-hover:bg-[#5E0C2B] text-white text-sm font-bold rounded-xl transition duration-150 shadow-xs shrink-0 select-none">
                             Pilih File
                         </span>
                         <span id="file-chosen-text" class="text-sm text-gray-600 truncate font-medium flex-1">

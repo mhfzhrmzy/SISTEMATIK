@@ -183,8 +183,8 @@
                     <div class="max-w-4xl mx-auto w-full {{ request()->routeIs('portal.quiz.kerjakan') ? 'flex-1 flex flex-col min-h-0' : 'flex-1 min-h-0 flex flex-col justify-center items-center' }}">
                         @yield('content')
                     </div>
-                @elseif (auth('siswa')->check() || request()->routeIs('portal.*', 'siswa.*', 'leaderboard.*', 'admin.profil*'))
-                    <div class="max-w-screen-2xl mx-auto px-10 w-full">
+                @elseif (auth('siswa')->check() || request()->routeIs('portal.*', 'siswa.*', 'leaderboard.*', 'admin.leaderboard.*', '*leaderboard*', 'admin.profil*') || request()->is('leaderboard*', 'admin/leaderboard*'))
+                    <div class="{{ auth('admin')->check() ? 'w-full' : 'max-w-screen-2xl mx-auto px-10 w-full' }}">
                         @yield('content')
                     </div>
                 @else
