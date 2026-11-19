@@ -14,7 +14,7 @@ class SiswaSeeder extends Seeder
     {
         $siswas = [
             ['nisn' => '0051234561', 'nama_lengkap' => 'Andi Pratama',    'jurusan' => 'Teknik Komputer & Jaringan', 'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
-            ['nisn' => '0051234571', 'nama_lengkap' => 'Andi sultan',     'jurusan' => 'Teknik Komputer & Jaringan', 'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['nisn' => '0051234571', 'nama_lengkap/*  */' => 'Andi sultan',     'jurusan' => 'Teknik Komputer & Jaringan', 'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
             ['nisn' => '0051234562', 'nama_lengkap' => 'Dewi Lestari',    'jurusan' => 'Desain Komunikasi Visual',   'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
             ['nisn' => '0051234563', 'nama_lengkap' => 'Rizky Febrian',   'jurusan' => 'Teknik Pemesinan',           'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
             ['nisn' => '0051234564', 'nama_lengkap' => 'Siti Nurhaliza',  'jurusan' => 'Teknik Audio Video',         'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
