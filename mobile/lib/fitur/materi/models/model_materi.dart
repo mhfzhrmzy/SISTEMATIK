@@ -75,13 +75,17 @@ class ModelMateri {
     final rawDeskripsi = isi;
     final rawKelas = json['kode_modul'] ?? json['kelas'] ?? '';
 
+    // `halaman_konten` hanya dipakai untuk data dummy/data lama. API materi
+    // tidak pernah mengirimnya, jadi isi_materi tidak boleh dipakai sebagai
+    // pengganti halaman — itu membuat deskripsi tampil dua kali.
     List<String> halaman = [];
     if (json['halaman_konten'] is List) {
       halaman = (json['halaman_konten'] as List)
           .map((item) => item.toString())
           .toList();
-    } else if (rawDeskripsi.toString().isNotEmpty) {
-      halaman = [rawDeskripsi.toString()];
+      if (halaman.length == 1 && halaman.first == isi) {
+        halaman = [];
+      }
     }
 
     final progressVal = json['progress'];

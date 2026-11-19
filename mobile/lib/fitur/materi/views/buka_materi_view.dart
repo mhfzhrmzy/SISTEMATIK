@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:pdfx/pdfx.dart';
 import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
@@ -17,7 +20,9 @@ import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.da
 ///   radius lengkungan 36px, dan bayangan yang selaras.
 /// - Tombol Back (kembali ke beranda) FIXED di bawah header.
 /// - Yang di-scroll HANYA dari "Deskripsi singkat" sampai kotak materi PDF.
-/// - Kotak isi materi berukuran FIX (proporsional A4: 210 x 297 mm, tanpa scroll di dalam kotaknya).
+/// - Kotak isi materi menampilkan file yang diunggah guru: PDF dirender
+///   langsung di dalam aplikasi (bisa digeser atau memakai tombol halaman),
+///   sedangkan PPT/PPTX/DOC/DOCX dibuka lewat aplikasi eksternal.
 /// - Kotak deskripsi otomatis menyesuaikan tinggi teks (auto-height) tanpa terpotong.
 /// - Tombol navigasi halaman (< Back | Halaman X/Y | Next >) dan tombol Selesai FIXED di bawah.
 /// - NavigasiBawah fixed di bawah.
@@ -45,15 +50,65 @@ class _BukaMateriViewState extends State<BukaMateriView> {
   String? _pesanGalat;
   bool _sedangMenyimpan = false;
 
-  int get _totalHalaman => _materi.totalHalaman == 0 ? 1 : _materi.totalHalaman;
-  bool get _adalahPertama => _halamanSaatIni == 0;
-  bool get _adalahTerakhir => _halamanSaatIni == _totalHalaman - 1;
+  PdfController? _pengendaliPdf;
+  PdfDocument? _dokumenPdf;
+  int _totalHalamanPdf = 0;
+  bool _memuatFile = false;
+  String? _pesanFile;
+
+  bool get _punyaFile => (_materi.urlFile ?? '').trim().isNotEmpty;
+
+  String get _namaFile {
+    final uri = Uri.tryParse(_materi.urlFile ?? '');
+    if (uri != null && uri.pathSegments.isNotEmpty) {
+      return uri.pathSegments.last;
+    }
+    return 'materi_${_materi.id}';
+  }
+
+  String get _ekstensiFile {
+    final nama = _namaFile.toLowerCase();
+    final titik = nama.lastIndexOf('.');
+    return titik == -1 ? '' : nama.substring(titik + 1);
+  }
+
+  bool get _filePdf => _ekstensiFile == 'pdf';
+
+  String get _labelFile {
+    switch (_ekstensiFile) {
+      case 'pdf':
+        return 'Dokumen PDF';
+      case 'ppt':
+      case 'pptx':
+        return 'Presentasi PowerPoint';
+      case 'doc':
+      case 'docx':
+        return 'Dokumen Word';
+      default:
+        return 'File materi';
+    }
+  }
+
+  bool get _modeTeks => !_punyaFile && _materi.halamanKonten.isNotEmpty;
+
+  int get _totalHalaman {
+    if (_filePdf && _totalHalamanPdf > 0) return _totalHalamanPdf;
+    if (_modeTeks) return _materi.halamanKonten.length;
+    return 1;
+  }
+
+  bool get _tampilkanNavigasi =>
+      _modeTeks || (_filePdf && _pengendaliPdf != null);
+
+  bool get _adalahPertama => _halamanSaatIni <= 0;
+  bool get _adalahTerakhir => _halamanSaatIni >= _totalHalaman - 1;
+
   String get _kontenHalamanIni {
-    if (_materi.halamanKonten.isNotEmpty &&
+    if (_halamanSaatIni >= 0 &&
         _halamanSaatIni < _materi.halamanKonten.length) {
       return _materi.halamanKonten[_halamanSaatIni];
     }
-    return _materi.deskripsi;
+    return '';
   }
 
   @override
@@ -62,6 +117,64 @@ class _BukaMateriViewState extends State<BukaMateriView> {
     _materi = widget.materi;
     _layananMateri = widget.layananMateri ?? LayananMateri();
     _muatDetail();
+  }
+
+  @override
+  void dispose() {
+    _pengendaliPdf?.dispose();
+    unawaited(_dokumenPdf?.close());
+    super.dispose();
+  }
+
+  Future<void> _muatFileMateri() async {
+    if (!_filePdf) return;
+
+    setState(() {
+      _memuatFile = true;
+      _pesanFile = null;
+    });
+
+    try {
+      final bytes = await _layananMateri.unduhFile(_materi.id);
+      final dokumen = await PdfDocument.openData(bytes);
+
+      if (!mounted) {
+        await dokumen.close();
+        return;
+      }
+
+      final pengendaliLama = _pengendaliPdf;
+      final dokumenLama = _dokumenPdf;
+      setState(() {
+        _dokumenPdf = dokumen;
+        _pengendaliPdf = PdfController(
+          document: Future<PdfDocument>.value(dokumen),
+        );
+        _totalHalamanPdf = dokumen.pagesCount;
+        _halamanSaatIni = 0;
+        _memuatFile = false;
+      });
+
+      // Bersihkan dokumen lama setelah frame baru selesai dibangun.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        pengendaliLama?.dispose();
+        if (dokumenLama != null && !identical(dokumenLama, dokumen)) {
+          unawaited(dokumenLama.close());
+        }
+      });
+    } on KesalahanApi catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _pesanFile = error.pesan;
+        _memuatFile = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _pesanFile = 'File PDF gagal dibuka. Pastikan file tidak rusak.';
+        _memuatFile = false;
+      });
+    }
   }
 
   Future<void> _muatDetail() async {
@@ -77,6 +190,9 @@ class _BukaMateriViewState extends State<BukaMateriView> {
         _halamanSaatIni = 0;
         _memuatDetail = false;
       });
+      if (_filePdf) {
+        await _muatFileMateri();
+      }
     } on KesalahanApi catch (error) {
       if (!mounted) return;
       setState(() {
@@ -113,13 +229,62 @@ class _BukaMateriViewState extends State<BukaMateriView> {
       ..showSnackBar(SnackBar(content: Text(pesan)));
   }
 
+  Widget _bangunKontenMateri(double tinggi) {
+    if (_punyaFile && _filePdf) {
+      return _KotakViewerPdf(
+        tinggi: tinggi,
+        memuat: _memuatFile,
+        pesan: _pesanFile,
+        pengendali: _pengendaliPdf,
+        kunciDokumen: _dokumenPdf,
+        saatUlangi: _muatFileMateri,
+        saatHalamanBerubah: (halaman) {
+          final indeks = halaman - 1;
+          if (!mounted || indeks == _halamanSaatIni) return;
+          setState(() => _halamanSaatIni = indeks);
+        },
+      );
+    }
+
+    if (_punyaFile) {
+      return _KartuFileEksternal(
+        tinggi: tinggi,
+        labelFile: _labelFile,
+        namaFile: _namaFile,
+        saatBuka: _unduhFileMateri,
+      );
+    }
+
+    if (_modeTeks) {
+      return _KotakKontenTeks(tinggi: tinggi, konten: _kontenHalamanIni);
+    }
+
+    return _KotakInfoFile(tinggi: tinggi);
+  }
+
   void halamanSebelumnya() {
     if (_adalahPertama) return;
+    if (_filePdf && _pengendaliPdf != null) {
+      _pengendaliPdf!.animateToPage(
+        _halamanSaatIni,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+      );
+      return;
+    }
     setState(() => _halamanSaatIni--);
   }
 
   void halamanBerikutnya() {
     if (_adalahTerakhir) return;
+    if (_filePdf && _pengendaliPdf != null) {
+      _pengendaliPdf!.animateToPage(
+        _halamanSaatIni + 2,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+      );
+      return;
+    }
     setState(() => _halamanSaatIni++);
   }
 
@@ -237,23 +402,20 @@ class _BukaMateriViewState extends State<BukaMateriView> {
 
                         // Container deskripsi (auto-height, responsif terhadap panjang teks)
                         _KotakDeskripsi(deskripsi: _materi.deskripsi),
-                        if (_materi.urlFile != null) ...[
-                          const SizedBox(height: 8),
+                        if (_punyaFile && _filePdf) ...[
+                          const SizedBox(height: 6),
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton.icon(
                               onPressed: _unduhFileMateri,
-                              icon: const Icon(Icons.download),
-                              label: const Text('Unduh file materi'),
+                              icon: const Icon(Icons.download, size: 18),
+                              label: const Text('Unduh materi'),
                             ),
                           ),
                         ],
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 6),
 
-                        _KotakKontainerPdf(
-                          tinggi: tinggiA4,
-                          konten: _kontenHalamanIni,
-                        ),
+                        _bangunKontenMateri(tinggiA4),
                       ],
                     ),
                   ),
@@ -266,15 +428,17 @@ class _BukaMateriViewState extends State<BukaMateriView> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Navigasi halaman: < Back | Halaman X/Y | Next >
-                      _BarisKontrolNavigasi(
-                        halamanSaatIni: _halamanSaatIni,
-                        totalHalaman: _totalHalaman,
-                        adalahPertama: _adalahPertama,
-                        adalahTerakhir: _adalahTerakhir,
-                        saatSebelumnya: halamanSebelumnya,
-                        saatBerikutnya: halamanBerikutnya,
-                      ),
-                      const SizedBox(height: 10),
+                      if (_tampilkanNavigasi) ...[
+                        _BarisKontrolNavigasi(
+                          halamanSaatIni: _halamanSaatIni,
+                          totalHalaman: _totalHalaman,
+                          adalahPertama: _adalahPertama,
+                          adalahTerakhir: _adalahTerakhir,
+                          saatSebelumnya: halamanSebelumnya,
+                          saatBerikutnya: halamanBerikutnya,
+                        ),
+                        const SizedBox(height: 10),
+                      ],
 
                       // Tombol Selesai maroon
                       _TombolSelesai(saatDitekan: selesai),
@@ -394,13 +558,221 @@ class _KotakDeskripsi extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Container Materi PDF (FIX Ukuran A4, TANPA Scroll di Dalamnya)
+// Viewer PDF di dalam aplikasi (ukuran A4)
 // ─────────────────────────────────────────────────────────────────────────────
-class _KotakKontainerPdf extends StatelessWidget {
+class _KotakViewerPdf extends StatelessWidget {
+  final double tinggi;
+  final bool memuat;
+  final String? pesan;
+  final PdfController? pengendali;
+  final PdfDocument? kunciDokumen;
+  final VoidCallback saatUlangi;
+  final ValueChanged<int> saatHalamanBerubah;
+
+  const _KotakViewerPdf({
+    required this.tinggi,
+    required this.memuat,
+    required this.pesan,
+    required this.pengendali,
+    required this.kunciDokumen,
+    required this.saatUlangi,
+    required this.saatHalamanBerubah,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: tinggi,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: _isi(),
+    );
+  }
+
+  Widget _isi() {
+    if (memuat) {
+      return const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(strokeWidth: 2.5),
+            ),
+            SizedBox(height: 12),
+            Text('Memuat file PDF...'),
+          ],
+        ),
+      );
+    }
+
+    if (pesan != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.description_outlined,
+                size: 40,
+                color: Colors.grey.shade500,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                pesan!,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey.shade700,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: saatUlangi,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Coba lagi'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (pengendali == null) {
+      return const Center(child: CircularProgressIndicator(strokeWidth: 2.5));
+    }
+
+    return PdfView(
+      key: ObjectKey(kunciDokumen),
+      controller: pengendali!,
+      onPageChanged: saatHalamanBerubah,
+      builders: PdfViewBuilders<DefaultBuilderOptions>(
+        options: const DefaultBuilderOptions(),
+        documentLoaderBuilder: (_) => const Center(
+          child: CircularProgressIndicator(strokeWidth: 2.5),
+        ),
+        pageLoaderBuilder: (_) => const Center(
+          child: CircularProgressIndicator(strokeWidth: 2.5),
+        ),
+        errorBuilder: (_, error) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              'Gagal menampilkan PDF: $error',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Kartu file non-PDF (PPT/DOC) — dibuka lewat aplikasi eksternal
+// ─────────────────────────────────────────────────────────────────────────────
+class _KartuFileEksternal extends StatelessWidget {
+  final double tinggi;
+  final String labelFile;
+  final String namaFile;
+  final VoidCallback saatBuka;
+
+  const _KartuFileEksternal({
+    required this.tinggi,
+    required this.labelFile,
+    required this.namaFile,
+    required this.saatBuka,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: tinggi,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.insert_drive_file_outlined,
+            size: 56,
+            color: WarnaAplikasi.utama,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            labelFile,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: WarnaAplikasi.utama,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            namaFile,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 16),
+          FilledButton.icon(
+            onPressed: saatBuka,
+            icon: const Icon(Icons.open_in_new),
+            label: const Text('Buka File Materi'),
+            style: FilledButton.styleFrom(
+              backgroundColor: WarnaAplikasi.utama,
+              foregroundColor: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'File dibuka dengan aplikasi yang terpasang di perangkat.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Kotak teks cadangan (hanya untuk data dummy/lama tanpa file)
+// ─────────────────────────────────────────────────────────────────────────────
+class _KotakKontenTeks extends StatelessWidget {
   final double tinggi;
   final String konten;
 
-  const _KotakKontainerPdf({required this.tinggi, required this.konten});
+  const _KotakKontenTeks({required this.tinggi, required this.konten});
 
   @override
   Widget build(BuildContext context) {
@@ -431,6 +803,62 @@ class _KotakKontainerPdf extends StatelessWidget {
             height: 1.6,
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Kotak informasi saat guru belum mengunggah file
+// ─────────────────────────────────────────────────────────────────────────────
+class _KotakInfoFile extends StatelessWidget {
+  final double tinggi;
+
+  const _KotakInfoFile({required this.tinggi});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: tinggi,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.cloud_off_outlined,
+            size: 48,
+            color: Colors.grey.shade500,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Guru belum mengunggah file materi untuk modul ini.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Silakan hubungi guru pengampu untuk mendapatkan file materinya.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          ),
+        ],
       ),
     );
   }
