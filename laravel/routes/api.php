@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login/siswa', [AuthController::class, 'loginSiswa']);
 Route::post('/login/guru', [AuthController::class, 'loginGuru']);
 
+// Foto Profil Siswa Public (CORS enabled untuk mobile/web)
+Route::get('/siswa/foto/{path}', [AuthController::class, 'serveFoto'])->where('path', '.*');
+
 // TTS Public
 Route::post('/tts', [ApiTtsController::class, 'synthesize']);
 

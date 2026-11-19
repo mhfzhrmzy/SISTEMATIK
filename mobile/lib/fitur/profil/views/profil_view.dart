@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pretest_posttest_app/inti/konstanta/konfigurasi_api.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
@@ -169,6 +170,7 @@ class _ProfilViewState extends State<ProfilView> {
                 nama: _nama,
                 kelas: _kelas,
                 warnaAvatar: _warnaLatarAvatar,
+                fotoUrl: KonfigurasiApi.perbaikiUrlFoto(SesiPengguna.fotoProfil),
               ),
               Expanded(
                 child: LayoutBuilder(
@@ -243,12 +245,27 @@ class _HeaderProfil extends StatelessWidget {
   final String nama;
   final String kelas;
   final Color warnaAvatar;
+  final String? fotoUrl;
 
   const _HeaderProfil({
     required this.nama,
     required this.kelas,
     this.warnaAvatar = const Color(0xFFBA7D8E),
+    this.fotoUrl,
   });
+
+  Widget _inisial() {
+    return Center(
+      child: Text(
+        nama.isNotEmpty ? nama[0].toUpperCase() : 'U',
+        style: const TextStyle(
+          color: WarnaAplikasi.utamaGelap,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -300,15 +317,17 @@ class _HeaderProfil extends StatelessWidget {
                       color: warnaAvatar,
                       borderRadius: BorderRadius.circular(18),
                     ),
-                    child: Center(
-                      child: Text(
-                        nama.isNotEmpty ? nama[0].toUpperCase() : 'U',
-                        style: const TextStyle(
-                          color: WarnaAplikasi.utamaGelap,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: fotoUrl != null && fotoUrl!.isNotEmpty
+                          ? Image.network(
+                              fotoUrl!,
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => _inisial(),
+                            )
+                          : _inisial(),
                     ),
                   ),
                   const SizedBox(width: 14),

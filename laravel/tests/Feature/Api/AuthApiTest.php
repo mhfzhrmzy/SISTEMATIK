@@ -240,6 +240,12 @@ class AuthApiTest extends TestCase
 
         $this->assertNotNull($siswa->fresh()->foto_profile);
         Storage::disk('public')->assertExists($siswa->fresh()->foto_profile);
+
+        // Tes endpoint serve foto publik dengan CORS
+        $fotoPath = $siswa->fresh()->foto_profile;
+        $serveResponse = $this->get('/api/siswa/foto/' . $fotoPath);
+        $serveResponse->assertOk()
+            ->assertHeader('Access-Control-Allow-Origin', '*');
     }
 
     public function test_login_guru_dengan_nip(): void

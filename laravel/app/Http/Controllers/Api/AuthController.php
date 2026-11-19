@@ -43,7 +43,7 @@ class AuthController extends Controller
             'token' => $token,
             'expires_at' => $kedaluwarsa->toIso8601String(),
             'role' => 'siswa',
-            'user' => $this->dataPenggunaSiswa($siswa),
+            'user' => $this->dataPenggunaSiswa($siswa, $request),
         ]);
     }
 
@@ -108,7 +108,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'message' => 'Profil siswa berhasil diambil.',
-            'user' => $this->dataPenggunaSiswa($request->user()),
+            'user' => $this->dataPenggunaSiswa($request->user(), $request),
         ]);
     }
 
@@ -123,7 +123,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Profil siswa berhasil diperbarui.',
-            'user' => $this->dataPenggunaSiswa($siswa->refresh()),
+            'user' => $this->dataPenggunaSiswa($siswa->refresh(), $request),
         ]);
     }
 
@@ -132,9 +132,15 @@ class AuthController extends Controller
      *
      * @return array<string, mixed>
      */
-    private function dataPenggunaSiswa(PenggunaSiswa $siswa): array
+    private function dataPenggunaSiswa(PenggunaSiswa $siswa, ?Request $request = null): array
     {
         $siswa->loadMissing('kelas.jurusan');
+        $baseUrl = $request ? $request->getSchemeAndHttpHost() : url('/');
+
+        $fotoUrl = null;
+        if ($siswa->foto_profile) {
+            $fotoUrl = $baseUrl . '/api/siswa/foto/' . ltrim($siswa->foto_profile, '/');
+        }
 
         return [
             'nisn' => $siswa->nisn,
@@ -144,9 +150,7 @@ class AuthController extends Controller
             'jurusan' => $siswa->kelas?->jurusan?->nama_jurusan,
             'tahun' => $siswa->kelas?->tahun,
             'poin' => $siswa->poin,
-            'foto_profile' => $siswa->foto_profile
-                ? Storage::disk('public')->url($siswa->foto_profile)
-                : null,
+            'foto_profile' => $fotoUrl,
         ];
     }
 
@@ -165,9 +169,35 @@ class AuthController extends Controller
         $path = $request->file('foto')->store('foto_profile/siswa', 'public');
         $siswa->update(['foto_profile' => $path]);
 
+        $baseUrl = $request->getSchemeAndHttpHost();
+        $fotoUrl = $baseUrl . '/api/siswa/foto/' . ltrim($path, '/');
+
         return response()->json([
             'message' => 'Foto profil berhasil diperbarui.',
-            'foto_profile' => Storage::disk('public')->url($path),
+            'foto_profile' => $fotoUrl,
+        ]);
+    }
+
+    /**
+     * Menyajikan foto profil siswa dengan header CORS penuh untuk mobile & web.
+     */
+    public function serveFoto(Request $request, string $path): \Symfony\Component\HttpFoundation\BinaryFileResponse|JsonResponse
+    {
+        // Sanitasi path untuk mencegah directory traversal
+        $cleanPath = str_replace(['..', '\\'], '', $path);
+
+        if (! Storage::disk('public')->exists($cleanPath)) {
+            return response()->json([
+                'message' => 'Foto tidak ditemukan.',
+            ], 404);
+        }
+
+        $fullPath = Storage::disk('public')->path($cleanPath);
+
+        return response()->file($fullPath, [
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
+            'Cache-Control' => 'public, max-age=86400',
         ]);
     }
 

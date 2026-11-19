@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pretest_posttest_app/inti/konstanta/konfigurasi_api.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
@@ -489,6 +490,8 @@ class _AvatarSiswa extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final urlTersedia = KonfigurasiApi.perbaikiUrlFoto(fotoUrl);
+
     return GestureDetector(
       onTap: saatDiketuk,
       child: Stack(
@@ -507,7 +510,7 @@ class _AvatarSiswa extends StatelessWidget {
                 width: 3.5,
               ),
             ),
-            child: fotoUrl == null
+            child: urlTersedia == null
                 ? const Icon(
                     Icons.person,
                     size: 58,
@@ -515,7 +518,7 @@ class _AvatarSiswa extends StatelessWidget {
                   )
                 : ClipOval(
                     child: Image.network(
-                      fotoUrl!,
+                      urlTersedia,
                       width: 86,
                       height: 86,
                       fit: BoxFit.cover,

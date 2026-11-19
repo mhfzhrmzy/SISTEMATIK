@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pretest_posttest_app/inti/konstanta/konfigurasi_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
@@ -122,7 +123,11 @@ class _BerandaViewState extends State<BerandaView> {
         child: Column(
           children: [
             // ── Header Profil — hp dan status bar dihitung sendiri di dalam widget ──
-            _HeaderProfil(nama: _namaPengguna, kelas: _kelasPengguna),
+            _HeaderProfil(
+              nama: _namaPengguna,
+              kelas: _kelasPengguna,
+              fotoUrl: KonfigurasiApi.perbaikiUrlFoto(SesiPengguna.fotoProfil),
+            ),
 
             // ── Konten Scrollable ─────────────────────────────────────────
             Expanded(
@@ -274,8 +279,26 @@ class _PesanMateri extends StatelessWidget {
 class _HeaderProfil extends StatelessWidget {
   final String nama;
   final String kelas;
+  final String? fotoUrl;
 
-  const _HeaderProfil({required this.nama, required this.kelas});
+  const _HeaderProfil({
+    required this.nama,
+    required this.kelas,
+    this.fotoUrl,
+  });
+
+  Widget _inisial() {
+    return Center(
+      child: Text(
+        nama.isNotEmpty ? nama[0].toUpperCase() : 'U',
+        style: const TextStyle(
+          color: WarnaAplikasi.utamaGelap,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -326,7 +349,7 @@ class _HeaderProfil extends StatelessWidget {
               // Baris avatar + nama + kelas
               Row(
                 children: [
-                  // Avatar profil rounded kotak berlatar dusty rose lembut & inisial dark maroon
+                  // Avatar profil rounded kotak berlatar dusty rose lembut / foto profil
                   Container(
                     width: 56,
                     height: 56,
@@ -334,15 +357,17 @@ class _HeaderProfil extends StatelessWidget {
                       color: const Color(0xFFBA7D8E),
                       borderRadius: BorderRadius.circular(18),
                     ),
-                    child: Center(
-                      child: Text(
-                        nama.isNotEmpty ? nama[0].toUpperCase() : 'U',
-                        style: const TextStyle(
-                          color: WarnaAplikasi.utamaGelap,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: fotoUrl != null && fotoUrl!.isNotEmpty
+                          ? Image.network(
+                              fotoUrl!,
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => _inisial(),
+                            )
+                          : _inisial(),
                     ),
                   ),
                   const SizedBox(width: 14),
