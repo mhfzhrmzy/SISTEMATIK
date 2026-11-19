@@ -5,6 +5,7 @@ import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/views/pratinjau_sertifikat_view.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/views/upload_sertifikat_view.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
@@ -144,6 +145,17 @@ class _SertifikatViewState extends State<SertifikatView> {
     }
   }
 
+  void _bukaPratinjau(ItemSertifikat item) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PratinjauSertifikatView(
+          item: item,
+          layananSertifikat: _layananSertifikat,
+        ),
+      ),
+    );
+  }
+
   Future<void> _hapusSertifikat(ItemSertifikat item) async {
     if (item.id == null) {
       _tampilkanPesan('ID sertifikat tidak tersedia.');
@@ -167,16 +179,14 @@ class _SertifikatViewState extends State<SertifikatView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Batal',
-                style: TextStyle(color: Colors.grey.shade600)),
+            child: Text('Batal', style: TextStyle(color: Colors.grey.shade600)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text(
               'Hapus',
               style: TextStyle(
-                  color: WarnaAplikasi.utama,
-                  fontWeight: FontWeight.bold),
+                  color: WarnaAplikasi.utama, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -188,8 +198,7 @@ class _SertifikatViewState extends State<SertifikatView> {
       await _layananSertifikat.hapus(item.id!);
       if (!mounted) return;
       setState(() {
-        _daftarSertifikat
-            .removeWhere((s) => s.id == item.id);
+        _daftarSertifikat.removeWhere((s) => s.id == item.id);
       });
       _tampilkanPesan('Sertifikat berhasil dihapus.');
     } on KesalahanApi catch (error) {
@@ -857,100 +866,124 @@ class _SertifikatViewState extends State<SertifikatView> {
                                   const SizedBox(height: 14),
                               itemBuilder: (ctx, idx) {
                                 final item = items[idx];
-                                return Container(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
+                                return Material(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: InkWell(
+                                    onTap: () => _bukaPratinjau(item),
                                     borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                        color: WarnaAplikasi.utama, width: 1.0),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(item.label,
-                                          style: const TextStyle(
-                                              color: WarnaAplikasi.utama,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold)),
-                                      const SizedBox(height: 3),
-                                      Text(item.judul,
-                                          style: const TextStyle(
-                                              color: WarnaAplikasi.utama,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold)),
-                                      const SizedBox(height: 3),
-                                      Text(item.tanggalTerbit,
-                                          style: TextStyle(
-                                              color: WarnaAplikasi.utama
-                                                  .withValues(alpha: 0.7),
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w500)),
-                                       const SizedBox(height: 12),
-                                       Row(
-                                         children: [
-                                           Expanded(
-                                             child: SizedBox(
-                                               height: 38,
-                                               child: ElevatedButton(
-                                                 onPressed: () =>
-                                                     _unduhSertifikat(item),
-                                                 style:
-                                                     ElevatedButton.styleFrom(
-                                                   backgroundColor:
-                                                       WarnaAplikasi.utama,
-                                                   foregroundColor:
-                                                       Colors.white,
-                                                   elevation: 0,
-                                                   shape: RoundedRectangleBorder(
-                                                       borderRadius:
-                                                           BorderRadius.circular(
-                                                               8)),
-                                                 ),
-                                                 child: const Text(
-                                                   'Unduh',
-                                                   style: TextStyle(
-                                                       fontSize: 13,
-                                                       fontWeight:
-                                                           FontWeight.bold),
-                                                 ),
-                                               ),
-                                             ),
-                                           ),
-                                           const SizedBox(width: 10),
-                                           Expanded(
-                                             child: SizedBox(
-                                               height: 38,
-                                               child: OutlinedButton(
-                                                 onPressed: () =>
-                                                     _hapusSertifikat(item),
-                                                 style: OutlinedButton.styleFrom(
-                                                   foregroundColor: Colors.red.shade700,
-                                                   side: BorderSide(
-                                                       color:
-                                                           Colors.red.shade300,
-                                                       width: 1.2),
-                                                   elevation: 0,
-                                                   shape: RoundedRectangleBorder(
-                                                       borderRadius:
-                                                           BorderRadius.circular(
-                                                               8)),
-                                                 ),
-                                                 child: const Text(
-                                                   'Hapus',
-                                                   style: TextStyle(
-                                                       fontSize: 13,
-                                                       fontWeight:
-                                                           FontWeight.bold),
-                                                 ),
-                                               ),
-                                             ),
-                                           ),
-                                         ],
-                                       ),
-                                    ],
+                                    child: Container(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 14, 16, 14),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                            color: WarnaAplikasi.utama,
+                                            width: 1.0),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(item.label,
+                                              style: const TextStyle(
+                                                  color: WarnaAplikasi.utama,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold)),
+                                          const SizedBox(height: 3),
+                                          Text(item.judul,
+                                              style: const TextStyle(
+                                                  color: WarnaAplikasi.utama,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold)),
+                                          const SizedBox(height: 3),
+                                          Text(item.tanggalTerbit,
+                                              style: TextStyle(
+                                                  color: WarnaAplikasi.utama
+                                                      .withValues(alpha: 0.7),
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w500)),
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: SizedBox(
+                                                  height: 38,
+                                                  child: ElevatedButton(
+                                                    onPressed: () =>
+                                                        _unduhSertifikat(item),
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      backgroundColor:
+                                                          WarnaAplikasi.utama,
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      elevation: 0,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8)),
+                                                    ),
+                                                    child: const Text(
+                                                      'Unduh',
+                                                      style: TextStyle(
+                                                          fontSize: 13,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Expanded(
+                                                child: SizedBox(
+                                                  height: 38,
+                                                  child: OutlinedButton(
+                                                    onPressed: () =>
+                                                        _hapusSertifikat(item),
+                                                    style: OutlinedButton
+                                                        .styleFrom(
+                                                      foregroundColor:
+                                                          Colors.red.shade700,
+                                                      side: BorderSide(
+                                                          color: Colors
+                                                              .red.shade300,
+                                                          width: 1.2),
+                                                      elevation: 0,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8)),
+                                                    ),
+                                                    child: const Text(
+                                                      'Hapus',
+                                                      style: TextStyle(
+                                                          fontSize: 13,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Center(
+                                            child: Text(
+                                              'Ketuk kartu untuk pratinjau',
+                                              style: TextStyle(
+                                                  fontSize: 10.5,
+                                                  color: WarnaAplikasi.utama
+                                                      .withValues(alpha: 0.55)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 );
                               },
