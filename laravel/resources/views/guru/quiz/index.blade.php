@@ -8,8 +8,7 @@
     {{-- Header Halaman --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-1">Kelola Quiz Pembelajaran</h1>
-            <p class="text-xs sm:text-sm text-slate-500">Buat dan atur jadwal kuis Pre-Test &amp; Post-Test untuk menguji capaian belajar siswa pada setiap materi.</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Kelola Quiz Pembelajaran</h1>
         </div>
         <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
             <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/90 shadow-2xs">
@@ -41,7 +40,6 @@
     <div class="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs">
         <div class="border-b border-slate-200/70 pb-3 mb-4">
             <h2 class="text-sm font-bold text-slate-900">Buat Quiz Baru</h2>
-            <p class="text-[11px] text-slate-500 mt-0.5">Pilih materi dan tentukan jenis kuis (Pre-Test atau Post-Test)</p>
         </div>
 
         <form action="{{ route('admin.quiz.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4" id="form-create-quiz" data-existing-combinations="{{ json_encode($existingCombinations) }}">
@@ -185,7 +183,7 @@
                        min="{{ date('Y-m-d') }}"
                        readonly
                        class="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-semibold bg-slate-100 text-slate-500 cursor-not-allowed">
-                <p id="tanggal-help" class="text-slate-400 text-[10px] mt-1">Otomatis, tidak dapat diubah</p>
+                <p id="tanggal-help" class="text-slate-400 text-[10px] mt-1"></p>
                 @error('tanggal')
                     <p class="text-rose-600 text-[11px] mt-1 font-medium">{{ $message }}</p>
                 @enderror
@@ -714,7 +712,7 @@
             inputTanggal.classList.remove('border-slate-300', 'bg-white', 'focus:ring-2', 'focus:ring-[#7B1038]/20', 'focus:border-[#7B1038]');
             inputTanggal.removeAttribute('name');
             inputTanggal.removeAttribute('min');
-            tanggalHelp.textContent = 'Otomatis, tidak dapat diubah';
+            tanggalHelp.textContent = '';
             timerHelp.textContent = 'Maks. 120 menit';
         }
     }

@@ -115,7 +115,7 @@
                     <div class="md:col-span-2">
                         <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Pelaksanaan</label>
                         <input type="date" name="tanggal" id="input-tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" min="{{ date('Y-m-d') }}" readonly class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold bg-slate-100 text-slate-500 cursor-not-allowed">
-                        <p id="tanggal-help" class="text-xs text-slate-400 mt-1">Otomatis, tidak dapat diubah</p>
+                        <p id="tanggal-help" class="text-xs text-slate-400 mt-1"></p>
                         @error('tanggal')
                             <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                         @enderror
@@ -383,7 +383,7 @@
             inputTanggal.classList.remove('border-slate-300', 'focus:ring-2', 'focus:ring-[#6D1837]');
             inputTanggal.removeAttribute('name');
             inputTanggal.removeAttribute('min');
-            tanggalHelp.textContent = 'Otomatis, tidak dapat diubah';
+            tanggalHelp.textContent = '';
             timerHelp.textContent = 'Maks. 120 menit';
         }
     }
