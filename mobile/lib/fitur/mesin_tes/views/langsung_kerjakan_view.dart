@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/layanan_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/views/tes_view.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';

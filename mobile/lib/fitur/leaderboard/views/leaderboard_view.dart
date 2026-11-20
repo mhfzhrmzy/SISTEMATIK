@@ -6,10 +6,10 @@ import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/preferensi_lokal.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
-import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
+import 'package:pretest_posttest_app/fitur/materi/data/api_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/data/layanan_leaderboard.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/data/api_leaderboard.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/models/model_leaderboard.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/widgets/batang_podium.dart'
     show BatangPodium, BatangPodiumKosong, AvatarSiswa;
@@ -681,19 +681,11 @@ class _LeaderboardViewState extends State<LeaderboardView> {
       widgets.add(const SizedBox(height: 16));
     }
 
-    // Tampilkan Top 10: data asli (maksi) + placeholder sampai peringkat 10
-    final daftarTerisi = daftar.length > 3 ? daftar.sublist(3, daftar.length > 10 ? 10 : daftar.length) : <ModelLeaderboard>[];
-    final jumlahPlaceholder = (10 - daftarTerisi.length - 3).clamp(0, 7);
-    final daftarPlaceholder = List<ModelLeaderboard>.generate(
-      jumlahPlaceholder,
-      (i) => ModelLeaderboard(
-        peringkat: i + 4,
-        nisn: '',
-        nama: '-',
-        skor: 0,
-      ),
-    );
-    final daftarGabungan = [...daftarTerisi, ...daftarPlaceholder];
+    // Tampilkan semua siswa mulai dari peringkat 4 (podium Top 3 di atas).
+    final daftarTerisi = daftar.length > 3
+        ? daftar.sublist(3)
+        : <ModelLeaderboard>[];
+    final daftarGabungan = daftarTerisi;
 
     widgets.add(
       Expanded(
@@ -704,7 +696,6 @@ class _LeaderboardViewState extends State<LeaderboardView> {
           separatorBuilder: (_, __) => const SizedBox(height: 10),
           itemBuilder: (ctx, idx) {
             final item = daftarGabungan[idx];
-            final isPlaceholder = idx >= daftarTerisi.length;
 
             return Container(
               height: 50,
@@ -724,10 +715,8 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                     width: 28,
                     child: Text(
                       '${item.peringkat}',
-                      style: TextStyle(
-                        color: isPlaceholder
-                            ? WarnaAplikasi.utama.withValues(alpha: 0.4)
-                            : WarnaAplikasi.utama,
+                      style: const TextStyle(
+                        color: WarnaAplikasi.utama,
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
@@ -739,10 +728,8 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                   Expanded(
                     child: Text(
                       item.nama,
-                      style: TextStyle(
-                        color: isPlaceholder
-                            ? WarnaAplikasi.utama.withValues(alpha: 0.4)
-                            : WarnaAplikasi.utama,
+                      style: const TextStyle(
+                        color: WarnaAplikasi.utama,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -752,11 +739,7 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                   ),
                   const SizedBox(width: 10),
                   // Profil circle (kanan)
-                  AvatarSiswa(
-                    pengguna: item,
-                    ukuran: 36,
-                    placeholder: isPlaceholder,
-                  ),
+                  AvatarSiswa(pengguna: item, ukuran: 36),
                 ],
               ),
             );

@@ -5,7 +5,7 @@ import 'package:pretest_posttest_app/inti/konstanta/konfigurasi_api.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
-import 'package:pretest_posttest_app/fitur/profil/data/layanan_profil.dart';
+import 'package:pretest_posttest_app/fitur/profil/data/api_profil.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';

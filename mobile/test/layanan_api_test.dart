@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/layanan_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/models/soal.dart';
 import 'package:pretest_posttest_app/inti/layanan/klien_api.dart';
 

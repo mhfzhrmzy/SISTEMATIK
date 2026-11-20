@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
-import 'package:pretest_posttest_app/inti/layanan/layanan_tts.dart';
+import 'package:pretest_posttest_app/inti/layanan/api_tts.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/models/soal.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/layanan_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/views/hasil_quiz_view.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/opsi_jawaban.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/baris_timer_audio.dart';

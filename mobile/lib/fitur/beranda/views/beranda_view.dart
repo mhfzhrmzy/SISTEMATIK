@@ -5,7 +5,7 @@ import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
-import 'package:pretest_posttest_app/fitur/materi/data/layanan_materi.dart';
+import 'package:pretest_posttest_app/fitur/materi/data/api_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/views/buka_materi_view.dart';
 import 'package:pretest_posttest_app/fitur/pretest/views/pretest_view.dart';

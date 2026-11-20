@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/data/layanan_sertifikat.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/data/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/widgets/pratinjau_pdf.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
@@ -204,10 +204,6 @@ class _PratinjauSertifikatViewState extends State<PratinjauSertifikatView> {
           ),
         ),
       );
-    }
-
-    if (kIsWeb) {
-      return PratinjauPdfWeb(data: _dataPdf!);
     }
 
     return PDFView(

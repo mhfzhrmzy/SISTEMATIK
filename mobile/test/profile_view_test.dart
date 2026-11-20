@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/models/pengguna_siswa.dart';
-import 'package:pretest_posttest_app/fitur/profil/data/layanan_profil.dart';
+import 'package:pretest_posttest_app/fitur/profil/data/api_profil.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/pengaturan_akun_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
 

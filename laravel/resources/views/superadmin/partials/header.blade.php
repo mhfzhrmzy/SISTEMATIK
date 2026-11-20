@@ -6,13 +6,10 @@
             @if(request('menu'))
                 <input type="hidden" name="menu" value="{{ request('menu') }}">
             @endif
-            <svg class="w-4 h-4 absolute left-3 top-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            <input type="text" name="search" id="superadmin-search-input" value="{{ request('search') }}" placeholder="Cari NIP, NISN, Guru, Siswa, Kelas..." 
-                   class="w-72 lg:w-96 pl-9 pr-8 py-1.5 text-xs rounded-xl bg-indigo-50/40 border border-indigo-100/80 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 focus:bg-white transition">
+            <input type="text" name="search" id="superadmin-search-input" value="{{ request('search') }}" placeholder="Cari NIP, NISN, Guru, Siswa, atau Kelas..."
+                   class="w-72 lg:w-96 px-5 py-2.5 text-sm rounded-xl bg-indigo-50/40 border border-indigo-100/80 text-black placeholder-black focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 focus:bg-white transition">
             @if(request('search'))
-                <a href="{{ route('superadmin.index', ['menu' => request('menu', 'dashboard')]) }}" class="absolute right-3 top-1.5 text-slate-400 hover:text-slate-700 text-sm font-bold" title="Hapus Filter">&times;</a>
+                <a href="{{ route('superadmin.index', ['menu' => request('menu', 'dashboard')]) }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-base font-bold" title="Hapus Filter">&times;</a>
             @endif
         </form>
     </div>

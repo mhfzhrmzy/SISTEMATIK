@@ -4,9 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/data/layanan_sertifikat.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/data/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/tema_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/views/sertifikat_view.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/views/upload_sertifikat_form.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
@@ -252,10 +251,10 @@ class _UploadSertifikatViewState extends State<UploadSertifikatView>
     return Theme(
       data: Theme.of(context).copyWith(
         colorScheme: const ColorScheme.light(
-          primary: TemaSertifikat.maroon,
+          primary: WarnaAplikasi.utama,
           onPrimary: Colors.white,
           surface: Colors.white,
-          onSurface: TemaSertifikat.maroon,
+          onSurface: WarnaAplikasi.utama,
         ),
       ),
       child: child!,
@@ -317,19 +316,23 @@ class _UploadSertifikatViewState extends State<UploadSertifikatView>
       child: Container(
         padding:
             const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-        decoration: TemaSertifikat.kotak(
-          warnaGaris: TemaSertifikat.maroon.withValues(alpha: 0.35),
-          radius: 20,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: WarnaAplikasi.utama.withValues(alpha: 0.35),
+            width: 1.2,
+          ),
         ),
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.arrow_back_rounded, size: 14, color: TemaSertifikat.maroon),
+            Icon(Icons.arrow_back_rounded, size: 14, color: WarnaAplikasi.utama),
             SizedBox(width: 4),
             Text(
               'Back',
               style: TextStyle(
-                color: TemaSertifikat.maroon,
+                color: WarnaAplikasi.utama,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
@@ -344,14 +347,14 @@ class _UploadSertifikatViewState extends State<UploadSertifikatView>
     return Row(
       children: [
         const Icon(
-            Icons.workspace_premium_rounded, color: TemaSertifikat.maroon, size: 18),
+            Icons.workspace_premium_rounded, color: WarnaAplikasi.utama, size: 18),
         const SizedBox(width: 8),
         Text(
           sedangEdit ? 'Edit Sertifikat' : 'Form Upload Sertifikat',
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.bold,
-            color: TemaSertifikat.maroon,
+            color: WarnaAplikasi.utama,
           ),
         ),
       ],

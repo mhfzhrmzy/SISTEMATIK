@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/layanan_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/header_tes.dart';
 import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';

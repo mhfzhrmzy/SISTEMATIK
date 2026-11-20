@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/layanan_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/models/soal.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/views/hasil_quiz_view.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/views/tes_view.dart';

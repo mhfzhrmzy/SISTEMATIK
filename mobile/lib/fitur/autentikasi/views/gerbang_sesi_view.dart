@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
-import 'package:pretest_posttest_app/fitur/autentikasi/data/layanan_autentikasi.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/data/api_autentikasi.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/views/login_view.dart';
 import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
 

@@ -105,7 +105,7 @@
 
     <!-- DAFTAR SISWA TABLE -->
     <div class="bg-white rounded-2xl p-6 border border-slate-200/70 shadow-sm">
-        <h2 class="mb-4 text-base font-bold text-slate-900">Daftar Akun Siswa Registered</h2>
+        <h2 class="mb-4 text-base font-bold text-slate-900">Daftar Akun Siswa</h2>
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
                 <thead>

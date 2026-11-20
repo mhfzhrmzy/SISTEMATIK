@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
-import 'package:pretest_posttest_app/inti/layanan/layanan_tts.dart';
+import 'package:pretest_posttest_app/inti/layanan/api_tts.dart';
 
 /// Baris yang menampilkan tombol "Play Audio" (TTS ElevenLabs) di kiri
 /// dan indikator sisa waktu di kanan untuk Pre-Test & Post-Test.

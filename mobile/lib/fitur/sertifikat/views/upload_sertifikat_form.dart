@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/tema_sertifikat.dart';
+import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 
 /// Kontrak yang dipenuhi [UploadSertifikatView] agar form dapat memantik
 /// interaksi tanpa tahu detail state-nya.
@@ -37,12 +37,13 @@ class UploadSertifikatForm extends StatelessWidget {
     }
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: TemaSertifikat.kotak(
-        warnaGaris: TemaSertifikat.maroonBorder,
-        radius: 16,
-        bayangan: [
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFD4A0B0), width: 1.2),
+        boxShadow: [
           BoxShadow(
-            color: TemaSertifikat.maroon.withValues(alpha: 0.07),
+            color: WarnaAplikasi.utama.withValues(alpha: 0.07),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -95,12 +96,12 @@ class UploadSertifikatForm extends StatelessWidget {
           controller: kontroler,
           validator: validasiKosong,
           style: const TextStyle(
-            color: TemaSertifikat.maroon,
+            color: WarnaAplikasi.utama,
             fontSize: 13.5,
             fontWeight: FontWeight.w500,
           ),
-          cursorColor: TemaSertifikat.maroon,
-          decoration: TemaSertifikat.dekorasiInput(petunjuk),
+          cursorColor: WarnaAplikasi.utama,
+          decoration: _dekorasiInput(petunjuk),
         ),
       ],
     );
@@ -112,7 +113,7 @@ class UploadSertifikatForm extends StatelessWidget {
         Text(
           teks,
           style: const TextStyle(
-            color: TemaSertifikat.maroon,
+            color: WarnaAplikasi.utama,
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
@@ -143,15 +144,18 @@ class UploadSertifikatForm extends StatelessWidget {
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-            decoration: TemaSertifikat.kotak(
-              warnaLatar: TemaSertifikat.maroonTerang,
-              warnaGaris: aktif ? TemaSertifikat.maroon : TemaSertifikat.maroonBorder,
-              ketebalanGaris: aktif ? 1.8 : 1.2,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF6EEF1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: aktif ? WarnaAplikasi.utama : const Color(0xFFD4A0B0),
+                width: aktif ? 1.8 : 1.2,
+              ),
             ),
             child: Row(
               children: [
                 const Icon(Icons.calendar_month_rounded,
-                    color: TemaSertifikat.maroon, size: 18),
+                    color: WarnaAplikasi.utama, size: 18),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -160,7 +164,7 @@ class UploadSertifikatForm extends StatelessWidget {
                       fontSize: 13,
                       fontWeight:
                           aktif ? FontWeight.w600 : FontWeight.normal,
-                      color: aktif ? TemaSertifikat.maroon : Colors.grey.shade500,
+                      color: aktif ? WarnaAplikasi.utama : Colors.grey.shade500,
                     ),
                   ),
                 ),
@@ -169,7 +173,7 @@ class UploadSertifikatForm extends StatelessWidget {
                     onTap: c.hapusTanggal,
                     borderRadius: BorderRadius.circular(10),
                     child:
-                        const Icon(Icons.close, size: 16, color: TemaSertifikat.maroon),
+                        const Icon(Icons.close, size: 16, color: WarnaAplikasi.utama),
                   ),
               ],
             ),
@@ -196,11 +200,11 @@ class UploadSertifikatForm extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 30),
-        decoration: TemaSertifikat.kotak(
-          warnaGaris: TemaSertifikat.maroon,
-          ketebalanGaris: 1.5,
-          radius: 14,
-        ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: WarnaAplikasi.utama, width: 1.5),
+      ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -208,17 +212,17 @@ class UploadSertifikatForm extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: const BoxDecoration(
-                color: TemaSertifikat.maroonTerang,
+                color: const Color(0xFFF6EEF1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.cloud_upload_rounded,
-                  color: TemaSertifikat.maroon, size: 34),
+                  color: WarnaAplikasi.utama, size: 34),
             ),
             const SizedBox(height: 12),
             const Text(
               'Upload File Disini',
               style: TextStyle(
-                color: TemaSertifikat.maroon,
+                color: WarnaAplikasi.utama,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -236,10 +240,10 @@ class UploadSertifikatForm extends StatelessWidget {
   Widget _dropzonePenuh() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: TemaSertifikat.kotak(
-        warnaLatar: TemaSertifikat.maroonTerang,
-        warnaGaris: TemaSertifikat.maroon,
-        radius: 12,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF6EEF1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: WarnaAplikasi.utama, width: 1.2),
       ),
       child: Row(
         children: [
@@ -247,7 +251,7 @@ class UploadSertifikatForm extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: TemaSertifikat.maroon,
+              color: WarnaAplikasi.utama,
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(Icons.picture_as_pdf_rounded,
@@ -261,7 +265,7 @@ class UploadSertifikatForm extends StatelessWidget {
                 Text(
                   c.namaFileTerpilih!,
                   style: const TextStyle(
-                    color: TemaSertifikat.maroon,
+                    color: WarnaAplikasi.utama,
                     fontSize: 12.5,
                     fontWeight: FontWeight.bold,
                   ),
@@ -275,7 +279,7 @@ class UploadSertifikatForm extends StatelessWidget {
           IconButton(
             onPressed: c.hapusFile,
             icon:
-                const Icon(Icons.delete_outline_rounded, color: TemaSertifikat.maroon, size: 20),
+                const Icon(Icons.delete_outline_rounded, color: WarnaAplikasi.utama, size: 20),
             tooltip: 'Hapus file',
           ),
         ],
@@ -290,7 +294,7 @@ class UploadSertifikatForm extends StatelessWidget {
           Expanded(
             child: OutlinedButton(
               onPressed: c.batalEdit,
-              style: TemaSertifikat.tombolGaris(),
+              style: OutlinedButton.styleFrom(),
               child:
                   const Text('Batal Edit', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
@@ -319,7 +323,7 @@ class UploadSertifikatForm extends StatelessWidget {
                       : 'Tambah Sertifikat',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            style: TemaSertifikat.tombolUtama(),
+            style: ElevatedButton.styleFrom(),
           ),
         ),
       ],
@@ -332,5 +336,31 @@ class UploadSertifikatForm extends StatelessWidget {
       'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
     ];
     return '${d.day.toString().padLeft(2, '0')} ${bulan[d.month - 1]} ${d.year}';
+  }
+
+  InputDecoration _dekorasiInput(String petunjuk) {
+    OutlineInputBorder buatBorder(Color warna, double lebar) =>
+        OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: warna, width: lebar),
+        );
+    return InputDecoration(
+      hintText: petunjuk,
+      hintStyle: const TextStyle(
+        color: Colors.grey,
+        fontSize: 13,
+        fontWeight: FontWeight.normal,
+      ),
+      filled: true,
+      fillColor: const Color(0xFFF6EEF1),
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+      border: buatBorder(const Color(0xFFD4A0B0), 1.2),
+      enabledBorder: buatBorder(const Color(0xFFD4A0B0), 1.2),
+      focusedBorder: buatBorder(WarnaAplikasi.utama, 1.8),
+      errorBorder: buatBorder(Colors.red.shade400, 1.5),
+      focusedErrorBorder: buatBorder(Colors.red.shade400, 1.8),
+      errorStyle: const TextStyle(fontSize: 11),
+    );
   }
 }
