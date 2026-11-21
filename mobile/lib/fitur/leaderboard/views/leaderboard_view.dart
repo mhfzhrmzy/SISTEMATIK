@@ -217,7 +217,7 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                                       _hasil!.kelas!.isNotEmpty
                                   ? (_hasil!.jurusan != null &&
                                           _hasil!.jurusan!.isNotEmpty
-                                      ? 'Kelas ${_hasil!.kelas} â€¢ ${_hasil!.jurusan}'
+                                      ? 'Kelas ${_hasil!.kelas} | ${_hasil!.jurusan}'
                                       : 'Kelas ${_hasil!.kelas}')
                                   : ''),
                           style: const TextStyle(
@@ -442,19 +442,22 @@ class _LeaderboardViewState extends State<LeaderboardView> {
 
   /// Podium kosong (placeholder) untuk Top 3.
   Widget _podiumKosong() {
-    return const Center(
+    return Center(
       child: SizedBox(
         height: 160,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            BatangPodiumKosong(peringkat: 2, tinggiBatang: 60, lebar: 92),
-            SizedBox(width: 12),
-            BatangPodiumKosong(peringkat: 1, tinggiBatang: 90, lebar: 100),
-            SizedBox(width: 12),
-            BatangPodiumKosong(peringkat: 3, tinggiBatang: 44, lebar: 92),
-          ],
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              BatangPodiumKosong(peringkat: 2, tinggiBatang: 60, lebar: 92),
+              SizedBox(width: 12),
+              BatangPodiumKosong(peringkat: 1, tinggiBatang: 90, lebar: 100),
+              SizedBox(width: 12),
+              BatangPodiumKosong(peringkat: 3, tinggiBatang: 44, lebar: 92),
+            ],
+          ),
         ),
       ),
     );
@@ -624,35 +627,38 @@ class _LeaderboardViewState extends State<LeaderboardView> {
         Center(
           child: SizedBox(
             height: 160,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                // Peringkat 2
-                BatangPodium(
-                  pengguna: peringkatKedua,
-                  tinggiBatang: 60,
-                  lebar: 92,
-                ),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Peringkat 2
+                  BatangPodium(
+                    pengguna: peringkatKedua,
+                    tinggiBatang: 60,
+                    lebar: 92,
+                  ),
 
-                const SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
-                // Peringkat 1
-                BatangPodium(
-                  pengguna: peringkatSatu,
-                  tinggiBatang: 90,
-                  lebar: 100,
-                ),
+                  // Peringkat 1
+                  BatangPodium(
+                    pengguna: peringkatSatu,
+                    tinggiBatang: 90,
+                    lebar: 100,
+                  ),
 
-                const SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
-                // Peringkat 3
-                BatangPodium(
-                  pengguna: peringkatTiga,
-                  tinggiBatang: 44,
-                  lebar: 92,
-                ),
-              ],
+                  // Peringkat 3
+                  BatangPodium(
+                    pengguna: peringkatTiga,
+                    tinggiBatang: 44,
+                    lebar: 92,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -661,19 +667,22 @@ class _LeaderboardViewState extends State<LeaderboardView> {
     } else {
       // Podium kosong: tampilkan 3 batang placeholder
       widgets.add(
-        const Center(
+        Center(
           child: SizedBox(
             height: 160,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                BatangPodiumKosong(peringkat: 2, tinggiBatang: 60, lebar: 92),
-                SizedBox(width: 12),
-                BatangPodiumKosong(peringkat: 1, tinggiBatang: 90, lebar: 100),
-                SizedBox(width: 12),
-                BatangPodiumKosong(peringkat: 3, tinggiBatang: 44, lebar: 92),
-              ],
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  BatangPodiumKosong(peringkat: 2, tinggiBatang: 60, lebar: 92),
+                  SizedBox(width: 12),
+                  BatangPodiumKosong(peringkat: 1, tinggiBatang: 90, lebar: 100),
+                  SizedBox(width: 12),
+                  BatangPodiumKosong(peringkat: 3, tinggiBatang: 44, lebar: 92),
+                ],
+              ),
             ),
           ),
         ),
