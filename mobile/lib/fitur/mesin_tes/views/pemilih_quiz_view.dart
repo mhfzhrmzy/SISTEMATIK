@@ -88,8 +88,8 @@ class _PemilihQuizViewState extends State<PemilihQuizView> {
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
               final quiz = quizzes[index];
-              final terkunci =
-                  widget.tipeTest == 'posttest' && quiz.sudahDikerjakan;
+              // Blokir pretest dan posttest yang sudah dikerjakan
+              final terkunci = quiz.sudahDikerjakan;
               return Card(
                 child: ListTile(
                   title: Text('$title ${index + 1}'),

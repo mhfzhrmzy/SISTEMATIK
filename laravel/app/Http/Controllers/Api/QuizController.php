@@ -138,17 +138,17 @@ class QuizController extends Controller
             }
         }
 
-        // Blokir pengerjaan ulang posttest jika sudah pernah dikerjakan
-        if ($quiz->tipe_test === 'posttest') {
-            $sudahDikerjakan = Leaderboard::where('id_quiz', $quiz->id_quiz)
-                ->where('nisn', $siswa->nisn)
-                ->exists();
+        // Blokir pengerjaan ulang pretest dan posttest jika sudah pernah dikerjakan
+        $sudahDikerjakan = Leaderboard::where('id_quiz', $quiz->id_quiz)
+            ->where('nisn', $siswa->nisn)
+            ->exists();
 
-            if ($sudahDikerjakan) {
-                return response()->json([
-                    'message' => 'Anda sudah mengerjakan post-test ini dan tidak dapat mengerjakannya kembali.',
-                ], 403);
-            }
+        if ($sudahDikerjakan) {
+            $tipeQuiz = $quiz->tipe_test === 'pretest' ? 'pre-test' : 'post-test';
+
+            return response()->json([
+                'message' => "Anda sudah mengerjakan {$tipeQuiz} ini dan tidak dapat mengerjakannya kembali.",
+            ], 403);
         }
 
         $soals = $quiz->soal;
@@ -287,17 +287,17 @@ class QuizController extends Controller
             }
         }
 
-        // Blokir pengerjaan ulang posttest jika sudah pernah dikerjakan
-        if ($quiz->tipe_test === 'posttest') {
-            $sudahDikerjakan = Leaderboard::where('id_quiz', $quiz->id_quiz)
-                ->where('nisn', $siswa->nisn)
-                ->exists();
+        // Blokir pengerjaan ulang pretest dan posttest jika sudah pernah dikerjakan
+        $sudahDikerjakan = Leaderboard::where('id_quiz', $quiz->id_quiz)
+            ->where('nisn', $siswa->nisn)
+            ->exists();
 
-            if ($sudahDikerjakan) {
-                return response()->json([
-                    'message' => 'Anda sudah mengerjakan post-test ini dan tidak dapat mengerjakannya kembali.',
-                ], 403);
-            }
+        if ($sudahDikerjakan) {
+            $tipeQuiz = $quiz->tipe_test === 'pretest' ? 'pre-test' : 'post-test';
+
+            return response()->json([
+                'message' => "Anda sudah mengerjakan {$tipeQuiz} ini dan tidak dapat mengerjakannya kembali.",
+            ], 403);
         }
 
         $validated = $request->validate([

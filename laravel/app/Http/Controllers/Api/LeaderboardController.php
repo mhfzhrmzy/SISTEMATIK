@@ -22,7 +22,7 @@ class LeaderboardController extends Controller
         $materiId = $request->query('materi_id');
         if ($tipeLeaderboard === 'permateri' && ! $materiId) {
             return response()->json([
-                'message' => 'Paramater materi_id wajib diisi untuk leaderboard permateri.',
+                'message' => 'Parameter materi_id wajib diisi untuk leaderboard permateri.',
             ], 422);
         }
 
