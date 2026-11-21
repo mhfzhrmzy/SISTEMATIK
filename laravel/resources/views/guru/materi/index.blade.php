@@ -77,7 +77,7 @@
                 </div>
 
                 {{-- Baris Mini Grid: Tahun Ajaran & Kelas --}}
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             Tahun <span class="text-rose-500">*</span>

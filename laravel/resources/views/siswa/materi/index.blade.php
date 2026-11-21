@@ -77,7 +77,7 @@
                     </div>
 
                     {{-- 4. Tiga Tombol Aksi di Bawah (Pre-test | Bahan Ajar | Post-test) --}}
-                    <div class="grid grid-cols-3 gap-2.5 pt-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2">
 
                         {{-- Kolom 1: PRE-TEST --}}
                         @if ($materi->pretestDone && $materi->hasPretest)

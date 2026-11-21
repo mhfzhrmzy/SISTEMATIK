@@ -57,6 +57,7 @@
 
     <!-- Tabel Daftar Quiz -->
     <h3 class="text-md font-semibold text-gray-800 mb-3">Daftar Quiz Pembelajaran</h3>
+    <div class="overflow-x-auto">
     <table class="w-full text-sm text-left border rounded-lg overflow-hidden">
         <thead>
             <tr class="border-b bg-gray-100 text-gray-700">
@@ -102,6 +103,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 
 @push('scripts')

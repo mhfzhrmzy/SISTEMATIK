@@ -60,7 +60,7 @@
             <!-- Form Buat Quiz -->
             <div class="bg-white rounded-2xl border border-slate-200/70 p-6 shadow-sm">
                 <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <span>➕ Buat Quiz Baru</span>
+                    <span>Buat Quiz Baru</span>
                 </h3>
                 <form action="{{ route('superadmin.quiz.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4" id="form-create-quiz">
                     @csrf

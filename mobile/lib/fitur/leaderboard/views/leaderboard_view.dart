@@ -412,13 +412,6 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                // Avatar
-                AvatarSiswa(
-                  pengguna: item,
-                  ukuran: 36,
-                  placeholder: true,
-                ),
-                const SizedBox(width: 10),
                 // Nama (tengah)
                 Expanded(
                   child: Text(
@@ -431,6 +424,13 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                ),
+                const SizedBox(width: 10),
+                // Avatar (kanan)
+                AvatarSiswa(
+                  pengguna: item,
+                  ukuran: 36,
+                  placeholder: true,
                 ),
               ],
             ),
@@ -681,11 +681,26 @@ class _LeaderboardViewState extends State<LeaderboardView> {
       widgets.add(const SizedBox(height: 16));
     }
 
-    // Tampilkan semua siswa mulai dari peringkat 4 (podium Top 3 di atas).
-    final daftarTerisi = daftar.length > 3
-        ? daftar.sublist(3)
-        : <ModelLeaderboard>[];
-    final daftarGabungan = daftarTerisi;
+    // Tampilkan minimal 10 baris total (podium 3 + tabel).
+    // Jika siswa lebih dari 10, tampilkan semua tanpa placeholder.
+    // Jika kurang dari 10, tabel di bawah podium dilengkapi placeholder kosong
+    // sehingga total baris (podium + tabel) tetap 10.
+    final daftarTerisi = daftar.length > 3 ? daftar.sublist(3) : <ModelLeaderboard>[];
+    final jumlahBarisTabel = daftarTerisi.length > 7 ? daftarTerisi.length : 7;
+    final placeholderKosong =
+        (jumlahBarisTabel - daftarTerisi.length).clamp(0, jumlahBarisTabel);
+    final daftarGabungan = [
+      ...daftarTerisi,
+      ...List.generate(
+        placeholderKosong,
+        (i) => ModelLeaderboard(
+          peringkat: daftarTerisi.length + i + 4,
+          nisn: '',
+          nama: '-',
+          skor: 0,
+        ),
+      ),
+    ];
 
     widgets.add(
       Expanded(
@@ -696,6 +711,11 @@ class _LeaderboardViewState extends State<LeaderboardView> {
           separatorBuilder: (_, __) => const SizedBox(height: 10),
           itemBuilder: (ctx, idx) {
             final item = daftarGabungan[idx];
+            final isPlaceholder = item.nisn.isEmpty;
+
+            final warnaTeks = isPlaceholder
+                ? WarnaAplikasi.utama.withValues(alpha: 0.4)
+                : WarnaAplikasi.utama;
 
             return Container(
               height: 50,
@@ -715,8 +735,8 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                     width: 28,
                     child: Text(
                       '${item.peringkat}',
-                      style: const TextStyle(
-                        color: WarnaAplikasi.utama,
+                      style: TextStyle(
+                        color: warnaTeks,
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
@@ -728,8 +748,8 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                   Expanded(
                     child: Text(
                       item.nama,
-                      style: const TextStyle(
-                        color: WarnaAplikasi.utama,
+                      style: TextStyle(
+                        color: warnaTeks,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -739,7 +759,11 @@ class _LeaderboardViewState extends State<LeaderboardView> {
                   ),
                   const SizedBox(width: 10),
                   // Profil circle (kanan)
-                  AvatarSiswa(pengguna: item, ukuran: 36),
+                  AvatarSiswa(
+                    pengguna: item,
+                    ukuran: 36,
+                    placeholder: isPlaceholder,
+                  ),
                 ],
               ),
             );

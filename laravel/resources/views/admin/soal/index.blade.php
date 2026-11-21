@@ -124,6 +124,7 @@
             </span>
         @endif
     </div>
+    <div class="overflow-x-auto">
     <table class="w-full text-sm text-left border rounded-lg">
         <thead>
             <tr class="border-b bg-gray-100 text-gray-700">
@@ -159,6 +160,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 
 <script>

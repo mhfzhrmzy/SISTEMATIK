@@ -33,6 +33,7 @@
 
     <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
         <h2 class="text-lg font-semibold mb-4">Daftar Bahan Ajar</h2>
+        <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">
             <thead>
                 <tr class="border-b bg-gray-50">
@@ -64,6 +65,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 @endsection

@@ -61,7 +61,7 @@
                 <!-- Form Tambah Bahan Ajar -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-sm">
                     <h2 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                        <span>➕ Tambah Bahan Ajar Baru</span>
+                        <span>Tambah Bahan Ajar Baru</span>
                     </h2>
 
                     <form action="{{ route('superadmin.materi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">

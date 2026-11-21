@@ -56,14 +56,37 @@
 
                     <div>
                         <label class="block text-xs font-medium text-slate-600 mb-1.5">Kata Sandi</label>
-                        <input type="password" name="password" placeholder="Masukkan Kata Sandi"
-                            class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-[#6D1837] focus:border-[#6D1837] outline-none transition text-slate-800 placeholder-slate-400" required>
+                        <div class="relative">
+                            <input type="password" id="siswa-password-input" name="password" placeholder="Masukkan Kata Sandi"
+                                class="w-full px-4 py-3 pr-11 text-sm bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-[#6D1837] focus:border-[#6D1837] outline-none transition text-slate-800 placeholder-slate-400" required>
+                            <button type="button" data-password-toggle="siswa-password-input" aria-label="Tampilkan kata sandi" class="absolute inset-y-0 right-0 flex items-center px-4 text-slate-400 hover:text-slate-600 transition cursor-pointer">
+                                <i class="password-toggle-icon fa-solid fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" class="w-full mt-2 bg-[#6D1837] hover:bg-[#57122B] active:scale-[0.99] text-white font-semibold py-3.5 px-4 shadow-md transition text-sm cursor-pointer">
                         Login
                     </button>
                 </form>
+                <script>
+                    document.querySelectorAll('[data-password-toggle]').forEach(function (btn) {
+                        const input = document.getElementById(btn.dataset.passwordToggle);
+                        if (!input) {
+                            return;
+                        }
+                        btn.addEventListener('click', function () {
+                            const icon = btn.querySelector('.password-toggle-icon');
+                            const showing = input.type === 'text';
+                            input.type = showing ? 'password' : 'text';
+                            btn.setAttribute('aria-label', showing ? 'Tampilkan kata sandi' : 'Sembunyikan kata sandi');
+                            if (icon) {
+                                icon.classList.toggle('fa-eye', !showing);
+                                icon.classList.toggle('fa-eye-slash', showing);
+                            }
+                        });
+                    });
+                </script>
 
                 <!-- Notice -->
                 <div class="mt-6 text-center text-xs text-slate-500">
