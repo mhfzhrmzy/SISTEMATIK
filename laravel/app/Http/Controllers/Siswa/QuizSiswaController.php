@@ -42,33 +42,33 @@ class QuizSiswaController extends Controller
     {
         $quiz->load('soal.pilihanJawaban', 'materi');
 
-        // Penguncian waktu untuk posttest
-        if ($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap()) {
+        // Penguncian waktu untuk kuis dengan jadwal lengkap (pretest & posttest)
+        if ($quiz->jadwalLengkap()) {
+            $labelTipe = $quiz->tipe_test === 'pretest' ? 'Pre-test' : 'Post-test';
             $now = now();
             $waktuMulai = $quiz->waktuMulai();
             $waktuSelesai = $quiz->waktuSelesai();
 
             if ($now->lt($waktuMulai)) {
                 return redirect()->route('portal.quiz.index', $quiz->materi)
-                    ->withErrors(['jadwal' => 'Post-test belum dimulai. Waktu mulai: '.$waktuMulai->translatedFormat('l, d M Y H:i').' WIB']);
+                    ->withErrors(['jadwal' => $labelTipe.' belum dimulai. Waktu mulai: '.$waktuMulai->translatedFormat('l, d M Y H:i').' WIB']);
             }
 
             if ($now->gt($waktuSelesai)) {
                 return redirect()->route('portal.quiz.index', $quiz->materi)
-                    ->withErrors(['jadwal' => 'Waktu pengerjaan post-test sudah habis.']);
+                    ->withErrors(['jadwal' => "Waktu pengerjaan {$labelTipe} sudah habis."]);
             }
         }
 
-        // Blokir pengerjaan ulang posttest jika sudah pernah dikerjakan
-        if ($quiz->tipe_test === 'posttest') {
-            $sudahDikerjakan = Leaderboard::where('id_quiz', $quiz->id_quiz)
-                ->where('nisn', auth('siswa')->id())
-                ->exists();
+        // Blokir pengerjaan ulang pretest dan posttest jika sudah pernah dikerjakan
+        $sudahDikerjakan = Leaderboard::where('id_quiz', $quiz->id_quiz)
+            ->where('nisn', auth('siswa')->id())
+            ->exists();
 
-            if ($sudahDikerjakan) {
-                return redirect()->route('portal.quiz.index', $quiz->materi)
-                    ->withErrors(['jadwal' => 'Anda sudah mengerjakan post-test ini dan tidak dapat mengerjakannya kembali.']);
-            }
+        if ($sudahDikerjakan) {
+            $labelTipe = $quiz->tipe_test === 'pretest' ? 'pre-test' : 'post-test';
+            return redirect()->route('portal.quiz.index', $quiz->materi)
+                ->withErrors(['jadwal' => "Anda sudah mengerjakan {$labelTipe} ini dan tidak dapat mengerjakannya kembali."]);
         }
 
         $soals = $quiz->soal;
@@ -134,9 +134,9 @@ class QuizSiswaController extends Controller
             }
         }
 
-        // Hitung sisa detik untuk posttest (untuk countdown absolut)
+        // Hitung sisa detik untuk countdown absolut jika jadwal lengkap
         $sisaDetik = null;
-        if ($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap()) {
+        if ($quiz->jadwalLengkap()) {
             $sisaDetik = max(0, (int) now()->diffInSeconds($quiz->waktuSelesai(), false));
         }
 
@@ -148,15 +148,16 @@ class QuizSiswaController extends Controller
      */
     public function submit(Request $request, Quiz $quiz)
     {
-        // Penguncian waktu untuk posttest
-        if ($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap()) {
+        // Penguncian waktu untuk kuis dengan jadwal lengkap (pretest & posttest)
+        if ($quiz->jadwalLengkap()) {
+            $labelTipe = $quiz->tipe_test === 'pretest' ? 'Pre-test' : 'Post-test';
             $now = now();
             $waktuMulai = $quiz->waktuMulai();
             $waktuSelesai = $quiz->waktuSelesai();
 
             if ($now->lt($waktuMulai)) {
                 return redirect()->route('portal.quiz.index', $quiz->materi)
-                    ->withErrors(['jadwal' => 'Post-test belum dimulai.']);
+                    ->withErrors(['jadwal' => "{$labelTipe} belum dimulai."]);
             }
 
             $batasGrace = $waktuSelesai->copy()->addSeconds(Quiz::GRACE_PERIOD_DETIK);
@@ -164,6 +165,17 @@ class QuizSiswaController extends Controller
                 return redirect()->route('portal.quiz.index', $quiz->materi)
                     ->withErrors(['jadwal' => 'Waktu pengerjaan sudah habis. Jawaban tidak tersimpan.']);
             }
+        }
+
+        // Blokir pengerjaan ulang pretest dan posttest jika sudah pernah dikerjakan
+        $sudahDikerjakan = Leaderboard::where('id_quiz', $quiz->id_quiz)
+            ->where('nisn', auth('siswa')->id())
+            ->exists();
+
+        if ($sudahDikerjakan) {
+            $labelTipe = $quiz->tipe_test === 'pretest' ? 'pre-test' : 'post-test';
+            return redirect()->route('portal.quiz.index', $quiz->materi)
+                ->withErrors(['jadwal' => "Anda sudah mengerjakan {$labelTipe} ini dan tidak dapat mengerjakannya kembali."]);
         }
 
         $soals = $quiz->soal;

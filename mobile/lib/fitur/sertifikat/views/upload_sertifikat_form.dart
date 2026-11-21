@@ -212,7 +212,7 @@ class UploadSertifikatForm extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: const BoxDecoration(
-                color: const Color(0xFFF6EEF1),
+                color: Color(0xFFF6EEF1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.cloud_upload_rounded,

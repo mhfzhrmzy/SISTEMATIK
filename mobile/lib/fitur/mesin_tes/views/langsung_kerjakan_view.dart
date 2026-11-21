@@ -67,8 +67,8 @@ class _LangsungKerjakanViewState extends State<LangsungKerjakanView> {
 
       final quiz = daftar.first;
 
-      // 2. Post-test yang sudah dikerjakan tidak bisa diulang
-      if (widget.tipeTest == 'posttest' && quiz.sudahDikerjakan) {
+      // 2. Kuis yang sudah dikerjakan tidak bisa diulang
+      if (quiz.sudahDikerjakan) {
         setState(() {
           _sedangMuat = false;
           _sudahDikerjakan = true;
@@ -164,10 +164,10 @@ class _PesanSelesai extends StatelessWidget {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
-        const Text(
-          'Post-Test hanya dapat dikerjakan satu kali.',
+        Text(
+          '$labelTipe hanya dapat dikerjakan satu kali.',
           textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.grey),
+          style: const TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 24),
         ElevatedButton(

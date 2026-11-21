@@ -53,7 +53,7 @@
                     <span class="px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-[#7B1038] text-white shadow-2xs">
                         {{ ucfirst($quiz->tipe_test) }}
                     </span>
-                    @if($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap())
+                    @if($quiz->jadwalLengkap())
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#E8F8F0] text-[#1F9254]">
                             Sedang Berlangsung
                         </span>
@@ -62,7 +62,7 @@
                 <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-[#1F2937] leading-tight truncate">
                     {{ $quiz->materi->judul_materi ?? 'Quiz' }}
                 </h1>
-                @if($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap())
+                @if($quiz->jadwalLengkap())
                     <p class="text-sm text-gray-600 flex items-center gap-1.5 pt-0.5">
                         <span class="font-medium">Waktu:</span>
                         <strong class="text-[#1F2937]">{{ $quiz->waktuMulai()->format('H:i') }} – {{ $quiz->waktuSelesai()->format('H:i') }} WIB</strong>

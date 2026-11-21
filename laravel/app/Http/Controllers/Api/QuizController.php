@@ -69,8 +69,8 @@ class QuizController extends Controller
                 'score' => $status['score'],
             ];
 
-            // Tambahkan info jadwal untuk posttest
-            if ($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap()) {
+            // Tambahkan info jadwal jika jadwal lengkap (pretest & posttest)
+            if ($quiz->jadwalLengkap()) {
                 $item['jam_mulai'] = $quiz->jam_mulai;
                 $item['waktu_mulai'] = $quiz->waktuMulai()->toDateTimeString();
                 $item['waktu_selesai'] = $quiz->waktuSelesai()->toDateTimeString();
@@ -119,21 +119,22 @@ class QuizController extends Controller
             }
         }
 
-        // Penguncian waktu untuk posttest
-        if ($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap()) {
+        // Penguncian waktu untuk kuis dengan jadwal lengkap (pretest & posttest)
+        if ($quiz->jadwalLengkap()) {
+            $labelTipe = $quiz->tipe_test === 'pretest' ? 'Pre-test' : 'Post-test';
             $now = now();
             $waktuMulai = $quiz->waktuMulai();
             $waktuSelesai = $quiz->waktuSelesai();
 
             if ($now->lt($waktuMulai)) {
                 return response()->json([
-                    'message' => 'Post-test belum dimulai. Waktu mulai: '.$waktuMulai->translatedFormat('l, d M Y H:i').' WIB',
+                    'message' => $labelTipe.' belum dimulai. Waktu mulai: '.$waktuMulai->translatedFormat('l, d M Y H:i').' WIB',
                 ], 403);
             }
 
             if ($now->gt($waktuSelesai)) {
                 return response()->json([
-                    'message' => 'Waktu pengerjaan post-test sudah habis.',
+                    'message' => "Waktu pengerjaan {$labelTipe} sudah habis.",
                 ], 403);
             }
         }
@@ -222,8 +223,8 @@ class QuizController extends Controller
             'soals' => $soalArray,
         ];
 
-        // Sisa detik untuk countdown absolut posttest
-        if ($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap()) {
+        // Sisa detik untuk countdown absolut (pretest & posttest)
+        if ($quiz->jadwalLengkap()) {
             $responseData['sisa_detik'] = max(0, (int) now()->diffInSeconds($quiz->waktuSelesai(), false));
             $responseData['waktu_selesai'] = $quiz->waktuSelesai()->toDateTimeString();
         }
@@ -267,15 +268,16 @@ class QuizController extends Controller
             }
         }
 
-        // Penguncian waktu untuk posttest
-        if ($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap()) {
+        // Penguncian waktu untuk kuis dengan jadwal lengkap (pretest & posttest)
+        if ($quiz->jadwalLengkap()) {
+            $labelTipe = $quiz->tipe_test === 'pretest' ? 'Pre-test' : 'Post-test';
             $now = now();
             $waktuMulai = $quiz->waktuMulai();
             $waktuSelesai = $quiz->waktuSelesai();
 
             if ($now->lt($waktuMulai)) {
                 return response()->json([
-                    'message' => 'Post-test belum dimulai.',
+                    'message' => "{$labelTipe} belum dimulai.",
                 ], 403);
             }
 

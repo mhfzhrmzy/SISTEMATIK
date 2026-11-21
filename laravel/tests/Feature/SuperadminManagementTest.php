@@ -313,6 +313,8 @@ class SuperadminManagementTest extends TestCase
                 'id_materi' => $materi->id_materi,
                 'tipe_test' => 'pretest',
                 'timer' => 30,
+                'tanggal' => now()->addDay()->toDateString(),
+                'jam_mulai' => '08:00',
             ]);
 
         $response->assertRedirect(route('superadmin.quiz.index'));

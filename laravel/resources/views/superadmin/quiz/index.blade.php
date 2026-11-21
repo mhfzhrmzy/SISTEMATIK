@@ -113,18 +113,18 @@
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Pelaksanaan</label>
-                        <input type="date" name="tanggal" id="input-tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" min="{{ date('Y-m-d') }}" readonly class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold bg-slate-100 text-slate-500 cursor-not-allowed">
-                        <p id="tanggal-help" class="text-xs text-slate-400 mt-1"></p>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Pelaksanaan <span class="text-red-500">*</span></label>
+                        <input type="date" name="tanggal" id="input-tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" min="{{ date('Y-m-d') }}" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-[#6D1837] focus:outline-none">
+                        <p id="tanggal-help" class="text-xs text-slate-400 mt-1">Pilih tanggal quiz dilaksanakan</p>
                         @error('tanggal')
                             <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    {{-- Blok khusus posttest: Jam Mulai + Estimasi Ditutup --}}
-                    <div id="blok-posttest" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-3 hidden">
+                    {{-- Blok Penjadwalan: Jam Mulai + Estimasi Ditutup --}}
+                    <div id="blok-posttest" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Jam Mulai Post-Test</label>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Jam Mulai Quiz <span class="text-red-500">*</span></label>
                             @php
                                 $oldJamParts = explode(':', old('jam_mulai', '08:00'));
                                 $selectedJam = str_pad($oldJamParts[0] ?? '08', 2, '0', STR_PAD_LEFT);
@@ -212,7 +212,7 @@
                                         @endif
                                     </td>
                                     <td class="px-3 py-3 text-slate-600 text-xs">
-                                        @if($quiz->tipe_test === 'posttest' && $quiz->jadwalLengkap())
+                                        @if($quiz->jadwalLengkap())
                                             {{ $quiz->waktuMulai()->format('d M Y · H:i') }} – {{ $quiz->waktuSelesai()->format('H:i') }} WIB
                                         @else
                                             {{ \Carbon\Carbon::parse($quiz->tanggal)->format('d M Y') }}
@@ -226,11 +226,9 @@
                                             <a href="{{ route('superadmin.soal.index', $quiz) }}" class="inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold px-2.5 py-1 rounded-lg border border-blue-200 text-xs transition">
                                                 📝 Soal ({{ $quiz->soal->count() }})
                                             </a>
-                                            @if($quiz->tipe_test === 'posttest')
-                                                <button type="button" onclick="openJadwalModal({{ $quiz->id_quiz }}, '{{ $quiz->tanggal?->format('Y-m-d') }}', '{{ $quiz->jam_mulai }}', {{ $quiz->timer }})" class="inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2.5 py-1 rounded-lg border border-indigo-200 text-xs transition cursor-pointer">
-                                                    📅 Jadwal
-                                                </button>
-                                            @endif
+                                            <button type="button" onclick="openJadwalModal({{ $quiz->id_quiz }}, '{{ $quiz->tanggal?->format('Y-m-d') }}', '{{ $quiz->jam_mulai }}', {{ $quiz->timer }})" class="inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2.5 py-1 rounded-lg border border-indigo-200 text-xs transition cursor-pointer">
+                                                📅 Jadwal
+                                            </button>
                                             <form action="{{ route('superadmin.quiz.destroy', $quiz) }}" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Hapus quiz ini beserta seluruh soalnya?')">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="inline-flex items-center text-red-600 hover:text-red-800 hover:bg-red-50 font-semibold px-2 py-1 rounded-lg text-xs transition cursor-pointer">
@@ -255,10 +253,10 @@
     </div>
 </div>
 
-{{-- Modal Edit Jadwal Posttest --}}
+{{-- Modal Edit Jadwal Quiz --}}
 <div id="modal-jadwal" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center">
     <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-4">
-        <h3 class="text-base font-bold text-slate-900 mb-4">📅 Ubah Jadwal Post-Test</h3>
+        <h3 class="text-base font-bold text-slate-900 mb-4">📅 Ubah Jadwal Quiz</h3>
         <form id="form-jadwal" method="POST">
             @csrf
             @method('PATCH')
@@ -359,33 +357,14 @@
     }
 
     function togglePosttestFields() {
-        const isPosttest = selectTipe.value === 'posttest';
-        blokPosttest.classList.toggle('hidden', !isPosttest);
-
         const todayStr = new Date().toLocaleDateString('en-CA');
-
-        if (isPosttest) {
-            inputTanggal.removeAttribute('readonly');
-            inputTanggal.classList.remove('bg-slate-100', 'text-slate-500', 'cursor-not-allowed', 'border-slate-200');
-            inputTanggal.classList.add('border-slate-300', 'focus:ring-2', 'focus:ring-[#6D1837]');
-            inputTanggal.setAttribute('name', 'tanggal');
-            inputTanggal.min = todayStr;
-            if (!inputTanggal.value || inputTanggal.value < todayStr) {
-                inputTanggal.value = todayStr;
-            }
-            tanggalHelp.textContent = 'Pilih tanggal post-test dilaksanakan';
-            timerHelp.textContent = 'Maks. 120 menit';
-            syncJamMulai();
-        } else {
-            inputTanggal.setAttribute('readonly', '');
+        inputTanggal.min = todayStr;
+        if (!inputTanggal.value || inputTanggal.value < todayStr) {
             inputTanggal.value = todayStr;
-            inputTanggal.classList.add('bg-slate-100', 'text-slate-500', 'cursor-not-allowed', 'border-slate-200');
-            inputTanggal.classList.remove('border-slate-300', 'focus:ring-2', 'focus:ring-[#6D1837]');
-            inputTanggal.removeAttribute('name');
-            inputTanggal.removeAttribute('min');
-            tanggalHelp.textContent = '';
-            timerHelp.textContent = 'Maks. 120 menit';
         }
+        tanggalHelp.textContent = 'Pilih tanggal quiz dilaksanakan';
+        timerHelp.textContent = 'Maks. 120 menit';
+        syncJamMulai();
     }
 
     function updateTipeOptions() {
@@ -429,8 +408,8 @@
     selectTipe.addEventListener('change', togglePosttestFields);
     inputTanggal.addEventListener('change', function() {
         const todayStr = new Date().toLocaleDateString('en-CA');
-        if (selectTipe.value === 'posttest' && this.value && this.value < todayStr) {
-            alert('Tanggal post-test tidak boleh tanggal yang sudah lewat.');
+        if (this.value && this.value < todayStr) {
+            alert('Tanggal quiz tidak boleh tanggal yang sudah lewat.');
             this.value = todayStr;
         }
         updateEstimasi();
@@ -492,7 +471,7 @@
     modalTanggal.addEventListener('change', function() {
         const todayStr = new Date().toLocaleDateString('en-CA');
         if (this.value && this.value < todayStr) {
-            alert('Tanggal post-test tidak boleh tanggal yang sudah lewat.');
+            alert('Tanggal tidak boleh tanggal yang sudah lewat.');
             this.value = todayStr;
         }
         updateModalEstimasi();

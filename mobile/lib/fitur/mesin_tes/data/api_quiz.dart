@@ -7,6 +7,10 @@ class QuizRingkas {
   final bool sudahDikerjakan;
   final int? skor;
   final int? jumlahSoal;
+  final String? jamMulai;
+  final String? waktuMulai;
+  final String? waktuSelesai;
+  final String? statusJadwal;
 
   const QuizRingkas({
     required this.id,
@@ -14,6 +18,10 @@ class QuizRingkas {
     required this.sudahDikerjakan,
     this.skor,
     this.jumlahSoal,
+    this.jamMulai,
+    this.waktuMulai,
+    this.waktuSelesai,
+    this.statusJadwal,
   });
 
   factory QuizRingkas.fromJson(Map<String, dynamic> json) {
@@ -24,6 +32,10 @@ class QuizRingkas {
       skor: json['score'] == null ? null : _toInt(json['score']),
       jumlahSoal:
           json['jumlah_soal'] == null ? null : _toInt(json['jumlah_soal']),
+      jamMulai: json['jam_mulai']?.toString(),
+      waktuMulai: json['waktu_mulai']?.toString(),
+      waktuSelesai: json['waktu_selesai']?.toString(),
+      statusJadwal: json['status_jadwal']?.toString(),
     );
   }
 }

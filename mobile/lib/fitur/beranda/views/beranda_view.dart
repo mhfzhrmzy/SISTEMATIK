@@ -708,7 +708,12 @@ class _LembarAksiMateri extends StatelessWidget {
             _UbinAksi(
               ikon: butuhPretest
                   ? Icons.lock_outline_rounded
-                  : Icons.assignment_turned_in_outlined,
+                  : (materi.posttestCompleted
+                      ? Icons.check_circle_outline_rounded
+                      : Icons.assignment_turned_in_outlined),
+              warnaIkon: (!butuhPretest && materi.posttestCompleted)
+                  ? const Color(0xFF1F9254)
+                  : null,
               label: 'Post-Test',
               sublabel: butuhPretest
                   ? 'Terkunci (Selesaikan Pre-Test dahulu)'

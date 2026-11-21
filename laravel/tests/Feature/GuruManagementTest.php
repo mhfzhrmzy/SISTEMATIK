@@ -142,6 +142,8 @@ class GuruManagementTest extends TestCase
                 'id_materi' => $materi->id_materi,
                 'tipe_test' => 'pretest',
                 'timer' => 30,
+                'tanggal' => now()->addDay()->toDateString(),
+                'jam_mulai' => '08:00',
             ]);
 
         $quiz = Quiz::where('id_materi', $materi->id_materi)

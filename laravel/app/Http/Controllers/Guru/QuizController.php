@@ -35,7 +35,7 @@ class QuizController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $isPosttest = $request->input('tipe_test') === 'posttest';
+        $labelTipe = $request->input('tipe_test') === 'pretest' ? 'pre-test' : 'post-test';
 
         $rules = [
             'id_materi' => ['required', 'exists:materi,id_materi'],
@@ -46,40 +46,29 @@ class QuizController extends Controller
             ],
             'poin' => ['nullable', 'integer', 'min:1'],
             'timer' => ['required', 'integer', 'min:1', 'max:120'],
+            'tanggal' => ['required', 'date', 'after_or_equal:today'],
+            'jam_mulai' => ['required', 'date_format:H:i'],
         ];
-
-        if ($isPosttest) {
-            $rules['tanggal'] = ['required', 'date', 'after_or_equal:today'];
-            $rules['jam_mulai'] = ['required', 'date_format:H:i'];
-        }
 
         $messages = [
             'tipe_test.unique' => 'Quiz tipe ini sudah ada untuk materi yang dipilih. Setiap materi hanya boleh memiliki satu pre-test dan satu post-test.',
-            'tanggal.after_or_equal' => 'Tanggal post-test hanya bisa hari ini atau masa depan.',
-            'jam_mulai.required' => 'Jam mulai post-test wajib diisi.',
+            'tanggal.after_or_equal' => "Tanggal {$labelTipe} hanya bisa hari ini atau masa depan.",
+            'jam_mulai.required' => "Jam mulai {$labelTipe} wajib diisi.",
             'jam_mulai.date_format' => 'Format jam mulai harus HH:MM.',
         ];
 
         $validated = $request->validate($rules, $messages);
 
-        // Validasi waktu mulai posttest harus di masa depan
-        if ($isPosttest) {
-            $waktuMulai = Carbon::parse($validated['tanggal'].' '.$validated['jam_mulai']);
-            if ($waktuMulai->lte(now())) {
-                return back()->withErrors([
-                    'jam_mulai' => 'Waktu mulai post-test sudah lewat. Pilih waktu yang masih ada di depan.',
-                ])->withInput();
-            }
+        // Validasi waktu mulai quiz harus di masa depan
+        $waktuMulai = Carbon::parse($validated['tanggal'].' '.$validated['jam_mulai']);
+        if ($waktuMulai->lte(now())) {
+            return back()->withErrors([
+                'jam_mulai' => "Waktu mulai {$labelTipe} sudah lewat. Pilih waktu yang masih ada di depan.",
+            ])->withInput();
         }
 
         $validated['poin'] = 100; // Otomatis total 100 poin (poin per soal = 100 / jumlah soal)
         unset($validated['nip']);
-
-        if (! $isPosttest) {
-            $validated['tanggal'] = now()->toDateString();
-            // Pretest tidak punya jam_mulai
-            unset($validated['jam_mulai']);
-        }
 
         $quiz = Quiz::create($validated);
 
@@ -87,18 +76,16 @@ class QuizController extends Controller
     }
 
     /**
-     * Mengubah jadwal posttest (tanggal, jam_mulai, timer).
+     * Mengubah jadwal quiz (tanggal, jam_mulai, timer).
      */
     public function updateJadwal(Request $request, Quiz $quiz): RedirectResponse
     {
-        if ($quiz->tipe_test !== 'posttest') {
-            return back()->withErrors(['tipe_test' => 'Hanya post-test yang bisa diubah jadwalnya.']);
-        }
+        $labelTipe = $quiz->tipe_test === 'pretest' ? 'Pre-test' : 'Post-test';
 
         // Tolak jika sudah ada siswa yang mengerjakan
         if ($quiz->leaderboard()->exists()) {
             return back()->withErrors([
-                'jadwal' => 'Post-test sudah dimulai oleh siswa, jadwal tidak bisa diubah.',
+                'jadwal' => "{$labelTipe} sudah dimulai oleh siswa, jadwal tidak bisa diubah.",
             ]);
         }
 
@@ -107,21 +94,21 @@ class QuizController extends Controller
             'jam_mulai' => ['required', 'date_format:H:i'],
             'timer' => ['required', 'integer', 'min:1', 'max:120'],
         ], [
-            'tanggal.after_or_equal' => 'Tanggal post-test hanya bisa hari ini atau masa depan.',
-            'jam_mulai.required' => 'Jam mulai post-test wajib diisi.',
+            'tanggal.after_or_equal' => "Tanggal {$labelTipe} hanya bisa hari ini atau masa depan.",
+            'jam_mulai.required' => "Jam mulai {$labelTipe} wajib diisi.",
             'jam_mulai.date_format' => 'Format jam mulai harus HH:MM.',
         ]);
 
         $waktuMulai = Carbon::parse($validated['tanggal'].' '.$validated['jam_mulai']);
         if ($waktuMulai->lte(now())) {
             return back()->withErrors([
-                'jam_mulai' => 'Waktu mulai post-test sudah lewat. Pilih waktu yang masih ada di depan.',
+                'jam_mulai' => "Waktu mulai {$labelTipe} sudah lewat. Pilih waktu yang masih ada di depan.",
             ])->withInput();
         }
 
         $quiz->update($validated);
 
-        return redirect()->route('admin.quiz.index')->with('success', 'Jadwal post-test berhasil diperbarui.');
+        return redirect()->route('admin.quiz.index')->with('success', "Jadwal {$labelTipe} berhasil diperbarui.");
     }
 
     /**

@@ -24,7 +24,7 @@ class Quiz extends Model
     public const GRACE_PERIOD_DETIK = 10;
 
     /**
-     * Waktu mulai posttest (tanggal + jam_mulai).
+     * Waktu mulai quiz (tanggal + jam_mulai).
      */
     public function waktuMulai(): ?Carbon
     {
@@ -36,7 +36,7 @@ class Quiz extends Model
     }
 
     /**
-     * Waktu selesai posttest (waktu_mulai + timer menit).
+     * Waktu selesai quiz (waktu_mulai + timer menit).
      */
     public function waktuSelesai(): ?Carbon
     {
@@ -49,7 +49,7 @@ class Quiz extends Model
     }
 
     /**
-     * Apakah jadwal posttest lengkap (tanggal + jam_mulai tersedia).
+     * Apakah jadwal quiz lengkap (tanggal + jam_mulai tersedia).
      */
     public function jadwalLengkap(): bool
     {
@@ -57,7 +57,7 @@ class Quiz extends Model
     }
 
     /**
-     * Status jadwal posttest relatif terhadap now():
+     * Status jadwal quiz relatif terhadap now():
      * 'terjadwal', 'berlangsung', 'selesai', atau null jika jadwal tidak lengkap.
      */
     public function statusJadwal(): ?string

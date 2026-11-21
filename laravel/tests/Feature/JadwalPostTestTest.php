@@ -483,4 +483,183 @@ class JadwalPostTestTest extends TestCase
         $response->assertSee('input-jam-mulai', false);
         $response->assertSee('input-estimasi-tutup', false);
     }
+
+    /**
+     * 13. Pretest kini juga memerlukan jam_mulai dan tanggal saat store.
+     */
+    public function test_store_pretest_tanpa_jam_mulai_gagal_validasi(): void
+    {
+        $response = $this->actingAs($this->guru, 'admin')->post(route('admin.quiz.store'), [
+            'id_materi' => $this->materi->id_materi,
+            'tipe_test' => 'pretest',
+            'timer' => 30,
+            'tanggal' => now()->addDay()->toDateString(),
+        ]);
+
+        $response->assertSessionHasErrors('jam_mulai');
+        $this->assertDatabaseMissing('quiz', ['id_materi' => $this->materi->id_materi, 'tipe_test' => 'pretest']);
+    }
+
+    /**
+     * 14. Store pretest dengan jadwal valid → tersimpan dengan tanggal dan jam_mulai.
+     */
+    public function test_store_pretest_valid_tersimpan_dengan_jadwal(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-10-26 07:00:00'));
+
+        $response = $this->actingAs($this->guru, 'admin')->post(route('admin.quiz.store'), [
+            'id_materi' => $this->materi->id_materi,
+            'tipe_test' => 'pretest',
+            'timer' => 30,
+            'tanggal' => '2026-10-27',
+            'jam_mulai' => '09:00',
+        ]);
+
+        $quiz = Quiz::where('id_materi', $this->materi->id_materi)
+            ->where('tipe_test', 'pretest')
+            ->first();
+
+        $this->assertNotNull($quiz);
+        $this->assertStringStartsWith('09:00', $quiz->jam_mulai);
+        $this->assertEquals('2026-10-27', $quiz->tanggal->format('Y-m-d'));
+        $this->assertTrue($quiz->jadwalLengkap());
+    }
+
+    /**
+     * 15. Guru dan Superadmin bisa update jadwal pretest.
+     */
+    public function test_update_jadwal_pretest_berhasil(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-10-26 07:00:00'));
+
+        $quiz = Quiz::create([
+            'id_materi' => $this->materi->id_materi,
+            'nip' => $this->guru->nip,
+            'tipe_test' => 'pretest',
+            'poin' => 100,
+            'timer' => 30,
+            'tanggal' => '2026-10-27',
+            'jam_mulai' => '08:00',
+        ]);
+
+        $response = $this->actingAs($this->guru, 'admin')
+            ->patch(route('admin.quiz.jadwal', $quiz), [
+                'tanggal' => '2026-10-28',
+                'jam_mulai' => '10:00',
+                'timer' => 45,
+            ]);
+
+        $response->assertRedirect(route('admin.quiz.index'));
+        $quiz->refresh();
+        $this->assertStringStartsWith('10:00', $quiz->jam_mulai);
+        $this->assertEquals('2026-10-28', $quiz->tanggal->format('Y-m-d'));
+        $this->assertEquals(45, $quiz->timer);
+    }
+
+    /**
+     * 16. Pretest dengan jadwal sebelum waktu_mulai ditolak (di web & API).
+     */
+    public function test_pretest_sebelum_waktu_mulai_ditolak(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-10-27 07:00:00'));
+
+        $quiz = Quiz::create([
+            'id_materi' => $this->materi->id_materi,
+            'nip' => $this->guru->nip,
+            'tipe_test' => 'pretest',
+            'poin' => 100,
+            'timer' => 60,
+            'tanggal' => '2026-10-27',
+            'jam_mulai' => '08:00',
+        ]);
+        $this->buatSoal($quiz, 3);
+
+        // Web portal
+        $response = $this->actingAs($this->siswa, 'siswa')
+            ->get(route('portal.quiz.kerjakan', $quiz));
+        $response->assertRedirect(route('portal.quiz.index', $this->materi));
+        $response->assertSessionHasErrors('jadwal');
+
+        // Mobile API
+        $responseApi = $this->actingAs($this->siswa, 'sanctum')
+            ->getJson("/api/siswa/quiz/{$quiz->id_quiz}");
+        $responseApi->assertStatus(403);
+        $responseApi->assertJsonPath('message', 'Pre-test belum dimulai. Waktu mulai: Tuesday, 27 Oct 2026 08:00 WIB');
+    }
+
+    /**
+     * 17. Di web siswa, pretest terjadwal menampilkan jadwal dan tombol Belum Dimulai (tidak bisa diklik).
+     */
+    public function test_pretest_terjadwal_menampilkan_jadwal_dan_tombol_belum_mulai(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-10-27 07:00:00'));
+
+        $quiz = Quiz::create([
+            'id_materi' => $this->materi->id_materi,
+            'nip' => $this->guru->nip,
+            'tipe_test' => 'pretest',
+            'poin' => 100,
+            'timer' => 60,
+            'tanggal' => '2026-10-27',
+            'jam_mulai' => '08:00',
+        ]);
+        $this->buatSoal($quiz, 3);
+
+        $response = $this->actingAs($this->siswa, 'siswa')
+            ->get(route('portal.quiz.index', $this->materi));
+
+        $response->assertStatus(200);
+        $response->assertSee('Jadwal:');
+        $response->assertSee('08:00 – 09:00 WIB');
+        $response->assertSee('Belum Dimulai');
+        $response->assertDontSee('Mulai Pre-Test');
+    }
+
+    /**
+     * 18. Pretest hanya bisa dikerjakan 1 kali di web; tombol menjadi "Sudah Dikerjakan" dan tidak bisa dikerjakan ulang.
+     */
+    public function test_pretest_sudah_dikerjakan_hanya_bisa_sekali(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-10-27 08:30:00'));
+
+        $quiz = Quiz::create([
+            'id_materi' => $this->materi->id_materi,
+            'nip' => $this->guru->nip,
+            'tipe_test' => 'pretest',
+            'poin' => 100,
+            'timer' => 60,
+            'tanggal' => '2026-10-27',
+            'jam_mulai' => '08:00',
+        ]);
+        $this->buatSoal($quiz, 3);
+
+        // Tandai sudah dikerjakan
+        Leaderboard::create([
+            'id_quiz' => $quiz->id_quiz,
+            'nisn' => $this->siswa->nisn,
+            'total_poin' => 100,
+        ]);
+
+        // Halaman indeks kuis menampilkan tombol nonaktif "Sudah Dikerjakan", bukan "Kerjakan Ulang"
+        $response = $this->actingAs($this->siswa, 'siswa')
+            ->get(route('portal.quiz.index', $this->materi));
+
+        $response->assertStatus(200);
+        $response->assertSee('Sudah Dikerjakan');
+        $response->assertDontSee('Kerjakan Ulang');
+
+        // Mencoba akses halaman kerjakan ditolak
+        $responseKerjakan = $this->actingAs($this->siswa, 'siswa')
+            ->get(route('portal.quiz.kerjakan', $quiz));
+        $responseKerjakan->assertRedirect(route('portal.quiz.index', $this->materi));
+        $responseKerjakan->assertSessionHasErrors('jadwal');
+
+        // Mencoba submit ulang ditolak
+        $responseSubmit = $this->actingAs($this->siswa, 'siswa')
+            ->post(route('portal.quiz.submit', $quiz), [
+                'jawaban' => [],
+            ]);
+        $responseSubmit->assertRedirect(route('portal.quiz.index', $this->materi));
+        $responseSubmit->assertSessionHasErrors('jadwal');
+    }
 }

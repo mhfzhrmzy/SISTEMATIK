@@ -76,16 +76,31 @@
                         @php
                             $attempted = $attemptedIds->has($quiz->id_quiz);
                             $poin      = $attemptedIds->get($quiz->id_quiz);
+                            $statusJadwal = $quiz->statusJadwal();
                         @endphp
                         <x-card class="hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div class="space-y-2 flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <span class="px-3 py-1 rounded-full text-sm font-bold bg-[#7B1038] text-white shadow-2xs">Pre-Test</span>
+                                    @if($statusJadwal === 'terjadwal')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">
+                                            Terjadwal
+                                        </span>
+                                    @elseif($statusJadwal === 'berlangsung')
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#E8F8F0] text-[#1F9254]">
+                                            Sedang Berlangsung
+                                        </span>
+                                    @elseif($statusJadwal === 'selesai')
+                                        <span class="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">
+                                            Jadwal Berakhir
+                                        </span>
+                                    @endif
+
                                     @if ($attempted)
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#E8F8F0] text-[#1F9254]">
                                             Sudah Dikerjakan
                                         </span>
-                                    @else
+                                    @elseif(!$statusJadwal)
                                         <span class="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">
                                             Belum Dikerjakan
                                         </span>
@@ -96,14 +111,24 @@
                                     Evaluasi Awal (Pre-Test)
                                 </h3>
 
+                                @if($quiz->jadwalLengkap())
+                                    <p class="text-sm text-gray-600 flex items-center gap-1.5 flex-wrap">
+                                        <span class="font-medium">Jadwal:</span>
+                                        <strong>{{ $quiz->waktuMulai()->locale('id')->translatedFormat('l, d F Y') }}</strong>
+                                        <span>|</span>
+                                        <span>{{ $quiz->waktuMulai()->format('H:i') }} – {{ $quiz->waktuSelesai()->format('H:i') }} WIB</span>
+                                    </p>
+                                @endif
+
                                 <div class="flex flex-wrap items-center gap-3 text-sm text-gray-600">
                                     <span>{{ $quiz->soal->count() }} Soal</span>
                                     <span class="text-slate-300 font-light">|</span>
                                     <span>100 Poin Total</span>
                                     <span class="text-slate-300 font-light">|</span>
-                                    <span class="inline-flex items-center gap-1.5">
+                                    <span class="inline-flex items-center gap-1">
                                         <svg class="w-4 h-4 shrink-0 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            <circle cx="12" cy="12" r="9" stroke-width="1.75"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 7v5l3 3"/>
                                         </svg>
                                         <span>{{ $quiz->timer }} Menit</span>
                                     </span>
@@ -113,14 +138,22 @@
                             <div class="shrink-0 self-start sm:self-center">
                                 @if ($quiz->soal->isEmpty())
                                     <span class="text-sm text-gray-600 italic">Soal belum siap</span>
+                                @elseif ($attempted)
+                                    <span class="inline-flex items-center bg-[#E8F8F0] text-[#1F9254] text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
+                                        Sudah Dikerjakan
+                                    </span>
+                                @elseif ($statusJadwal === 'terjadwal')
+                                    <span class="inline-flex items-center bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
+                                        Belum Dimulai
+                                    </span>
+                                @elseif ($statusJadwal === 'selesai')
+                                    <span class="inline-flex items-center bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
+                                        Waktu Berakhir
+                                    </span>
                                 @else
                                     <a href="{{ route('portal.quiz.kerjakan', $quiz) }}"
-                                       class="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-xs {{ $attempted ? 'bg-white hover:bg-[#7B1038] text-[#7B1038] hover:text-white border-2 border-[#7B1038]' : 'bg-[#7B1038] hover:bg-[#5E0C2B] text-white' }}">
-                                        @if ($attempted)
-                                            Kerjakan Ulang
-                                        @else
-                                            Mulai Pre-Test
-                                        @endif
+                                       class="inline-flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
+                                        Mulai Pre-Test
                                     </a>
                                 @endif
                             </div>
@@ -206,7 +239,7 @@
                                     </span>
                                 @elseif($statusJadwal === 'berlangsung')
                                     @if($attempted)
-                                        <span class="inline-flex items-center bg-[#E8F8F0] text-[#1F9254] text-sm font-semibold px-4 py-2.5 rounded-xl">
+                                        <span class="inline-flex items-center bg-[#E8F8F0] text-[#1F9254] text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
                                             Sudah Dikerjakan
                                         </span>
                                     @else
@@ -217,7 +250,7 @@
                                     @endif
                                 @elseif($statusJadwal === 'selesai')
                                     @if($attempted)
-                                        <span class="inline-flex items-center bg-[#E8F8F0] text-[#1F9254] text-sm font-semibold px-4 py-2.5 rounded-xl">
+                                        <span class="inline-flex items-center bg-[#E8F8F0] text-[#1F9254] text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
                                             Sudah Dikerjakan
                                         </span>
                                     @else
