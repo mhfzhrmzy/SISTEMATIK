@@ -13,16 +13,19 @@ class GuruSeeder extends Seeder
         $gurus = [
             [
                 'nip' => '198501012010011001',
+                'nik' => '3509010185010001',
                 'nama_lengkap' => 'Budi Santoso, S.Pd',
                 'password' => Hash::make('password123'),
             ],
             [
                 'nip' => '198803152012022002',
+                'nik' => '3509031588030002',
                 'nama_lengkap' => 'Siti Rahmawati, M.Kom',
                 'password' => Hash::make('password123'),
             ],
             [
                 'nip' => '199005202015031003',
+                'nik' => '3509052099050003',
                 'nama_lengkap' => 'Ahmad Fauzi, S.T',
                 'password' => Hash::make('password123'),
             ],

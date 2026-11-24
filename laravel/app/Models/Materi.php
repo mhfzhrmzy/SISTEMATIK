@@ -10,10 +10,14 @@ class Materi extends Model
 
     protected $primaryKey = 'id_materi';
 
-    protected $fillable = ['nip', 'nip_superadmin', 'id_kelas', 'judul_materi', 'isi_materi', 'upload_file'];
+    protected $fillable = ['nip', 'guru_id', 'nip_superadmin', 'id_kelas', 'judul_materi', 'isi_materi', 'upload_file'];
 
     public function guru()
     {
+        // Support both old (nip) and new (guru_id) relations
+        if ($this->guru_id) {
+            return $this->belongsTo(Guru::class, 'guru_id', 'id');
+        }
         return $this->belongsTo(Guru::class, 'nip', 'nip');
     }
 

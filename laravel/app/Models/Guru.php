@@ -12,14 +12,14 @@ class Guru extends Authenticatable
 
     protected $table = 'guru';
 
-    protected $primaryKey = 'nip';
+    protected $primaryKey = 'id';
 
-    public $incrementing = false;
+    public $incrementing = true;
 
-    protected $keyType = 'string';
+    protected $keyType = 'int';
 
     protected $fillable = [
-        'nip', 'nama_lengkap', 'password', 'foto_profile', 'dibuat_oleh',
+        'nip', 'nik', 'nama_lengkap', 'password', 'foto_profile', 'dibuat_oleh',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -27,18 +27,25 @@ class Guru extends Authenticatable
     protected function casts(): array
     {
         return [
-            'nip' => 'string',
             'password' => 'hashed',
         ];
     }
 
     public function materi()
     {
-        return $this->hasMany(Materi::class, 'nip', 'nip');
+        return $this->hasMany(Materi::class, 'guru_id', 'id');
     }
 
     public function dibuatOleh()
     {
         return $this->belongsTo(SuperAdmin::class, 'dibuat_oleh', 'nip');
+    }
+
+    /**
+     * Get identifier for authentication (NIP or NIK)
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'id';
     }
 }

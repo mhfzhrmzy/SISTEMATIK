@@ -10,8 +10,12 @@
             @method('PUT')
             <input type="hidden" name="from" value="superadmin">
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">NIP (Nomor Induk Pegawai)</label>
-                <input type="text" id="edit-guru-nip" name="nip" maxlength="18" inputmode="numeric" pattern="[0-9]*" required readonly class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2 text-xs text-slate-500 cursor-not-allowed">
+                <label class="block text-xs font-bold text-slate-700 mb-1">NIP (18 Digit) <span class="font-normal text-slate-400">(minimal salah satu)</span></label>
+                <input type="text" id="edit-guru-nip" name="nip" maxlength="18" inputmode="numeric" pattern="[0-9]*" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">NIK (16 Digit) <span class="font-normal text-slate-400">(minimal salah satu)</span></label>
+                <input type="text" id="edit-guru-nik" name="nik" maxlength="16" inputmode="numeric" pattern="[0-9]*" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition">
             </div>
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap</label>
@@ -199,9 +203,10 @@
         document.getElementById('import-siswa-modal').classList.add('hidden');
     }
 
-    function openEditGuruModal(nip, nama) {
+    function openEditGuruModal(nip, nik, nama) {
         document.getElementById('edit-guru-form').action = "/admin/" + encodeURIComponent(nip);
         document.getElementById('edit-guru-nip').value = nip;
+        document.getElementById('edit-guru-nik').value = nik || '';
         document.getElementById('edit-guru-nama').value = nama;
         document.getElementById('edit-guru-modal').classList.remove('hidden');
     }
