@@ -5,12 +5,12 @@
 @section('content')
 <div class="space-y-6">
 
-    <div class="border-b border-gray-100 pb-4">
-        <span class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-[#7B1038] text-white mb-1.5 shadow-2xs">
+    <div class="border-b border-gray-100 pb-4 mb-6">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
             AKUN SAYA
         </span>
-        <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937]">Profil &amp; Informasi Siswa</h1>
-        <p class="text-sm text-gray-600 mt-0.5">Kelola informasi data diri, foto profil, dan kredensial keamanan akun Anda.</p>
+        <h1 class="text-3xl font-bold text-[#1F2937] mb-1">Profil &amp; Informasi Siswa</h1>
+        <p class="text-base text-gray-600">Kelola informasi data diri, foto profil, dan kredensial keamanan akun Anda.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
@@ -50,7 +50,7 @@
             </div>
 
             <div>
-                <h2 class="text-lg font-bold text-[#1F2937]">{{ $siswa->nama_lengkap }}</h2>
+                <h2 class="text-lg font-semibold text-[#1F2937]">{{ $siswa->nama_lengkap }}</h2>
                 <p class="text-sm text-gray-600 font-mono mt-0.5">NISN: {{ $siswa->nisn }}</p>
             </div>
 
@@ -64,7 +64,7 @@
 
         {{-- Data pokok --}}
         <x-card class="lg:col-span-8 space-y-4">
-            <h3 class="font-bold text-base text-[#1F2937]">Informasi Akademik</h3>
+            <h3 class="text-lg font-semibold text-[#1F2937]">Informasi Akademik</h3>
 
             @foreach ([
                 'NISN'               => $siswa->nisn,

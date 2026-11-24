@@ -50,16 +50,16 @@
         <div class="flex items-center justify-between gap-4">
             <div class="min-w-0">
                 <div class="flex items-center gap-2 flex-wrap mb-1.5">
-                    <span class="px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-[#7B1038] text-white shadow-2xs">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white shadow-2xs">
                         {{ ucfirst($quiz->tipe_test) }}
                     </span>
                     @if($quiz->jadwalLengkap())
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#E8F8F0] text-[#1F9254]">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#E8F8F0] text-[#1F9254]">
                             Sedang Berlangsung
                         </span>
                     @endif
                 </div>
-                <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-[#1F2937] leading-tight truncate">
+                <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937] leading-tight truncate mb-0.5">
                     {{ $quiz->materi->judul_materi ?? 'Quiz' }}
                 </h1>
                 @if($quiz->jadwalLengkap())

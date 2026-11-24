@@ -53,3 +53,10 @@ input[type="file"]::file-selector-button:hover,
 input[type="file"]::-webkit-file-upload-button:hover {
     background-color: #5E0C2B;
 }
+
+/* Responsive Certificate Grid */
+.certificate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+    gap: 20px;
+}

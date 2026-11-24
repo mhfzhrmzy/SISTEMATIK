@@ -6,10 +6,18 @@
 <div class="space-y-4 sm:space-y-5">
 
     {{-- Header Bagian --}}
-    <div class="pt-0.5 sm:pt-1">
-        <h1 class="text-xl sm:text-2xl font-bold text-[var(--text-gray-900)] text-gradient-gray tracking-normal leading-tight">
-            Bahan Ajar Aktif
-        </h1>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
+        <div>
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
+                PORTAL BELAJAR
+            </span>
+            <h1 class="text-3xl font-bold text-[#1F2937] mb-1">
+                Bahan Ajar Aktif
+            </h1>
+            <p class="text-base text-gray-600">
+                Koleksi modul pembelajaran dan materi aktif untuk kelas Anda.
+            </p>
+        </div>
     </div>
 
     {{-- 3. Daftar Kartu Materi (Grid 2 Kolom Responsif Sesuai Referensi) --}}
@@ -31,23 +39,23 @@
                     <div>
                         {{-- Baris Atas: Kode Modul --}}
                         <div class="mb-3">
-                            <span class="inline-block px-3 py-1 rounded-lg text-sm font-bold bg-gray-100 text-gray-600 tracking-wide">
+                            <span class="inline-block px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 tracking-wide">
                                 {{ $materi->kode_modul }}
                             </span>
                         </div>
 
                         {{-- Judul Materi --}}
-                        <h2 class="text-lg sm:text-xl font-bold text-[var(--text-gray-900)] mb-2 leading-snug">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-2 leading-snug">
                             {{ $materi->judul_materi }}
                         </h2>
 
                         {{-- Deskripsi Materi --}}
-                        <p class="text-sm text-gray-600 leading-relaxed line-clamp-2 mb-5">
+                        <p class="text-sm text-gray-600 leading-relaxed line-clamp-2 mb-4">
                             {{ $materi->isi_materi ?: 'Membahas pengenalan konsep dasar, penerapan langsung di bidang keahlian, latihan mandiri, dan evaluasi pemahaman standar industri.' }}
                         </p>
 
                         {{-- Kartu Guru Pengampu --}}
-                        <div class="bg-[#F8F9FA] rounded-xl p-3 flex items-center gap-3 mb-5">
+                        <div class="bg-[#F8F9FA] rounded-xl p-3 flex items-center gap-3 mb-4">
                             <div class="w-9 h-9 rounded-full bg-[#7B1038] text-white flex items-center justify-center shrink-0 shadow-xs">
                                 <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 14l9-5-9-5-9 5 9 5z" />
@@ -55,7 +63,7 @@
                                 </svg>
                             </div>
                             <div class="min-w-0 flex-1">
-                                <span class="text-sm font-bold text-gray-600 uppercase tracking-wider block">
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">
                                     GURU PENGAMPU
                                 </span>
                                 <span class="text-sm font-semibold text-gray-700 truncate block" title="{{ $materi->Guru->nama_lengkap ?? 'Guru Pengampu' }}">

@@ -3,48 +3,48 @@
 @section('title', 'Sertifikat & Portofolio Siswa')
 
 @section('content')
-<div class="space-y-6">
+<div class="w-full pb-8">
 
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 pb-4 mb-3">
         <div>
-            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-1 shadow-2xs">
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
                 PRESTASI BELAJAR
             </span>
-            <h1 class="text-3xl font-bold text-[#1F2937] mb-2">Daftar Sertifikat &amp; Portofolio</h1>
+            <h1 class="text-3xl font-bold text-[#1F2937] mb-1">Daftar Sertifikat &amp; Portofolio</h1>
             <p class="text-base text-gray-600">Koleksi sertifikat kelulusan modul dan sertifikat mandiri Anda.</p>
         </div>
         <a href="{{ route('siswa.sertifikat.create') }}"
-           class="inline-flex items-center gap-2 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-base font-semibold px-5 py-2.5 rounded-xl shadow-xs transition self-start sm:self-auto">
+           class="inline-flex items-center gap-2 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-base font-semibold px-5 py-2.5 rounded-xl shadow-xs transition self-start sm:self-auto shrink-0">
             + Upload Sertifikat Baru
         </a>
     </div>
 
     {{-- Filter tanggal --}}
-    <div class="mb-8">
+    <div class="mb-4 sm:mb-5">
         @include('siswa.sertifikat._filter')
     </div>
 
     {{-- Grid Kartu Sertifikat --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div class="certificate-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 20px;">
         @forelse ($sertifikat as $item)
-            <div class="bg-white rounded-2xl shadow-xs hover:shadow-md transition-all duration-200 p-6 flex flex-col">
+            <div class="bg-white rounded-2xl shadow-xs hover:shadow-md transition-all duration-200 p-5 flex flex-col">
                 <div class="flex-1">
-                    <div class="flex items-center justify-between gap-2 mb-3">
+                    <div class="flex items-center justify-between gap-2 mb-2.5">
                         <span class="text-xs font-semibold px-3 py-1 rounded-full {{ $item->tipe_sertifikat === 'materi' ? 'bg-[#7B1038] text-white shadow-2xs' : 'bg-[#E8F8F0] text-[#1F9254]' }}">
                             {{ $item->tipe_sertifikat === 'materi' ? 'Kelulusan Modul' : 'Mandiri' }}
                         </span>
                         <span class="text-sm text-gray-600">{{ $item->tanggal_terbit ? \Carbon\Carbon::parse($item->tanggal_terbit)->locale('id')->translatedFormat('j F Y') : '-' }}</span>
                     </div>
                     <h2 class="text-lg font-semibold text-gray-900 leading-snug line-clamp-2">{{ $item->judul_sertifikat }}</h2>
-                    <p class="text-sm text-gray-600 mt-1">Penerbit: {{ $item->penerbit ?? '-' }}</p>
+                    <p class="text-sm text-gray-600 mt-2">Penerbit: {{ $item->penerbit ?? '-' }}</p>
                     @if ($item->materi)
-                        <p class="text-sm text-[#7B1038] mt-1 font-semibold">Modul: {{ $item->materi->judul_materi }}</p>
+                        <p class="text-sm text-[#7B1038] mt-1.5 font-semibold">Modul: {{ $item->materi->judul_materi }}</p>
                     @endif
                     @if ($item->deskripsi)
-                        <p class="text-sm text-gray-700 mt-3 bg-gray-50 px-4 py-3 rounded-xl leading-relaxed line-clamp-3">{{ $item->deskripsi }}</p>
+                        <p class="text-sm text-gray-700 mt-2.5 bg-gray-50 px-3.5 py-2.5 rounded-xl leading-relaxed line-clamp-3">{{ $item->deskripsi }}</p>
                     @endif
                 </div>
-                <div class="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+                <div class="mt-auto pt-3.5 border-t border-gray-100 flex items-center justify-between gap-3">
                     <button type="button"
                             class="text-sm font-semibold px-4 py-2 rounded-xl border border-[#7B1038] text-[#7B1038] hover:bg-[#7B1038] hover:text-white transition"
                             onclick="tampilkanSertifikat('{{ asset('storage/' . $item->file_sertifikat) }}', '{{ addslashes($item->judul_sertifikat) }}', '{{ addslashes($item->penerbit ?? '') }}')">

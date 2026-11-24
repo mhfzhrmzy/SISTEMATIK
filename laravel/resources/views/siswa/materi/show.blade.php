@@ -15,13 +15,13 @@
     {{-- Header Modul --}}
     <x-card class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <span class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-[#7B1038] text-white mb-2 shadow-2xs">
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
                 BAHAN AJAR &amp; MODUL
             </span>
-            <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937] leading-snug">
+            <h1 class="text-2xl sm:text-3xl font-bold text-[#1F2937] leading-snug mb-1">
                 {{ $materi->judul_materi }}
             </h1>
-            <p class="text-sm text-gray-600 mt-1 flex items-center gap-1.5">
+            <p class="text-base text-gray-600 mt-1 flex items-center gap-1.5">
                 <span>Diampu oleh</span>
                 <strong class="text-[#1F2937] font-semibold">{{ $materi->Guru->nama_lengkap ?? 'Guru Pengampu' }}</strong>
             </p>
@@ -29,7 +29,7 @@
 
         <div class="shrink-0">
             <a href="{{ route('portal.quiz.index', $materi) }}"
-               class="inline-flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
+               class="inline-flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-base font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
                 <span>Evaluasi Quiz</span>
             </a>
         </div>
@@ -37,7 +37,7 @@
 
     {{-- Deskripsi Materi --}}
     <x-card class="space-y-2">
-        <h2 class="text-sm font-bold text-[#5E0C2B] uppercase tracking-wider">Deskripsi Pembelajaran</h2>
+        <h2 class="text-base font-semibold text-[#7B1038] uppercase tracking-wider">Deskripsi Pembelajaran</h2>
         <p class="text-sm sm:text-base text-[#1F2937] leading-relaxed break-words">{{ trim($materi->isi_materi) ?: 'Membahas pengenalan konsep dasar, penerapan langsung di bidang keahlian, latihan mandiri, dan evaluasi pemahaman standar industri.' }}</p>
     </x-card>
 

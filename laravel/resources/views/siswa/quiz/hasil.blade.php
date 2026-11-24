@@ -32,10 +32,10 @@
 
         {{-- Maroon Accent Header --}}
         <div class="bg-[#7B1038] rounded-2xl px-6 sm:px-8 pt-6 sm:pt-7 pb-11 sm:pb-13 text-center text-white">
-            <span class="inline-block px-3.5 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-white/20 text-white mb-2 sm:mb-2.5">
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-white/20 text-white mb-2 shadow-2xs">
                 HASIL {{ strtoupper($quiz->tipe_test) }}
             </span>
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold leading-snug truncate">
+            <h1 class="text-2xl sm:text-3xl font-bold leading-snug truncate">
                 {{ $quiz->materi->judul_materi ?? 'Quiz' }}
             </h1>
         </div>

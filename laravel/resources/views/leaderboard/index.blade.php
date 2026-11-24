@@ -6,7 +6,7 @@
     <!-- Baris 1: Judul + Subjudul (Kiri) & Badge Siswa Terdaftar (Kanan) -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-1">
+            <h1 class="text-3xl font-bold text-gray-900 mb-1">
                 Peringkat Poin Siswa
             </h1>
             <p class="text-base text-gray-600">

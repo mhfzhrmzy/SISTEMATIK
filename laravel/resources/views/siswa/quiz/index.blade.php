@@ -24,14 +24,14 @@
 
     {{-- Header Banner Materi --}}
     <x-card class="flex flex-col md:flex-row md:items-center justify-between gap-5">
-        <div class="space-y-1.5">
-            <span class="inline-block px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-[#7B1038] text-white shadow-2xs">
+        <div>
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
                 MODUL EVALUASI
             </span>
-            <h1 class="text-xl sm:text-2xl font-bold text-[#1F2937] leading-tight">
+            <h1 class="text-2xl sm:text-3xl font-bold text-[#1F2937] leading-tight mb-1">
                 {{ $materi->judul_materi }}
             </h1>
-            <p class="text-sm text-gray-600 flex items-center gap-1.5">
+            <p class="text-base text-gray-600 flex items-center gap-1.5">
                 <span>Diampu oleh</span>
                 <strong class="text-[#1F2937] font-semibold">{{ $materi->Guru->nama_lengkap ?? 'Guru Pengampu' }}</strong>
             </p>
@@ -68,7 +68,7 @@
         @if ($pretests->isNotEmpty())
             <div class="space-y-3">
                 <div class="flex items-center gap-2">
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-[#5E0C2B]">Pre-Test</h2>
+                    <h2 class="text-base font-bold uppercase tracking-wider text-[#7B1038]">Pre-Test</h2>
                 </div>
 
                 <div class="space-y-3">
@@ -167,7 +167,7 @@
         @if ($posttests->isNotEmpty())
             <div class="space-y-3 pt-2">
                 <div class="flex items-center gap-2">
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-[#5E0C2B]">Post-Test</h2>
+                    <h2 class="text-base font-bold uppercase tracking-wider text-[#7B1038]">Post-Test</h2>
                 </div>
 
                 <div class="space-y-3">

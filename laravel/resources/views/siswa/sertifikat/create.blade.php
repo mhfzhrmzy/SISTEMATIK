@@ -16,10 +16,10 @@
 
     <x-card class="overflow-hidden p-8">
         <div class="border-b border-gray-100 pb-5 mb-6">
-            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-1 shadow-2xs">
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
                 UNGGAH PORTOFOLIO
             </span>
-            <h1 class="text-3xl font-bold text-[#1F2937] mb-2">Upload Sertifikat Pribadi</h1>
+            <h1 class="text-3xl font-bold text-[#1F2937] mb-1">Upload Sertifikat Pribadi</h1>
             <p class="text-base text-gray-600">Unggah dokumen sertifikat prestasi atau kegiatan mandiri Anda.</p>
         </div>
 
