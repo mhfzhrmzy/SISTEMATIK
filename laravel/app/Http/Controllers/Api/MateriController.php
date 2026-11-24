@@ -18,7 +18,7 @@ class MateriController extends Controller
         $siswa = $request->user();
         $siswa->loadMissing('kelas.jurusan');
 
-        $materis = Materi::with(['Guru', 'quiz', 'kelas.jurusan'])
+        $materis = Materi::with(['guru', 'quiz', 'kelas.jurusan'])
             ->where('id_kelas', $siswa->id_kelas)
             ->latest()
             ->get();
@@ -87,8 +87,8 @@ class MateriController extends Controller
                 'upload_file' => $materi->upload_file
                     ? Storage::disk('public')->url($materi->upload_file)
                     : null,
-                'guru_pengajar' => $materi->Guru
-                    ? $materi->Guru->nama_lengkap
+                'guru_pengajar' => $materi->guru
+                    ? $materi->guru->nama_lengkap
                     : null,
                 'quiz_count' => $quizzes->count(),
                 'pretest_count' => $quizzes->where('tipe_test', 'pretest')->count(),
@@ -120,7 +120,7 @@ class MateriController extends Controller
             ], 403);
         }
 
-        $materi->load(['Guru', 'quiz.soal']);
+        $materi->load(['guru', 'quiz.soal']);
 
         $pretests = $materi->quiz->where('tipe_test', 'pretest');
         $pretestCompleted = false;
@@ -167,8 +167,8 @@ class MateriController extends Controller
                 'upload_file' => $materi->upload_file
                     ? Storage::disk('public')->url($materi->upload_file)
                     : null,
-                'guru_pengajar' => $materi->Guru
-                    ? $materi->Guru->nama_lengkap
+                'guru_pengajar' => $materi->guru
+                    ? $materi->guru->nama_lengkap
                     : null,
                 'pretest_completed' => $pretestCompleted,
                 'is_dibuka' => (bool) $materiSiswaRecord->is_dibuka,

@@ -19,8 +19,8 @@ class QuizManajemenController extends Controller
      */
     public function index(): View
     {
-        $quizzes = Quiz::with(['materi.Guru', 'soal'])->latest()->get();
-        $materis = Materi::with(['Guru', 'kelas'])->orderBy('judul_materi')->get();
+        $quizzes = Quiz::with(['materi.guru', 'soal'])->latest()->get();
+        $materis = Materi::with(['guru', 'kelas'])->orderBy('judul_materi')->get();
         $admins = Guru::orderBy('nama_lengkap', 'asc')->get();
 
         // Kombinasi id_materi => [tipe_test, ...] yang sudah ada (untuk mencegah duplikat)

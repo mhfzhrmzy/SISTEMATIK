@@ -16,11 +16,11 @@ class SertifikatController extends Controller
         $siswa = $request->user();
 
         $sertifikat = Sertifikat::where('nisn', $siswa->nisn)
-            ->with(['materi.Guru', 'kategori'])
+            ->with(['materi.guru', 'kategori'])
             ->latest()
             ->get()
             ->map(function (Sertifikat $item) {
-                $guru = $item->materi?->Guru;
+                $guru = $item->materi?->guru;
 
                 return [
                     'id_sertifikat' => $item->id_sertifikat,

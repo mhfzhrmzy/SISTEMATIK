@@ -98,6 +98,8 @@ class Quiz extends Model
 
     public function getGuruAttribute(): ?Guru
     {
+        $this->loadMissing('materi.guru');
+
         return $this->materi?->guru;
     }
 }

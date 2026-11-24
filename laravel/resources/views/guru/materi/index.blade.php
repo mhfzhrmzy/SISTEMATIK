@@ -288,10 +288,10 @@
                                 <td class="px-4 py-3 whitespace-nowrap text-slate-700 font-medium">
                                     <div class="flex items-center gap-1.5">
                                         <span class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0">
-                                            {{ strtoupper(substr($item->Guru->nama_lengkap ?? 'G', 0, 1)) }}
+                                            {{ strtoupper(substr($item->guru?->nama_lengkap ?? 'G', 0, 1)) }}
                                         </span>
-                                        <span class="truncate max-w-[130px]" title="{{ $item->Guru->nama_lengkap ?? '-' }}">
-                                            {{ $item->Guru->nama_lengkap ?? '-' }}
+                                        <span class="truncate max-w-[130px]" title="{{ $item->guru?->nama_lengkap ?? '-' }}">
+                                            {{ $item->guru?->nama_lengkap ?? '-' }}
                                         </span>
                                     </div>
                                 </td>

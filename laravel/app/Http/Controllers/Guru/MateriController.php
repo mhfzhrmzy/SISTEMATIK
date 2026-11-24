@@ -21,7 +21,7 @@ class MateriController extends Controller
      */
     public function index(): View
     {
-        $materis = Materi::with(['Guru', 'kelas.jurusan'])->latest()->get();
+        $materis = Materi::with(['guru', 'kelas.jurusan'])->latest()->get();
         $admins = Guru::orderBy('nama_lengkap', 'asc')->get();
 
         return view('guru.materi.index', compact('materis', 'admins'));
@@ -106,7 +106,7 @@ class MateriController extends Controller
      */
     public function edit(Materi $materi): View
     {
-        $materi->load(['kelas.jurusan', 'Guru']);
+        $materi->load(['kelas.jurusan', 'guru']);
         $admins = Guru::orderBy('nama_lengkap', 'asc')->get();
 
         return view('guru.materi.edit', compact('materi', 'admins'));
