@@ -15,7 +15,7 @@ class QuizSiswaController extends Controller
      */
     public function index(Materi $materi)
     {
-        $materi->load('adminGuru');
+        $materi->load('Guru');
         $quizzes = $materi->quiz()->with('soal')->latest()->get();
 
         // Filter: posttest tanpa jadwal lengkap tidak ditampilkan
@@ -67,6 +67,7 @@ class QuizSiswaController extends Controller
 
         if ($sudahDikerjakan) {
             $labelTipe = $quiz->tipe_test === 'pretest' ? 'pre-test' : 'post-test';
+
             return redirect()->route('portal.quiz.index', $quiz->materi)
                 ->withErrors(['jadwal' => "Anda sudah mengerjakan {$labelTipe} ini dan tidak dapat mengerjakannya kembali."]);
         }
@@ -174,6 +175,7 @@ class QuizSiswaController extends Controller
 
         if ($sudahDikerjakan) {
             $labelTipe = $quiz->tipe_test === 'pretest' ? 'pre-test' : 'post-test';
+
             return redirect()->route('portal.quiz.index', $quiz->materi)
                 ->withErrors(['jadwal' => "Anda sudah mengerjakan {$labelTipe} ini dan tidak dapat mengerjakannya kembali."]);
         }

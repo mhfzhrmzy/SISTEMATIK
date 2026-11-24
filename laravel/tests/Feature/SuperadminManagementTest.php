@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\Materi;
@@ -25,7 +25,7 @@ class SuperadminManagementTest extends TestCase
 
     private Kelas $kelas;
 
-    private AdminGuru $guru;
+    private Guru $guru;
 
     protected function setUp(): void
     {
@@ -50,7 +50,7 @@ class SuperadminManagementTest extends TestCase
             'tahun' => '2026',
         ]);
 
-        $this->guru = AdminGuru::create([
+        $this->guru = Guru::create([
             'nip' => '198501012010011001',
             'nama_lengkap' => 'Budi Santoso, S.Pd',
             'password' => bcrypt('password123'),
@@ -81,7 +81,7 @@ class SuperadminManagementTest extends TestCase
     public function test_superadmin_can_create_guru(): void
     {
         $response = $this->actingAs($this->superadmin, 'superadmin')
-            ->post(route('admin.store'), [
+            ->post(route('guru.store'), [
                 'from' => 'superadmin',
                 'nip' => '198803152012022002',
                 'nama_lengkap' => 'Siti Rahmawati, M.Kom',
@@ -99,7 +99,7 @@ class SuperadminManagementTest extends TestCase
     public function test_superadmin_can_update_guru(): void
     {
         $response = $this->actingAs($this->superadmin, 'superadmin')
-            ->put(route('admin.update', $this->guru), [
+            ->put(route('guru.update', $this->guru), [
                 'from' => 'superadmin',
                 'nip' => $this->guru->nip,
                 'nama_lengkap' => 'Budi Santoso, M.Pd',
@@ -115,7 +115,7 @@ class SuperadminManagementTest extends TestCase
     public function test_superadmin_can_delete_guru(): void
     {
         $response = $this->actingAs($this->superadmin, 'superadmin')
-            ->delete(route('admin.destroy', $this->guru), [
+            ->delete(route('guru.destroy', $this->guru), [
                 'from' => 'superadmin',
             ]);
 

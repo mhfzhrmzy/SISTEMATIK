@@ -23,6 +23,28 @@
                 {{ $leaderboards->count() }} Siswa Terdaftar
             </span>
 
+            @if (! $isSiswa)
+                @php
+                    $exportRoute = $isGuru ? 'guru.leaderboard.export' : 'leaderboard.export';
+
+                    $exportQuery = array_filter(
+                        request()->query() + [
+                            'kelas' => $kelas,
+                            'jurusan' => $jurusan,
+                            'tipe_leaderboard' => $tipeLeaderboard,
+                            'materi_id' => $selectedMateriId,
+                            'tipe_test' => $filterTest,
+                        ],
+                        fn ($value) => $value !== null && $value !== ''
+                    );
+                @endphp
+                <a href="{{ route($exportRoute, $exportQuery) }}"
+                   class="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-[#7B1038] hover:bg-[#6a0d31] border border-[#7B1038] px-3.5 py-1.5 rounded-full transition duration-150 shadow-2xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+                    Export
+                </a>
+            @endif
+
             @if (! $isSiswa && ($kelas || $jurusan || $selectedMateriId || $filterTest))
                 <a href="{{ url()->current() }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-700 hover:text-gray-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3.5 py-1.5 rounded-full transition duration-150 shadow-2xs">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>

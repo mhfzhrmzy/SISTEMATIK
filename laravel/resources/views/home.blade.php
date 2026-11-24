@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div class="mt-4">
-                            <a href="{{ route('admin.login') }}" class="block w-full bg-[#0A2342] hover:bg-[#061529] text-white text-xs font-semibold py-3 px-3 rounded-xl text-center shadow-sm transition">
+                            <a href="{{ route('guru.login') }}" class="block w-full bg-[#0A2342] hover:bg-[#061529] text-white text-xs font-semibold py-3 px-3 rounded-xl text-center shadow-sm transition">
                                 Login Guru
                             </a>
                         </div>

@@ -17,7 +17,7 @@ class CheckRole
     public function handle(Request $request, Closure $next, string $role): Response
     {
         $isSuperadmin = Auth::guard('superadmin')->check();
-        $isGuru = Auth::guard('admin')->check();
+        $isGuru = Auth::guard('guru')->check();
         $isSiswa = Auth::guard('siswa')->check();
 
         if ($role === 'superadmin') {
@@ -29,7 +29,7 @@ class CheckRole
                 abort(403, 'Akses Ditolak: Halaman superadmin hanya boleh diakses oleh Superadmin.');
             }
 
-            return redirect()->route('admin.login');
+            return redirect()->route('guru.login');
         }
 
         if ($role === 'guru') {
@@ -41,7 +41,7 @@ class CheckRole
                 abort(403, 'Akses Ditolak: Halaman guru hanya boleh diakses oleh Guru.');
             }
 
-            return redirect()->route('admin.login');
+            return redirect()->route('guru.login');
         }
 
         if ($role === 'siswa') {

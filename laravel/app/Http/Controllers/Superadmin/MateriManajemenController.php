@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Materi;
 use Illuminate\Contracts\View\View;
@@ -21,8 +21,8 @@ class MateriManajemenController extends Controller
      */
     public function index(): View
     {
-        $materis = Materi::with(['adminGuru', 'kelas.jurusan'])->latest()->get();
-        $admins = AdminGuru::orderBy('nama_lengkap', 'asc')->get();
+        $materis = Materi::with(['Guru', 'kelas.jurusan'])->latest()->get();
+        $admins = Guru::orderBy('nama_lengkap', 'asc')->get();
 
         return view('superadmin.materi.index', compact('materis', 'admins'));
     }
@@ -33,7 +33,7 @@ class MateriManajemenController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'nip' => 'required|exists:admin_guru,nip',
+            'nip' => 'required|exists:guru,nip',
             'kelas' => 'required|in:10 1,10 2,10-1,10-2',
             'tahun' => 'required|digits:4|integer|min:2020|max:2099',
             'jurusan' => 'required|in:Teknik Alat Berat,Teknik Kendaraan Ringan,Teknik Sepeda Motor,Teknik Pemesinan,Teknik Instalasi Listrik,Teknik Pembangkit Listrik,Teknik Mekatronika,Teknik Audio Video,Teknik Komputer & Jaringan,Teknik Konstruksi & Perumahan,Desain Permodelan & Informasi Bangunan,Desain Komunikasi Visual',
@@ -107,8 +107,8 @@ class MateriManajemenController extends Controller
      */
     public function edit(Materi $materi): View
     {
-        $materi->load(['adminGuru', 'kelas.jurusan']);
-        $admins = AdminGuru::orderBy('nama_lengkap', 'asc')->get();
+        $materi->load(['Guru', 'kelas.jurusan']);
+        $admins = Guru::orderBy('nama_lengkap', 'asc')->get();
 
         return view('superadmin.materi.edit', compact('materi', 'admins'));
     }
@@ -119,7 +119,7 @@ class MateriManajemenController extends Controller
     public function update(Request $request, Materi $materi): RedirectResponse
     {
         $request->validate([
-            'nip' => 'required|exists:admin_guru,nip',
+            'nip' => 'required|exists:guru,nip',
             'kelas' => 'required|in:10 1,10 2,10-1,10-2',
             'tahun' => 'required|digits:4|integer|min:2020|max:2099',
             'jurusan' => 'required|in:Teknik Alat Berat,Teknik Kendaraan Ringan,Teknik Sepeda Motor,Teknik Pemesinan,Teknik Instalasi Listrik,Teknik Pembangkit Listrik,Teknik Mekatronika,Teknik Audio Video,Teknik Komputer & Jaringan,Teknik Konstruksi & Perumahan,Desain Permodelan & Informasi Bangunan,Desain Komunikasi Visual',

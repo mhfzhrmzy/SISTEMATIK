@@ -20,7 +20,7 @@ class MateriSiswaController extends Controller
     {
         $siswa = auth('siswa')->user();
         $siswa->load('kelas.jurusan');
-        $materis = Materi::with(['adminGuru', 'quiz'])
+        $materis = Materi::with(['Guru', 'quiz'])
             ->where('id_kelas', $siswa->id_kelas)
             ->latest()
             ->get();
@@ -112,7 +112,7 @@ class MateriSiswaController extends Controller
                 ->with('error', 'Kamu tidak memiliki akses ke materi ini.');
         }
 
-        $materi->load(['adminGuru', 'quiz.soal.pilihanJawaban']);
+        $materi->load(['Guru', 'quiz.soal.pilihanJawaban']);
 
         $pretests = $materi->quiz->where('tipe_test', 'pretest');
         $hasPretests = $pretests->isNotEmpty();

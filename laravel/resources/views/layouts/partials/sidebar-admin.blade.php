@@ -1,10 +1,10 @@
-{{-- resources/views/layouts/partials/sidebar-admin.blade.php --}}
+{{-- resources/views/layouts/partials/sidebar-guru.blade.php --}}
 @php
-    $currentAdmin = auth('admin')->user();
+    $currentAdmin = auth('guru')->user();
 
     $menus = [
         ['Bahan Ajar',  'materi.index',      request()->routeIs('materi.*')],
-        ['Kelola Quiz', 'admin.quiz.index',  request()->routeIs('admin.quiz.*') || request()->routeIs('admin.soal.*')],
+        ['Kelola Quiz', 'guru.quiz.index',  request()->routeIs('guru.quiz.*') || request()->routeIs('guru.soal.*')],
         ['Sertifikat',  'sertifikat.index',  request()->routeIs('sertifikat.*')],
         ['Leaderboard', 'leaderboard.index', request()->routeIs('leaderboard.*')],
     ];
@@ -13,7 +13,7 @@
         $menus[] = ['Superadmin', 'superadmin.index', request()->routeIs('superadmin.*')];
     }
 
-    $profilAktif = request()->routeIs('admin.profil*');
+    $profilAktif = request()->routeIs('guru.profil*');
 @endphp
 
 <style>
@@ -23,7 +23,7 @@
         background: #fff; box-shadow: 2px 0 12px rgba(123, 16, 56, 0.08);
         transform: translateX(-100%); transition: transform 0.2s ease;
     }
-    #sidebar-admin.is-open { transform: translateX(0); }
+    #sidebar-guru.is-open { transform: translateX(0); }
 
     #sidebar-overlay {
         display: none; position: fixed; inset: 0; z-index: 30;
@@ -94,7 +94,7 @@
     </nav>
 
     <div class="shrink-0 border-t border-[#E5CDD5]/70 p-3 space-y-1.5">
-        <a href="{{ route('admin.profil') }}"
+        <a href="{{ route('guru.profil') }}"
            class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 {{ $profilAktif ? 'bg-[#7B1038] text-white' : 'text-[#5E0C2B] hover:bg-[#7B1038]/10' }}">
             @if ($currentAdmin->foto_profile)
                 <img src="{{ asset('storage/'.$currentAdmin->foto_profile) }}" alt="" class="w-9 h-9 rounded-full object-cover shrink-0">
@@ -109,7 +109,7 @@
             </span>
         </a>
 
-        <form action="{{ route('admin.logout') }}" method="POST">
+        <form action="{{ route('guru.logout') }}" method="POST">
             @csrf
             <button type="submit"
                     class="w-full flex items-center justify-center min-h-[44px] px-4 py-2.5 bg-gray-100 text-[#7B1038] hover:bg-[#7B1038] hover:text-white rounded-xl text-sm font-semibold transition">

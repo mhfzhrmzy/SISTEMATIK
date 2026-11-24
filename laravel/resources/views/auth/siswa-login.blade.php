@@ -31,7 +31,7 @@
                     <a href="{{ route('siswa.login') }}" class="flex-1 py-2.5 px-3 text-xs font-semibold text-center transition bg-white text-[#6D1837] shadow-sm border border-slate-200">
                         Siswa (NISN)
                     </a>
-                    <a href="{{ route('admin.login') }}" class="flex-1 py-2.5 px-3 text-xs font-semibold text-center transition text-slate-600 hover:text-slate-900">
+                    <a href="{{ route('guru.login') }}" class="flex-1 py-2.5 px-3 text-xs font-semibold text-center transition text-slate-600 hover:text-slate-900">
                         Guru / Pendidik
                     </a>
                 </div>

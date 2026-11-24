@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\PenggunaSiswa;
@@ -243,7 +243,7 @@ class AuthApiTest extends TestCase
 
         // Tes endpoint serve foto publik dengan CORS
         $fotoPath = $siswa->fresh()->foto_profile;
-        $serveResponse = $this->get('/api/siswa/foto/' . $fotoPath);
+        $serveResponse = $this->get('/api/siswa/foto/'.$fotoPath);
         $serveResponse->assertOk()
             ->assertHeader('Access-Control-Allow-Origin', '*');
     }
@@ -275,7 +275,7 @@ class AuthApiTest extends TestCase
 
     public function test_login_guru_dengan_nip(): void
     {
-        $guru = AdminGuru::create([
+        $guru = Guru::create([
             'nip' => '198712345678901234',
             'nama_lengkap' => 'Budi Santoso, S.Pd',
             'password' => Hash::make('password123'),

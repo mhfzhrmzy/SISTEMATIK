@@ -1,12 +1,12 @@
 <?php
 
-use App\Http\Controllers\AdminProfilController;
 use App\Http\Controllers\Auth\GuruLoginController;
 use App\Http\Controllers\Auth\SiswaLoginController;
 use App\Http\Controllers\Guru\MateriController;
 use App\Http\Controllers\Guru\QuizController as GuruQuizController;
 use App\Http\Controllers\Guru\SertifikatController;
 use App\Http\Controllers\Guru\SoalController as GuruSoalController;
+use App\Http\Controllers\GuruProfilController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\Siswa\MateriSiswaController;
 use App\Http\Controllers\Siswa\ProfilSiswaController;
@@ -26,7 +26,7 @@ Route::get('/', function () {
     if (auth('superadmin')->check()) {
         return redirect()->route('superadmin.index');
     }
-    if (auth('admin')->check()) {
+    if (auth('guru')->check()) {
         return redirect()->route('materi.index');
     }
     if (auth('siswa')->check()) {
@@ -40,9 +40,9 @@ Route::get('/', function () {
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
 
 // ─── Autentikasi Guru & Superadmin ───────────────────────────────────────────
-Route::get('/login/guru', [GuruLoginController::class, 'create'])->name('admin.login');
-Route::post('/login/guru', [GuruLoginController::class, 'store'])->name('admin.login.attempt');
-Route::post('/logout/guru', [GuruLoginController::class, 'destroy'])->name('admin.logout');
+Route::get('/login/guru', [GuruLoginController::class, 'create'])->name('guru.login');
+Route::post('/login/guru', [GuruLoginController::class, 'store'])->name('guru.login.attempt');
+Route::post('/logout/guru', [GuruLoginController::class, 'destroy'])->name('guru.logout');
 
 // ─── Autentikasi Siswa ────────────────────────────────────────────────────────
 Route::get('/login/siswa', [SiswaLoginController::class, 'create'])->name('siswa.login');
@@ -71,7 +71,7 @@ Route::middleware('role:guru')->group(function () {
         Route::delete('/sertifikat/{sertifikat}', 'destroy')->name('sertifikat.destroy');
     });
 
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('guru')->name('guru.')->group(function () {
         // Manajemen Quiz
         Route::controller(GuruQuizController::class)->group(function () {
             Route::get('/quiz', 'index')->name('quiz.index');
@@ -93,12 +93,13 @@ Route::middleware('role:guru')->group(function () {
         });
 
         Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
+        Route::get('/leaderboard/export', [LeaderboardController::class, 'exportCsv'])->name('leaderboard.export');
 
         // Profil Guru
-        Route::get('/profil', [AdminProfilController::class, 'show'])->name('profil');
-        Route::post('/profil/foto', [AdminProfilController::class, 'updateFoto'])->name('profil.foto');
-        Route::delete('/profil/foto', [AdminProfilController::class, 'hapusFoto'])->name('profil.foto.hapus');
-        Route::post('/profil/password', [AdminProfilController::class, 'updatePassword'])->name('profil.password');
+        Route::get('/profil', [GuruProfilController::class, 'show'])->name('profil');
+        Route::post('/profil/foto', [GuruProfilController::class, 'updateFoto'])->name('profil.foto');
+        Route::delete('/profil/foto', [GuruProfilController::class, 'hapusFoto'])->name('profil.foto.hapus');
+        Route::post('/profil/password', [GuruProfilController::class, 'updatePassword'])->name('profil.password');
     });
 });
 
@@ -109,13 +110,13 @@ Route::middleware('role:superadmin')->group(function () {
 
     // Manajemen Guru
     Route::controller(GuruManajemenController::class)->group(function () {
-        Route::get('/admin', 'index')->name('admin.index');
-        Route::post('/admin', 'store')->name('admin.store');
-        Route::post('/admin/import', 'importCsv')->name('admin.import');
-        Route::get('/admin/template', 'downloadTemplate')->name('admin.template');
-        Route::get('/admin/{guru}/edit', 'edit')->name('admin.edit');
-        Route::put('/admin/{guru}', 'update')->name('admin.update');
-        Route::delete('/admin/{guru}', 'destroy')->name('admin.destroy');
+        Route::get('/guru', 'index')->name('guru.index');
+        Route::post('/guru', 'store')->name('guru.store');
+        Route::post('/guru/import', 'importCsv')->name('guru.import');
+        Route::get('/guru/template', 'downloadTemplate')->name('guru.template');
+        Route::get('/guru/{guru}/edit', 'edit')->name('guru.edit');
+        Route::put('/guru/{guru}', 'update')->name('guru.update');
+        Route::delete('/guru/{guru}', 'destroy')->name('guru.destroy');
     });
 
     // Manajemen Siswa
@@ -151,7 +152,7 @@ Route::middleware('role:superadmin')->group(function () {
         Route::controller(SoalManajemenController::class)->group(function () {
             Route::get('/quiz/{quiz}/soal', 'index')->name('soal.index');
             Route::post('/quiz/{quiz}/soal', 'store')->name('soal.store');
-            Route::patch('/quiz/{quiz}/toggle-shuffle', 'toggleShuffle')->name('quiz.toggle-shuffle');
+            Route::patch('/quiz/{quiz}/toggle-shuffle', 'toggleShuffle')->name('soal.toggle-shuffle');
             Route::post('/quiz/{quiz}/soal/import', 'importCsv')->name('soal.import');
             Route::get('/soal/template', 'downloadTemplate')->name('soal.template');
             Route::get('/soal/{soal}/edit', 'edit')->name('soal.edit');

@@ -20,7 +20,7 @@ class EnsureSiswa
             return $next($request);
         }
 
-        if (Auth::guard('superadmin')->check() || Auth::guard('admin')->check()) {
+        if (Auth::guard('superadmin')->check() || Auth::guard('guru')->check()) {
             abort(403, 'Akses Ditolak: Halaman siswa hanya boleh diakses oleh Siswa.');
         }
 

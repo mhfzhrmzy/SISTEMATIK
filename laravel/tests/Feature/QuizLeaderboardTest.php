@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Leaderboard;
 use App\Models\Materi;
@@ -23,7 +23,7 @@ class QuizLeaderboardTest extends TestCase
         $file = UploadedFile::fake()->create('modul.pdf', 100);
         $path = $file->store('materi', 'public');
 
-        $admin = AdminGuru::create([
+        $admin = Guru::create([
             'nip' => '198501012010011005',
             'nama_lengkap' => 'Guru Test',
             'email' => 'gurutest@sekolah.sch.id',
@@ -38,13 +38,13 @@ class QuizLeaderboardTest extends TestCase
             'upload_file' => $path,
         ]);
 
-        $response = $this->actingAs($admin, 'admin')->get(route('materi.show', $materi));
+        $response = $this->actingAs($admin, 'guru')->get(route('materi.show', $materi));
         $response->assertStatus(200);
     }
 
     public function test_quiz_creation_defaults_tanggal_to_today(): void
     {
-        $admin = AdminGuru::create([
+        $admin = Guru::create([
             'nip' => '198501012010011006',
             'nama_lengkap' => 'Guru Test 2',
             'email' => 'gurutest2@sekolah.sch.id',
@@ -58,7 +58,7 @@ class QuizLeaderboardTest extends TestCase
             'nip' => $admin->nip,
         ]);
 
-        $response = $this->actingAs($admin, 'admin')->post(route('admin.quiz.store'), [
+        $response = $this->actingAs($admin, 'guru')->post(route('guru.quiz.store'), [
             'id_materi' => $materi->id_materi,
             'tipe_test' => 'pretest',
             'poin' => 10,
@@ -75,12 +75,12 @@ class QuizLeaderboardTest extends TestCase
             ->where('tipe_test', 'pretest')
             ->firstOrFail();
 
-        $response->assertRedirect(route('admin.soal.index', $quiz));
+        $response->assertRedirect(route('guru.soal.index', $quiz));
     }
 
     public function test_admin_can_import_csv_questions(): void
     {
-        $admin = AdminGuru::create([
+        $admin = Guru::create([
             'nip' => '198501012010011007',
             'nama_lengkap' => 'Guru Test 3',
             'email' => 'gurutest3@sekolah.sch.id',
@@ -104,7 +104,7 @@ class QuizLeaderboardTest extends TestCase
 
         $file = UploadedFile::fake()->createWithContent('soal.csv', $csvContent);
 
-        $response = $this->actingAs($admin, 'admin')->post(route('admin.soal.import', $quiz), [
+        $response = $this->actingAs($admin, 'guru')->post(route('guru.soal.import', $quiz), [
             'csv_file' => $file,
         ]);
 
@@ -114,7 +114,7 @@ class QuizLeaderboardTest extends TestCase
             'jawaban_benar' => 'b',
         ]);
 
-        $response->assertRedirect(route('admin.soal.index', $quiz));
+        $response->assertRedirect(route('guru.soal.index', $quiz));
     }
 
     public function test_leaderboard_page_renders_successfully(): void
@@ -136,7 +136,7 @@ class QuizLeaderboardTest extends TestCase
 
     public function test_guru_can_filter_leaderboard_by_kelas_and_jurusan(): void
     {
-        $admin = AdminGuru::create([
+        $admin = Guru::create([
             'nip' => '198501012010011009',
             'nama_lengkap' => 'Guru Leaderboard',
             'email' => 'guruleaderboard@sekolah.sch.id',
@@ -191,7 +191,7 @@ class QuizLeaderboardTest extends TestCase
         ]);
 
         // Filter kelas 10 1 & TKJ
-        $response = $this->actingAs($admin, 'admin')->get(route('leaderboard.index', [
+        $response = $this->actingAs($admin, 'guru')->get(route('leaderboard.index', [
             'kelas' => '10 1',
             'jurusan' => 'Teknik Komputer & Jaringan',
         ]));
@@ -205,7 +205,7 @@ class QuizLeaderboardTest extends TestCase
 
     public function test_guru_can_view_leaderboard_permateri_with_pretest_and_posttest(): void
     {
-        $admin = AdminGuru::create([
+        $admin = Guru::create([
             'nip' => '198501012010011010',
             'nama_lengkap' => 'Guru Materi Test',
             'email' => 'gurumateri@sekolah.sch.id',
@@ -259,7 +259,7 @@ class QuizLeaderboardTest extends TestCase
         ]);
 
         // Cek Leaderboard Pre-Test per materi
-        $responsePre = $this->actingAs($admin, 'admin')->get(route('leaderboard.index', [
+        $responsePre = $this->actingAs($admin, 'guru')->get(route('leaderboard.index', [
             'tipe_leaderboard' => 'permateri',
             'materi_id' => $materi->id_materi,
             'jurusan' => 'Teknik Komputer & Jaringan',
@@ -272,7 +272,7 @@ class QuizLeaderboardTest extends TestCase
         $responsePre->assertSee('Pre-Test');
 
         // Cek Leaderboard Post-Test per materi
-        $responsePost = $this->actingAs($admin, 'admin')->get(route('leaderboard.index', [
+        $responsePost = $this->actingAs($admin, 'guru')->get(route('leaderboard.index', [
             'tipe_leaderboard' => 'permateri',
             'materi_id' => $materi->id_materi,
             'jurusan' => 'Teknik Komputer & Jaringan',
@@ -287,7 +287,7 @@ class QuizLeaderboardTest extends TestCase
 
     public function test_admin_leaderboard_route_is_accessible(): void
     {
-        $admin = AdminGuru::create([
+        $admin = Guru::create([
             'nip' => '198501012010011011',
             'nama_lengkap' => 'Guru Admin Route',
             'email' => 'adminroute@sekolah.sch.id',
@@ -295,14 +295,14 @@ class QuizLeaderboardTest extends TestCase
             'role' => 'guru',
         ]);
 
-        $response = $this->actingAs($admin, 'admin')->get(route('admin.leaderboard.index'));
+        $response = $this->actingAs($admin, 'guru')->get(route('guru.leaderboard.index'));
         $response->assertStatus(200);
         $response->assertSee('Leaderboard');
     }
 
     public function test_siswa_only_sees_posttest_for_their_own_kelas_and_jurusan(): void
     {
-        $admin = AdminGuru::create([
+        $admin = Guru::create([
             'nip' => '198501012010011012',
             'nama_lengkap' => 'Guru Pengampu Siswa',
             'email' => 'pengampusiswa@sekolah.sch.id',

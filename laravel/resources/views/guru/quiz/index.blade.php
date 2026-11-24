@@ -42,7 +42,7 @@
             <h2 class="text-sm font-bold text-slate-900">Buat Quiz Baru</h2>
         </div>
 
-        <form action="{{ route('admin.quiz.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4" id="form-create-quiz" data-existing-combinations="{{ json_encode($existingCombinations) }}">
+        <form action="{{ route('guru.quiz.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4" id="form-create-quiz" data-existing-combinations="{{ json_encode($existingCombinations) }}">
             @csrf
 
             {{-- 1. Pilih Materi --}}
@@ -369,7 +369,7 @@
                                 <div class="inline-flex items-center justify-end gap-1.5">
 
                                     {{-- Tombol Kelola Soal --}}
-                                    <a href="{{ route('admin.soal.index', $quiz) }}"
+                                    <a href="{{ route('guru.soal.index', $quiz) }}"
                                        title="Kelola Butir Soal"
                                        class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-[#7B1038] text-slate-700 hover:text-white font-bold px-3 py-1.5 rounded-xl border border-slate-300 hover:border-[#7B1038] text-xs transition duration-150 shadow-2xs">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -390,7 +390,7 @@
                                     </button>
 
                                     {{-- Tombol Hapus Quiz --}}
-                                    <form action="{{ route('admin.quiz.destroy', $quiz) }}"
+                                    <form action="{{ route('guru.quiz.destroy', $quiz) }}"
                                           method="POST"
                                           onsubmit="return confirm('Apakah Anda yakin ingin menghapus kuis ini? Semua soal dan riwayat skor pengerjaan siswa akan ikut terhapus.')"
                                           class="inline m-0 p-0">

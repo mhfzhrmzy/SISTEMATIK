@@ -49,7 +49,7 @@
         @yield('content')
     @else
         {{-- Navbar atas: tidak dipakai untuk guru (guru pakai sidebar) atau saat siswa sedang mengerjakan kuis (fokus ujian) --}}
-        @if (!request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register', 'portal.quiz.kerjakan') && !auth('admin')->check())
+        @if (!request()->routeIs('home', 'guru.login', 'guru.register', 'siswa.login', 'siswa.register', 'portal.quiz.kerjakan') && !auth('guru')->check())
         <header class="sticky top-0 z-50 bg-white shadow-[0_2px_8px_rgba(123,16,56,0.10)]">
             <div class="max-w-screen-2xl mx-auto px-10 h-16 sm:h-[70px] flex items-center justify-between">
                 <!-- Brand / Data Diri Siswa -->
@@ -108,8 +108,8 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('admin.login') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('admin.login') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">Login Guru</a>
-                        <a href="{{ route('admin.register') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('admin.register') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">Registrasi Guru</a>
+                        <a href="{{ route('guru.login') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('guru.login') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">Login Guru</a>
+                        <a href="{{ route('guru.register') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('guru.register') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">Registrasi Guru</a>
                         <span class="w-px h-5 bg-[#E5CDD5] inline-block mx-1" aria-hidden="true"></span>
                         <a href="{{ route('siswa.login') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('siswa.login') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">Login Siswa</a>
                         <a href="{{ route('siswa.register') }}" class="px-3 py-1.5 rounded-full transition-colors duration-150 {{ request()->routeIs('siswa.register') ? 'bg-[#7B1038] text-white font-semibold shadow-xs' : 'text-[#5E0C2B] hover:text-[#7B1038] hover:bg-slate-100' }}">Registrasi Siswa</a>
@@ -161,8 +161,8 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('admin.login') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('admin.login') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">Login Guru</a>
-                    <a href="{{ route('admin.register') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('admin.register') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">Registrasi Guru</a>
+                    <a href="{{ route('guru.login') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('guru.login') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">Login Guru</a>
+                    <a href="{{ route('guru.register') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('guru.register') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">Registrasi Guru</a>
                     <div class="h-px bg-[#E5CDD5] my-2"></div>
                     <a href="{{ route('siswa.login') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.login') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">Login Siswa</a>
                     <a href="{{ route('siswa.register') }}" class="mobile-menu-item flex items-center min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 {{ request()->routeIs('siswa.register') ? 'bg-[#7B1038] text-white shadow-xs' : 'text-[#5E0C2B] hover:bg-slate-100 hover:text-[#7B1038]' }}">Registrasi Siswa</a>
@@ -172,20 +172,20 @@
         @endif
 
         {{-- Konten --}}
-        @if (request()->routeIs('home', 'admin.login', 'admin.register', 'siswa.login', 'siswa.register'))
+        @if (request()->routeIs('home', 'guru.login', 'guru.register', 'siswa.login', 'siswa.register'))
             @yield('content')
         @else
-            @if (auth('admin')->check())
+            @if (auth('guru')->check())
                 @include('layouts.partials.sidebar-admin')
             @endif
 
-            <main class="w-full {{ request()->routeIs('portal.quiz.kerjakan') ? 'h-screen max-h-screen overflow-hidden flex flex-col py-3 sm:py-4 px-4 sm:px-6' : (request()->routeIs('portal.quiz.submit') ? 'flex-1 min-h-0 overflow-hidden flex flex-col justify-center items-center py-2 sm:py-3 px-4 sm:px-6' : 'py-6') }} {{ auth('admin')->check() ? 'lg:ml-64 lg:w-[calc(100%-16rem)] px-4 sm:px-6 lg:px-8' : '' }}">
+            <main class="w-full {{ request()->routeIs('portal.quiz.kerjakan') ? 'h-screen max-h-screen overflow-hidden flex flex-col py-3 sm:py-4 px-4 sm:px-6' : (request()->routeIs('portal.quiz.submit') ? 'flex-1 min-h-0 overflow-hidden flex flex-col justify-center items-center py-2 sm:py-3 px-4 sm:px-6' : 'py-6') }} {{ auth('guru')->check() ? 'lg:ml-64 lg:w-[calc(100%-16rem)] px-4 sm:px-6 lg:px-8' : '' }}">
                 @if (request()->routeIs('portal.quiz.kerjakan', 'portal.quiz.submit'))
                     <div class="max-w-4xl mx-auto w-full {{ request()->routeIs('portal.quiz.kerjakan') ? 'flex-1 flex flex-col min-h-0' : 'flex-1 min-h-0 flex flex-col justify-center items-center' }}">
                         @yield('content')
                     </div>
-                @elseif (auth('siswa')->check() || request()->routeIs('portal.*', 'siswa.*', 'leaderboard.*', 'admin.leaderboard.*', '*leaderboard*', 'admin.profil*') || request()->is('leaderboard*', 'admin/leaderboard*'))
-                    <div class="{{ auth('admin')->check() ? 'w-full' : 'max-w-screen-2xl mx-auto px-10 w-full' }}">
+                @elseif (auth('siswa')->check() || request()->routeIs('portal.*', 'siswa.*', 'leaderboard.*', 'guru.leaderboard.*', '*leaderboard*', 'guru.profil*') || request()->is('leaderboard*', 'guru/leaderboard*'))
+                    <div class="{{ auth('guru')->check() ? 'w-full' : 'max-w-screen-2xl mx-auto px-10 w-full' }}">
                         @yield('content')
                     </div>
                 @else

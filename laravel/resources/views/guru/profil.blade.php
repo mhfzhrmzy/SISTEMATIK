@@ -23,7 +23,7 @@
 
         <div class="mt-3 flex items-center justify-center gap-2">
             {{-- Ubah / Upload Foto --}}
-            <form action="{{ route('admin.profil.foto') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('guru.profil.foto') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="foto" id="foto" accept="image/*" class="hidden" onchange="this.form.submit()">
                 <label for="foto" class="cursor-pointer inline-block bg-[#7B1038] hover:bg-[#5E0C2B] transition text-white text-xs font-semibold px-4 py-1.5 rounded-full">
@@ -33,7 +33,7 @@
 
             {{-- Hapus Foto (hanya tampil jika sudah ada foto) --}}
             @if($admin->foto_profile)
-                <form action="{{ route('admin.profil.foto.hapus') }}" method="POST"
+                <form action="{{ route('guru.profil.foto.hapus') }}" method="POST"
                       onsubmit="return confirm('Yakin ingin menghapus foto profil?')">
                     @csrf
                     @method('DELETE')
@@ -73,7 +73,7 @@
             🔑 Ganti Kata Sandi
         </button>
 
-        <form id="form-password" action="{{ route('admin.profil.password') }}" method="POST"
+        <form id="form-password" action="{{ route('guru.profil.password') }}" method="POST"
               class="{{ $errors->has('password_lama') || $errors->has('password_baru') ? '' : 'hidden' }} mt-4 border-t border-gray-100 pt-4">
             @csrf
 

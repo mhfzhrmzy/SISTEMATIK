@@ -155,7 +155,7 @@
             </h3>
             <button type="button" onclick="closeImportGuruModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold px-2 cursor-pointer">&times;</button>
         </div>
-        <form action="{{ route('admin.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form action="{{ route('guru.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             <input type="hidden" name="from" value="superadmin">
             <div>
@@ -166,7 +166,7 @@
 
             <div class="p-3 bg-purple-50/60 rounded-xl border border-purple-100 text-xs text-purple-900 flex items-center justify-between">
                 <span>Belum punya contoh format?</span>
-                <a href="{{ route('admin.template') }}" class="font-bold text-purple-700 hover:underline flex items-center gap-1">
+                <a href="{{ route('guru.template') }}" class="font-bold text-purple-700 hover:underline flex items-center gap-1">
                     Download Template CSV
                 </a>
             </div>

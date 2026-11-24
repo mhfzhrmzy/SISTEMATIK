@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\Materi;
@@ -12,7 +12,7 @@ class MateriSeeder extends Seeder
 {
     public function run(): void
     {
-        $guru = AdminGuru::first();
+        $guru = Guru::first();
 
         if (! $guru) {
             return;

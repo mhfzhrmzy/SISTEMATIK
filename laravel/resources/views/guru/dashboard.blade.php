@@ -14,15 +14,15 @@
             <p class="text-sm text-gray-500">Materi</p>
             <p class="text-2xl font-semibold mt-1">{{ $totalMateri }}</p>
         </a>
-        <a href="{{ route('admin.quiz.index') }}" class="rounded-lg border p-5 hover:bg-gray-50">
+        <a href="{{ route('guru.quiz.index') }}" class="rounded-lg border p-5 hover:bg-gray-50">
             <p class="text-sm text-gray-500">Quiz</p>
             <p class="text-2xl font-semibold mt-1">{{ $totalQuiz }}</p>
         </a>
-        <a href="{{ route('admin.siswa.index') }}" class="rounded-lg border p-5 hover:bg-gray-50">
+        <a href="{{ route('guru.siswa.index') }}" class="rounded-lg border p-5 hover:bg-gray-50">
             <p class="text-sm text-gray-500">Siswa Terdaftar</p>
             <p class="text-2xl font-semibold mt-1">{{ $totalSiswa }}</p>
         </a>
-        <a href="{{ route('admin.leaderboard.index') }}" class="rounded-lg border p-5 hover:bg-gray-50">
+        <a href="{{ route('guru.leaderboard.index') }}" class="rounded-lg border p-5 hover:bg-gray-50">
             <p class="text-sm text-gray-500">Hasil Posttest</p>
             <p class="text-2xl font-semibold mt-1">{{ $totalHasilPosttest }}</p>
         </a>

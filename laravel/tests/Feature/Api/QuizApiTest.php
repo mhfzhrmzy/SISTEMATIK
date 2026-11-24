@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\Leaderboard;
@@ -352,7 +352,7 @@ class QuizApiTest extends TestCase
 
     private function buatMateri(PenggunaSiswa $siswa): Materi
     {
-        $guru = AdminGuru::create([
+        $guru = Guru::create([
             'nip' => '198712345678901234',
             'nama_lengkap' => 'Budi Santoso, S.Pd',
             'password' => Hash::make('password123'),
@@ -375,7 +375,7 @@ class QuizApiTest extends TestCase
             'rombel' => 2,
             'tahun' => '2026',
         ]);
-        $guru = AdminGuru::create([
+        $guru = Guru::create([
             'nip' => '198712345678901235',
             'nama_lengkap' => 'Guru Kelas Lain',
             'password' => Hash::make('password123'),

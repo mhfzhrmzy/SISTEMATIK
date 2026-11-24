@@ -211,7 +211,7 @@
                                             @endif
                                         </td>
                                         <td class="px-3 py-3 text-slate-700 font-medium">
-                                            {{ $item->adminGuru->nama_lengkap ?? '-' }}
+                                            {{ $item->Guru->nama_lengkap ?? '-' }}
                                         </td>
                                         <td class="px-3 py-3">
                                             @if($item->kelas)

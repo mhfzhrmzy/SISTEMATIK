@@ -18,8 +18,8 @@ class QuizController extends Controller
      */
     public function index(): View
     {
-        $quizzes = Quiz::with(['materi.adminGuru', 'materi.kelas.jurusan', 'soal'])->latest()->get();
-        $materis = Materi::with(['adminGuru', 'kelas.jurusan'])->orderBy('judul_materi')->get();
+        $quizzes = Quiz::with(['materi.Guru', 'materi.kelas.jurusan', 'soal'])->latest()->get();
+        $materis = Materi::with(['Guru', 'kelas.jurusan'])->orderBy('judul_materi')->get();
 
         // Kombinasi id_materi => [tipe_test, ...] yang sudah ada (untuk mencegah duplikat)
         $existingCombinations = Quiz::select('id_materi', 'tipe_test')
@@ -72,7 +72,7 @@ class QuizController extends Controller
 
         $quiz = Quiz::create($validated);
 
-        return redirect()->route('admin.soal.index', $quiz)->with('success', 'Quiz berhasil dibuat.');
+        return redirect()->route('guru.soal.index', $quiz)->with('success', 'Quiz berhasil dibuat.');
     }
 
     /**
@@ -108,7 +108,7 @@ class QuizController extends Controller
 
         $quiz->update($validated);
 
-        return redirect()->route('admin.quiz.index')->with('success', "Jadwal {$labelTipe} berhasil diperbarui.");
+        return redirect()->route('guru.quiz.index')->with('success', "Jadwal {$labelTipe} berhasil diperbarui.");
     }
 
     /**
@@ -118,6 +118,6 @@ class QuizController extends Controller
     {
         $quiz->delete();
 
-        return redirect()->route('admin.quiz.index')->with('success', 'Quiz berhasil dihapus.');
+        return redirect()->route('guru.quiz.index')->with('success', 'Quiz berhasil dihapus.');
     }
 }

@@ -2,14 +2,15 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Jurusan;
+use App\Models\KategoriSertifikat;
 use App\Models\Kelas;
 use App\Models\Materi;
 use App\Models\PenggunaSiswa;
 use App\Models\Sertifikat;
-use App\Models\KategoriSertifikat;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -31,7 +32,7 @@ class SertifikatApiTest extends TestCase
         $siswa = $this->buatSiswa($kelas, '0051234561', 'Andi Pratama');
         $siswaLain = $this->buatSiswa($kelas, '0051234562', 'Bagus Wijaya');
 
-        $guru = AdminGuru::create([
+        $guru = Guru::create([
             'nip' => '198712345678901234',
             'nama_lengkap' => 'Budi Santoso, S.Pd',
             'password' => Hash::make('password123'),
@@ -194,7 +195,7 @@ class SertifikatApiTest extends TestCase
         $response = $this->withToken($this->tokenSiswa($siswa))
             ->postJson('/api/siswa/sertifikat', [
                 'judul_sertifikat' => 'Sertifikat Gambar',
-                'file_sertifikat' => \Illuminate\Http\UploadedFile::fake()->image('foto.jpg'),
+                'file_sertifikat' => UploadedFile::fake()->image('foto.jpg'),
             ]);
 
         $response->assertUnprocessable()
@@ -217,7 +218,7 @@ class SertifikatApiTest extends TestCase
         $response = $this->withToken($this->tokenSiswa($siswa))
             ->postJson('/api/siswa/sertifikat', [
                 'judul_sertifikat' => 'Sertifikat PDF',
-                'file_sertifikat' => \Illuminate\Http\UploadedFile::fake()
+                'file_sertifikat' => UploadedFile::fake()
                     ->create('sertifikat.pdf', 'application/pdf'),
             ]);
 

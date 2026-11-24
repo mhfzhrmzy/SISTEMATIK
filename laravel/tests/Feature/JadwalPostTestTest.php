@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Leaderboard;
 use App\Models\Materi;
@@ -17,7 +17,7 @@ class JadwalPostTestTest extends TestCase
 {
     use RefreshDatabase;
 
-    private AdminGuru $guru;
+    private Guru $guru;
 
     private PenggunaSiswa $siswa;
 
@@ -27,7 +27,7 @@ class JadwalPostTestTest extends TestCase
     {
         parent::setUp();
 
-        $this->guru = AdminGuru::create([
+        $this->guru = Guru::create([
             'nip' => '198501012010011099',
             'nama_lengkap' => 'Guru Jadwal Test',
             'password' => 'password123',
@@ -81,7 +81,7 @@ class JadwalPostTestTest extends TestCase
      */
     public function test_store_posttest_tanpa_jam_mulai_gagal_validasi(): void
     {
-        $response = $this->actingAs($this->guru, 'admin')->post(route('admin.quiz.store'), [
+        $response = $this->actingAs($this->guru, 'guru')->post(route('guru.quiz.store'), [
             'id_materi' => $this->materi->id_materi,
             'tipe_test' => 'posttest',
             'timer' => 30,
@@ -99,7 +99,7 @@ class JadwalPostTestTest extends TestCase
     {
         Carbon::setTestNow(Carbon::parse('2026-10-26 10:00:00'));
 
-        $response = $this->actingAs($this->guru, 'admin')->post(route('admin.quiz.store'), [
+        $response = $this->actingAs($this->guru, 'guru')->post(route('guru.quiz.store'), [
             'id_materi' => $this->materi->id_materi,
             'tipe_test' => 'posttest',
             'timer' => 30,
@@ -118,7 +118,7 @@ class JadwalPostTestTest extends TestCase
     {
         Carbon::setTestNow(Carbon::parse('2026-10-26 10:00:00'));
 
-        $response = $this->actingAs($this->guru, 'admin')->post(route('admin.quiz.store'), [
+        $response = $this->actingAs($this->guru, 'guru')->post(route('guru.quiz.store'), [
             'id_materi' => $this->materi->id_materi,
             'tipe_test' => 'posttest',
             'timer' => 30,
@@ -137,7 +137,7 @@ class JadwalPostTestTest extends TestCase
     {
         Carbon::setTestNow(Carbon::parse('2026-10-26 07:00:00'));
 
-        $response = $this->actingAs($this->guru, 'admin')->post(route('admin.quiz.store'), [
+        $response = $this->actingAs($this->guru, 'guru')->post(route('guru.quiz.store'), [
             'id_materi' => $this->materi->id_materi,
             'tipe_test' => 'posttest',
             'timer' => 45,
@@ -150,7 +150,7 @@ class JadwalPostTestTest extends TestCase
             ->first();
 
         $this->assertNotNull($quiz);
-        $response->assertRedirect(route('admin.soal.index', $quiz));
+        $response->assertRedirect(route('guru.soal.index', $quiz));
         $this->assertStringStartsWith('08:00', $quiz->jam_mulai);
         $this->assertEquals('2026-10-27', $quiz->tanggal->format('Y-m-d'));
         $this->assertEquals(45, $quiz->timer);
@@ -433,7 +433,7 @@ class JadwalPostTestTest extends TestCase
 
         // Siswa tidak bisa akses route guru
         $response = $this->actingAs($this->siswa, 'siswa')
-            ->patch(route('admin.quiz.jadwal', $quiz), [
+            ->patch(route('guru.quiz.jadwal', $quiz), [
                 'tanggal' => '2026-10-28',
                 'jam_mulai' => '09:00',
                 'timer' => 90,
@@ -441,13 +441,13 @@ class JadwalPostTestTest extends TestCase
         $response->assertForbidden();
 
         // Guru bisa update jadwal
-        $response = $this->actingAs($this->guru, 'admin')
-            ->patch(route('admin.quiz.jadwal', $quiz), [
+        $response = $this->actingAs($this->guru, 'guru')
+            ->patch(route('guru.quiz.jadwal', $quiz), [
                 'tanggal' => '2026-10-28',
                 'jam_mulai' => '09:00',
                 'timer' => 90,
             ]);
-        $response->assertRedirect(route('admin.quiz.index'));
+        $response->assertRedirect(route('guru.quiz.index'));
 
         $quiz->refresh();
         $this->assertStringStartsWith('09:00', $quiz->jam_mulai);
@@ -460,8 +460,8 @@ class JadwalPostTestTest extends TestCase
             'total_poin' => 80,
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->patch(route('admin.quiz.jadwal', $quiz), [
+        $response = $this->actingAs($this->guru, 'guru')
+            ->patch(route('guru.quiz.jadwal', $quiz), [
                 'tanggal' => '2026-10-29',
                 'jam_mulai' => '10:00',
                 'timer' => 60,
@@ -474,8 +474,8 @@ class JadwalPostTestTest extends TestCase
      */
     public function test_admin_quiz_index_menampilkan_input_jam_mulai(): void
     {
-        $response = $this->actingAs($this->guru, 'admin')
-            ->get(route('admin.quiz.index'));
+        $response = $this->actingAs($this->guru, 'guru')
+            ->get(route('guru.quiz.index'));
 
         $response->assertStatus(200);
         $response->assertSee('Jam Mulai Post-Test');
@@ -489,7 +489,7 @@ class JadwalPostTestTest extends TestCase
      */
     public function test_store_pretest_tanpa_jam_mulai_gagal_validasi(): void
     {
-        $response = $this->actingAs($this->guru, 'admin')->post(route('admin.quiz.store'), [
+        $response = $this->actingAs($this->guru, 'guru')->post(route('guru.quiz.store'), [
             'id_materi' => $this->materi->id_materi,
             'tipe_test' => 'pretest',
             'timer' => 30,
@@ -507,7 +507,7 @@ class JadwalPostTestTest extends TestCase
     {
         Carbon::setTestNow(Carbon::parse('2026-10-26 07:00:00'));
 
-        $response = $this->actingAs($this->guru, 'admin')->post(route('admin.quiz.store'), [
+        $response = $this->actingAs($this->guru, 'guru')->post(route('guru.quiz.store'), [
             'id_materi' => $this->materi->id_materi,
             'tipe_test' => 'pretest',
             'timer' => 30,
@@ -542,14 +542,14 @@ class JadwalPostTestTest extends TestCase
             'jam_mulai' => '08:00',
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->patch(route('admin.quiz.jadwal', $quiz), [
+        $response = $this->actingAs($this->guru, 'guru')
+            ->patch(route('guru.quiz.jadwal', $quiz), [
                 'tanggal' => '2026-10-28',
                 'jam_mulai' => '10:00',
                 'timer' => 45,
             ]);
 
-        $response->assertRedirect(route('admin.quiz.index'));
+        $response->assertRedirect(route('guru.quiz.index'));
         $quiz->refresh();
         $this->assertStringStartsWith('10:00', $quiz->jam_mulai);
         $this->assertEquals('2026-10-28', $quiz->tanggal->format('Y-m-d'));

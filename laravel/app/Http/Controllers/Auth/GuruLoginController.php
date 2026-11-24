@@ -43,9 +43,9 @@ class GuruLoginController extends Controller
         }
 
         // Coba login sebagai guru
-        if (Auth::guard('admin')->attempt($credentials, $request->boolean('remember'))) {
+        if (Auth::guard('guru')->attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            $guru = Auth::guard('admin')->user();
+            $guru = Auth::guard('guru')->user();
 
             return redirect()->route('materi.index')
                 ->with('success', 'Selamat datang kembali, Guru '.$guru->nama_lengkap.'.');
@@ -62,7 +62,7 @@ class GuruLoginController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('superadmin')->logout();
-        Auth::guard('admin')->logout();
+        Auth::guard('guru')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

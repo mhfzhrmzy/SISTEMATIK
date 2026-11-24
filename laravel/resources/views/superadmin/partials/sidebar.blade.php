@@ -66,7 +66,7 @@
     <!-- SIDEBAR FOOTER -->
     <div class="p-4 border-t border-slate-100 space-y-3">
         <!-- Logout Button -->
-        <form action="{{ route('admin.logout') }}" method="POST">
+        <form action="{{ route('guru.logout') }}" method="POST">
             @csrf
             <button type="submit" class="w-full flex items-center gap-2.5 px-3 py-2.5 text-red-600 hover:bg-red-50 hover:text-red-700 text-sm font-semibold rounded-xl transition cursor-pointer">
                 <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

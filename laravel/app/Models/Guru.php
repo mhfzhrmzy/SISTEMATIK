@@ -6,11 +6,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class AdminGuru extends Authenticatable
+class Guru extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $table = 'admin_guru';
+    protected $table = 'guru';
 
     protected $primaryKey = 'nip';
 

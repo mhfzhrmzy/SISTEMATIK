@@ -69,7 +69,7 @@
             </div>
 
             {{-- Stats Grid (Benar, Salah, Total) --}}
-            <div class="grid grid-cols-3 gap-2 sm:gap-4">
+            <div class="grid grid-cols-3 gap-3 sm:gap-4">
                 <div class="bg-[#E8F8F0] rounded-2xl p-3 sm:p-3.5 text-center">
                     <div class="text-xl sm:text-2xl font-black text-[#1F9254]">{{ $benar }}</div>
                     <div class="text-sm text-[#1F9254] font-medium mt-0.5">Benar</div>

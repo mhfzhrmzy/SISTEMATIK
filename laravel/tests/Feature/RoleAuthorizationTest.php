@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\PenggunaSiswa;
@@ -16,7 +16,7 @@ class RoleAuthorizationTest extends TestCase
 
     private SuperAdmin $superadmin;
 
-    private AdminGuru $guru;
+    private Guru $guru;
 
     private PenggunaSiswa $siswa;
 
@@ -30,7 +30,7 @@ class RoleAuthorizationTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        $this->guru = AdminGuru::create([
+        $this->guru = Guru::create([
             'nip' => '198501012015121002',
             'nama_lengkap' => 'Guru Test',
             'password' => bcrypt('password123'),
@@ -61,7 +61,7 @@ class RoleAuthorizationTest extends TestCase
 
     public function test_guru_cannot_access_superadmin_page(): void
     {
-        $this->actingAs($this->guru, 'admin')
+        $this->actingAs($this->guru, 'guru')
             ->get(route('superadmin.index'))
             ->assertStatus(403);
     }
@@ -75,7 +75,7 @@ class RoleAuthorizationTest extends TestCase
 
     public function test_guru_can_access_guru_page(): void
     {
-        $this->actingAs($this->guru, 'admin')
+        $this->actingAs($this->guru, 'guru')
             ->get(route('materi.index'))
             ->assertStatus(200);
     }
@@ -110,7 +110,7 @@ class RoleAuthorizationTest extends TestCase
 
     public function test_guru_cannot_access_siswa_page(): void
     {
-        $this->actingAs($this->guru, 'admin')
+        $this->actingAs($this->guru, 'guru')
             ->get(route('portal.materi.index'))
             ->assertStatus(403);
     }
@@ -118,10 +118,10 @@ class RoleAuthorizationTest extends TestCase
     public function test_unauthenticated_user_redirection(): void
     {
         $this->get(route('superadmin.index'))
-            ->assertRedirect(route('admin.login'));
+            ->assertRedirect(route('guru.login'));
 
         $this->get(route('materi.index'))
-            ->assertRedirect(route('admin.login'));
+            ->assertRedirect(route('guru.login'));
 
         $this->get(route('portal.materi.index'))
             ->assertRedirect(route('siswa.login'));

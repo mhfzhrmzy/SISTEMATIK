@@ -18,7 +18,7 @@ class MateriController extends Controller
         $siswa = $request->user();
         $siswa->loadMissing('kelas.jurusan');
 
-        $materis = Materi::with(['adminGuru', 'quiz', 'kelas.jurusan'])
+        $materis = Materi::with(['Guru', 'quiz', 'kelas.jurusan'])
             ->where('id_kelas', $siswa->id_kelas)
             ->latest()
             ->get();
@@ -36,7 +36,7 @@ class MateriController extends Controller
         $jurusanClean = strtoupper(substr(preg_replace('/[^a-zA-Z0-9]/', '', $siswa->jurusan ?? 'TKJ'), 0, 4));
         $kelasPrefix = str_replace(' ', '', $siswa->kelas?->tingkat ?? '10');
 
-        $data = $materis->values()->map(function (Materi $materi, int $index) use ($siswa, $attempts, $progressMap, $jurusanClean, $kelasPrefix) {
+        $data = $materis->values()->map(function (Materi $materi, int $index) use ($attempts, $progressMap, $jurusanClean, $kelasPrefix) {
             $quizzes = $materi->quiz;
             $pretest = $quizzes->firstWhere('tipe_test', 'pretest');
             $posttest = $quizzes->firstWhere('tipe_test', 'posttest');
@@ -87,8 +87,8 @@ class MateriController extends Controller
                 'upload_file' => $materi->upload_file
                     ? Storage::disk('public')->url($materi->upload_file)
                     : null,
-                'guru_pengajar' => $materi->adminGuru
-                    ? $materi->adminGuru->nama_lengkap
+                'guru_pengajar' => $materi->Guru
+                    ? $materi->Guru->nama_lengkap
                     : null,
                 'quiz_count' => $quizzes->count(),
                 'pretest_count' => $quizzes->where('tipe_test', 'pretest')->count(),
@@ -120,7 +120,7 @@ class MateriController extends Controller
             ], 403);
         }
 
-        $materi->load(['adminGuru', 'quiz.soal']);
+        $materi->load(['Guru', 'quiz.soal']);
 
         $pretests = $materi->quiz->where('tipe_test', 'pretest');
         $pretestCompleted = false;
@@ -167,8 +167,8 @@ class MateriController extends Controller
                 'upload_file' => $materi->upload_file
                     ? Storage::disk('public')->url($materi->upload_file)
                     : null,
-                'guru_pengajar' => $materi->adminGuru
-                    ? $materi->adminGuru->nama_lengkap
+                'guru_pengajar' => $materi->Guru
+                    ? $materi->Guru->nama_lengkap
                     : null,
                 'pretest_completed' => $pretestCompleted,
                 'is_dibuka' => (bool) $materiSiswaRecord->is_dibuka,

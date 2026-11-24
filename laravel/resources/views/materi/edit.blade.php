@@ -32,7 +32,7 @@
 
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">Diampu Oleh (Guru)</label>
-                <input type="text" value="{{ $materi->adminGuru->nama_lengkap ?? auth('admin')->user()->nama_lengkap }}" readonly class="w-full border rounded px-3 py-2 text-gray-600 bg-gray-100 cursor-not-allowed">
+                <input type="text" value="{{ $materi->Guru->nama_lengkap ?? auth('admin')->user()->nama_lengkap }}" readonly class="w-full border rounded px-3 py-2 text-gray-600 bg-gray-100 cursor-not-allowed">
                 <input type="hidden" name="nip" value="{{ $materi->nip ?? auth('admin')->id() }}">
             </div>
 

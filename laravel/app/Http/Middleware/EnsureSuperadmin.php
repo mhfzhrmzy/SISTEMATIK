@@ -20,10 +20,10 @@ class EnsureSuperadmin
             return $next($request);
         }
 
-        if (Auth::guard('admin')->check() || Auth::guard('siswa')->check()) {
+        if (Auth::guard('guru')->check() || Auth::guard('siswa')->check()) {
             abort(403, 'Akses Ditolak: Halaman superadmin hanya boleh diakses oleh Superadmin.');
         }
 
-        return redirect()->route('admin.login');
+        return redirect()->route('guru.login');
     }
 }

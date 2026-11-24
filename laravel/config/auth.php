@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\PenggunaSiswa;
 use App\Models\SuperAdmin;
 use App\Models\User;
@@ -43,7 +43,7 @@ return [
     'guards' => [
         'web' => ['driver' => 'session', 'provider' => 'users'],
 
-        'admin' => ['driver' => 'session', 'provider' => 'admin_guru'],
+        'guru' => ['driver' => 'session', 'provider' => 'guru'],
         'superadmin' => ['driver' => 'session', 'provider' => 'super_admin'],
         'siswa' => ['driver' => 'session', 'provider' => 'pengguna_siswa'],
     ],
@@ -68,7 +68,7 @@ return [
     'providers' => [
         'users' => ['driver' => 'eloquent', 'model' => env('AUTH_MODEL', User::class)],
 
-        'admin_guru' => ['driver' => 'eloquent', 'model' => AdminGuru::class],
+        'guru' => ['driver' => 'eloquent', 'model' => Guru::class],
         'super_admin' => ['driver' => 'eloquent', 'model' => SuperAdmin::class],
         'pengguna_siswa' => ['driver' => 'eloquent', 'model' => PenggunaSiswa::class],
     ],

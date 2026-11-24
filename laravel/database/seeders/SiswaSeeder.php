@@ -19,6 +19,7 @@ class SiswaSeeder extends Seeder
             ['nisn' => '0051234563', 'nama_lengkap' => 'Rizky Febrian',   'jurusan' => 'Teknik Pemesinan',           'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
             ['nisn' => '0051234564', 'nama_lengkap' => 'Siti Nurhaliza',  'jurusan' => 'Teknik Audio Video',         'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
             ['nisn' => '0051234565', 'nama_lengkap' => 'Bagus Setiawan', 'jurusan' => 'Teknik Kendaraan Ringan',    'tingkat' => 10, 'rombel' => 2, 'tahun' => '2026'],
+            ['nisn' => '0090000001', 'nama_lengkap' => 'Siswa Load Test', 'jurusan' => 'Teknik Komputer & Jaringan', 'tingkat' => 10, 'rombel' => 1, 'tahun' => '2026'],
         ];
 
         foreach ($siswas as $data) {

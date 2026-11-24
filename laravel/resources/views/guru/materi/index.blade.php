@@ -69,10 +69,10 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1">Diampu Oleh (Guru)</label>
                     <div class="relative">
                         <input type="text"
-                               value="{{ auth('admin')->user()->nama_lengkap ?? 'Guru Terautentikasi' }}"
+                               value="{{ auth('guru')->user()->nama_lengkap ?? 'Guru Terautentikasi' }}"
                                readonly
                                class="w-full rounded-xl border border-slate-200 bg-slate-100/80 px-3.5 py-2 text-xs font-semibold text-slate-600 cursor-not-allowed">
-                        <input type="hidden" name="nip" value="{{ auth('admin')->id() }}">
+                        <input type="hidden" name="nip" value="{{ auth('guru')->id() }}">
                     </div>
                 </div>
 
@@ -288,10 +288,10 @@
                                 <td class="px-4 py-3 whitespace-nowrap text-slate-700 font-medium">
                                     <div class="flex items-center gap-1.5">
                                         <span class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0">
-                                            {{ strtoupper(substr($item->adminGuru->nama_lengkap ?? 'G', 0, 1)) }}
+                                            {{ strtoupper(substr($item->Guru->nama_lengkap ?? 'G', 0, 1)) }}
                                         </span>
-                                        <span class="truncate max-w-[130px]" title="{{ $item->adminGuru->nama_lengkap ?? '-' }}">
-                                            {{ $item->adminGuru->nama_lengkap ?? '-' }}
+                                        <span class="truncate max-w-[130px]" title="{{ $item->Guru->nama_lengkap ?? '-' }}">
+                                            {{ $item->Guru->nama_lengkap ?? '-' }}
                                         </span>
                                     </div>
                                 </td>

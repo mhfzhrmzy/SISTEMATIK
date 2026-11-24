@@ -12,9 +12,9 @@ class Materi extends Model
 
     protected $fillable = ['nip', 'nip_superadmin', 'id_kelas', 'judul_materi', 'isi_materi', 'upload_file'];
 
-    public function adminGuru()
+    public function guru()
     {
-        return $this->belongsTo(AdminGuru::class, 'nip', 'nip');
+        return $this->belongsTo(Guru::class, 'nip', 'nip');
     }
 
     public function superAdmin()

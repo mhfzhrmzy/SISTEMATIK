@@ -10,7 +10,7 @@
         lalu klik <strong>Simpan Semua Soal</strong> di bagian bawah.
     </p>
 
-    <form action="{{ route('admin.soal.store') }}" method="POST" id="form-soal" class="space-y-4">
+    <form action="{{ route('guru.soal.store') }}" method="POST" id="form-soal" class="space-y-4">
         @csrf
 
         <div>
@@ -49,7 +49,7 @@
                     class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2 rounded-md">
                 Simpan Semua Soal
             </button>
-            <a href="{{ route('admin.soal.index') }}"
+            <a href="{{ route('guru.soal.index') }}"
                class="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium px-5 py-2 rounded-md">
                 Batal
             </a>

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Materi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,7 +14,7 @@ class MateriPreviewTest extends TestCase
 {
     use RefreshDatabase;
 
-    private AdminGuru $guru;
+    private Guru $guru;
 
     private Materi $materi;
 
@@ -24,7 +24,7 @@ class MateriPreviewTest extends TestCase
 
         Storage::fake('public');
 
-        $this->guru = AdminGuru::create([
+        $this->guru = Guru::create([
             'nip' => '198501012015121002',
             'nama_lengkap' => 'Guru Test',
             'password' => bcrypt('password123'),
@@ -46,7 +46,7 @@ class MateriPreviewTest extends TestCase
 
     public function test_guru_can_access_edit_materi_page(): void
     {
-        $response = $this->actingAs($this->guru, 'admin')
+        $response = $this->actingAs($this->guru, 'guru')
             ->get(route('materi.edit', $this->materi));
 
         $response->assertStatus(200);
@@ -56,7 +56,7 @@ class MateriPreviewTest extends TestCase
 
     public function test_guru_can_view_direct_materi_file(): void
     {
-        $response = $this->actingAs($this->guru, 'admin')
+        $response = $this->actingAs($this->guru, 'guru')
             ->get(route('materi.show', $this->materi));
 
         $response->assertStatus(200);

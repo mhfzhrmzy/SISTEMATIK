@@ -16,7 +16,7 @@ class EnsureGuru
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::guard('admin')->check()) {
+        if (Auth::guard('guru')->check()) {
             return $next($request);
         }
 
@@ -24,6 +24,6 @@ class EnsureGuru
             abort(403, 'Akses Ditolak: Halaman guru hanya boleh diakses oleh Guru.');
         }
 
-        return redirect()->route('admin.login');
+        return redirect()->route('guru.login');
     }
 }

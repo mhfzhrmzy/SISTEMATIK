@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <a href="{{ route('admin.quiz.index') }}"
+        <a href="{{ route('guru.quiz.index') }}"
            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition duration-150 self-start sm:self-auto">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -80,7 +80,7 @@
                 Setelah melakukan import, Anda tetap dapat menambah soal baru secara manual.
             </p>
 
-            <form action="{{ route('admin.soal.import', $quiz) }}" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-center gap-3">
+            <form action="{{ route('guru.soal.import', $quiz) }}" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-center gap-3">
                 @csrf
                 <input type="file"
                        name="csv_file"
@@ -93,7 +93,7 @@
                     Upload &amp; Import CSV
                 </button>
 
-                <a href="{{ route('admin.soal.template') }}"
+                <a href="{{ route('guru.soal.template') }}"
                    class="inline-flex items-center justify-center border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 hover:border-[#7B1038] hover:text-[#7B1038] text-xs font-bold px-3.5 py-2.5 rounded-xl transition duration-150 shadow-2xs">
                     Unduh Template CSV
                 </a>
@@ -122,7 +122,7 @@
             const existingPertanyaans = @json($soals->pluck('pertanyaan')->map(fn($p) => strtolower(trim($p)))->values());
         </script>
 
-        <form action="{{ route('admin.soal.store', $quiz) }}" method="POST" id="form-soal" class="space-y-4">
+        <form action="{{ route('guru.soal.store', $quiz) }}" method="POST" id="form-soal" class="space-y-4">
             @csrf
 
             <div id="soal-container" class="space-y-4"></div>
@@ -160,7 +160,7 @@
 
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 {{-- Tombol Toggle Shuffle/Acak Soal --}}
-                <form action="{{ route('admin.quiz.toggle-shuffle', $quiz) }}" method="POST" class="inline-flex m-0 p-0">
+                <form action="{{ route('guru.quiz.toggle-shuffle', $quiz) }}" method="POST" class="inline-flex m-0 p-0">
                     @csrf
                     @method('PATCH')
                     @if($quiz->is_shuffle)
@@ -246,7 +246,7 @@
                             </td>
                             <td class="px-4 py-3.5 text-right whitespace-nowrap">
                                 <div class="inline-flex items-center gap-1.5">
-                                    <a href="{{ route('admin.soal.edit', $soal) }}"
+                                    <a href="{{ route('guru.soal.edit', $soal) }}"
                                        title="Edit Soal"
                                        class="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition duration-150">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,7 +254,7 @@
                                         </svg>
                                     </a>
 
-                                    <form action="{{ route('admin.soal.destroy', $soal) }}"
+                                    <form action="{{ route('guru.soal.destroy', $soal) }}"
                                           method="POST"
                                           onsubmit="return confirm('Apakah Anda yakin ingin menghapus butir soal ini?')"
                                           class="inline m-0 p-0">

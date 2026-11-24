@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\Leaderboard;
@@ -325,9 +325,9 @@ class MateriApiTest extends TestCase
         return $siswa->createToken('tes')->plainTextToken;
     }
 
-    private function buatGuru(): AdminGuru
+    private function buatGuru(): Guru
     {
-        return AdminGuru::create([
+        return Guru::create([
             'nip' => '198712345678901234',
             'nama_lengkap' => 'Budi Santoso, S.Pd',
             'password' => Hash::make('password123'),
@@ -356,7 +356,7 @@ class MateriApiTest extends TestCase
         ]);
     }
 
-    private function buatMateri(Kelas $kelas, AdminGuru $guru, string $judul, array $atribut = []): Materi
+    private function buatMateri(Kelas $kelas, Guru $guru, string $judul, array $atribut = []): Materi
     {
         return Materi::create(array_merge([
             'nip' => $guru->nip,

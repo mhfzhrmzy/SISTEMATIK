@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -29,7 +29,7 @@ class GuruSeeder extends Seeder
         ];
 
         foreach ($gurus as $guru) {
-            AdminGuru::firstOrCreate(['nip' => $guru['nip']], $guru);
+            Guru::firstOrCreate(['nip' => $guru['nip']], $guru);
         }
     }
 }

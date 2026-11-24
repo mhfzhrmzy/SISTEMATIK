@@ -6,7 +6,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="lg:col-span-1 bg-white rounded-lg shadow p-6 h-fit">
         <h2 class="text-lg font-semibold mb-4">Tambah Admin (Guru)</h2>
-        <form action="{{ route('admin.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form action="{{ route('guru.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             <div>
                 <label class="block text-sm font-medium mb-1">NIP</label>
@@ -71,8 +71,8 @@
                             <td class="px-3 py-2">{{ $admin->nama_lengkap }}</td>
                             <td class="px-3 py-2 text-right">
                                 <div class="flex items-center justify-end gap-3">
-                                    <a href="{{ route('admin.edit', $admin) }}" class="text-amber-600 hover:underline">Edit</a>
-                                    <form action="{{ route('admin.destroy', $admin) }}" method="POST"
+                                    <a href="{{ route('guru.edit', $admin) }}" class="text-amber-600 hover:underline">Edit</a>
+                                    <form action="{{ route('guru.destroy', $admin) }}" method="POST"
                                           onsubmit="return confirm('Hapus admin ini?')">
                                         @csrf
                                         @method('DELETE')

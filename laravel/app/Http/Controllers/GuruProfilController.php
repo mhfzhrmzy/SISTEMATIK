@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
-class AdminProfilController extends Controller
+class GuruProfilController extends Controller
 {
     public function show()
     {
-        /** @var AdminGuru $admin */
-        $admin = auth('admin')->user();
+        /** @var Guru $admin */
+        $admin = auth('guru')->user();
 
-        return view('admin.profil', compact('admin'));
+        return view('guru.profil', compact('admin'));
     }
 
     public function updateFoto(Request $request)
     {
         $request->validate(['foto' => 'required|image|mimes:jpg,jpeg,png|max:2048']);
 
-        /** @var AdminGuru $admin */
-        $admin = auth('admin')->user();
+        /** @var Guru $admin */
+        $admin = auth('guru')->user();
 
         if ($admin->foto_profile) {
             Storage::disk('public')->delete($admin->foto_profile);
@@ -36,8 +36,8 @@ class AdminProfilController extends Controller
 
     public function hapusFoto()
     {
-        /** @var AdminGuru $admin */
-        $admin = auth('admin')->user();
+        /** @var Guru $admin */
+        $admin = auth('guru')->user();
 
         if ($admin->foto_profile) {
             Storage::disk('public')->delete($admin->foto_profile);
@@ -56,8 +56,8 @@ class AdminProfilController extends Controller
             'password_baru' => 'required|min:8',
         ]);
 
-        /** @var AdminGuru $admin */
-        $admin = auth('admin')->user();
+        /** @var Guru $admin */
+        $admin = auth('guru')->user();
 
         if (! Hash::check($request->password_lama, $admin->password)) {
             return back()->withErrors(['password_lama' => 'Password lama tidak sesuai.']);

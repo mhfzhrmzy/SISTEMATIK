@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Materi;
 use App\Models\PenggunaSiswa;
@@ -19,7 +19,7 @@ class GuruManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    private AdminGuru $guru;
+    private Guru $guru;
 
     private Kelas $kelas;
 
@@ -29,7 +29,7 @@ class GuruManagementTest extends TestCase
 
         Storage::fake('public');
 
-        $this->guru = AdminGuru::create([
+        $this->guru = Guru::create([
             'nip' => '198501012010011001',
             'nama_lengkap' => 'Budi Santoso, S.Kom.',
             'password' => bcrypt('password123'),
@@ -40,7 +40,7 @@ class GuruManagementTest extends TestCase
 
     public function test_guru_can_access_materi_index(): void
     {
-        $response = $this->actingAs($this->guru, 'admin')
+        $response = $this->actingAs($this->guru, 'guru')
             ->get(route('materi.index'));
 
         $response->assertStatus(200);
@@ -51,7 +51,7 @@ class GuruManagementTest extends TestCase
     {
         $file = UploadedFile::fake()->create('modul_jaringan.pdf', 500, 'application/pdf');
 
-        $response = $this->actingAs($this->guru, 'admin')
+        $response = $this->actingAs($this->guru, 'guru')
             ->post(route('materi.store'), [
                 'judul_materi' => 'Pengenalan Jaringan Komputer',
                 'nip' => $this->guru->nip,
@@ -81,7 +81,7 @@ class GuruManagementTest extends TestCase
             'isi_materi' => 'Deskripsi lama',
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
+        $response = $this->actingAs($this->guru, 'guru')
             ->put(route('materi.update', $materi), [
                 'judul_materi' => 'Materi Diperbarui',
                 'nip' => $this->guru->nip,
@@ -110,7 +110,7 @@ class GuruManagementTest extends TestCase
             'isi_materi' => 'Deskripsi materi hapus',
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
+        $response = $this->actingAs($this->guru, 'guru')
             ->delete(route('materi.destroy', $materi));
 
         $response->assertRedirect(route('materi.index'));
@@ -121,8 +121,8 @@ class GuruManagementTest extends TestCase
 
     public function test_guru_can_access_quiz_index(): void
     {
-        $response = $this->actingAs($this->guru, 'admin')
-            ->get(route('admin.quiz.index'));
+        $response = $this->actingAs($this->guru, 'guru')
+            ->get(route('guru.quiz.index'));
 
         $response->assertStatus(200);
         $response->assertSee('Kelola Quiz');
@@ -137,8 +137,8 @@ class GuruManagementTest extends TestCase
             'isi_materi' => 'Deskripsi quiz test',
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->post(route('admin.quiz.store'), [
+        $response = $this->actingAs($this->guru, 'guru')
+            ->post(route('guru.quiz.store'), [
                 'id_materi' => $materi->id_materi,
                 'tipe_test' => 'pretest',
                 'timer' => 30,
@@ -150,9 +150,9 @@ class GuruManagementTest extends TestCase
             ->where('tipe_test', 'pretest')
             ->firstOrFail();
 
-        $response->assertRedirect(route('admin.soal.index', $quiz));
+        $response->assertRedirect(route('guru.soal.index', $quiz));
         $response->assertSessionHas('success');
-        $this->get(route('admin.soal.index', $quiz))
+        $this->get(route('guru.soal.index', $quiz))
             ->assertOk()
             ->assertSee('Tambah Soal Secara Manual');
 
@@ -172,8 +172,8 @@ class GuruManagementTest extends TestCase
             'isi_materi' => 'Deskripsi posttest test',
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->post(route('admin.quiz.store'), [
+        $response = $this->actingAs($this->guru, 'guru')
+            ->post(route('guru.quiz.store'), [
                 'id_materi' => $materi->id_materi,
                 'tipe_test' => 'posttest',
                 'timer' => 45,
@@ -185,7 +185,7 @@ class GuruManagementTest extends TestCase
             ->where('tipe_test', 'posttest')
             ->firstOrFail();
 
-        $response->assertRedirect(route('admin.soal.index', $quiz));
+        $response->assertRedirect(route('guru.soal.index', $quiz));
         $this->assertDatabaseHas('quiz', [
             'id_materi' => $materi->id_materi,
             'tipe_test' => 'posttest',
@@ -212,14 +212,14 @@ class GuruManagementTest extends TestCase
 
         $newDate = now()->addDays(2)->toDateString();
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->patch(route('admin.quiz.jadwal', $quiz), [
+        $response = $this->actingAs($this->guru, 'guru')
+            ->patch(route('guru.quiz.jadwal', $quiz), [
                 'tanggal' => $newDate,
                 'jam_mulai' => '09:30',
                 'timer' => 40,
             ]);
 
-        $response->assertRedirect(route('admin.quiz.index'));
+        $response->assertRedirect(route('guru.quiz.index'));
         $freshQuiz = $quiz->fresh();
         $this->assertEquals($newDate, $freshQuiz->tanggal->format('Y-m-d'));
         $this->assertEquals('09:30', $freshQuiz->jam_mulai);
@@ -242,10 +242,10 @@ class GuruManagementTest extends TestCase
             'tanggal' => now()->toDateString(),
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->delete(route('admin.quiz.destroy', $quiz));
+        $response = $this->actingAs($this->guru, 'guru')
+            ->delete(route('guru.quiz.destroy', $quiz));
 
-        $response->assertRedirect(route('admin.quiz.index'));
+        $response->assertRedirect(route('guru.quiz.index'));
         $this->assertDatabaseMissing('quiz', [
             'id_quiz' => $quiz->id_quiz,
         ]);
@@ -267,8 +267,8 @@ class GuruManagementTest extends TestCase
             'tanggal' => now()->toDateString(),
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->post(route('admin.soal.store', $quiz), [
+        $response = $this->actingAs($this->guru, 'guru')
+            ->post(route('guru.soal.store', $quiz), [
                 'soals' => [
                     [
                         'pertanyaan' => 'Apa kepanjangan dari LAN?',
@@ -281,7 +281,7 @@ class GuruManagementTest extends TestCase
                 ],
             ]);
 
-        $response->assertRedirect(route('admin.soal.index', $quiz));
+        $response->assertRedirect(route('guru.soal.index', $quiz));
         $this->assertDatabaseHas('soal', [
             'id_quiz' => $quiz->id_quiz,
             'pertanyaan' => 'Apa kepanjangan dari LAN?',
@@ -323,8 +323,8 @@ class GuruManagementTest extends TestCase
             'pilihan_d' => 'Opsi D',
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->put(route('admin.soal.update', $soal), [
+        $response = $this->actingAs($this->guru, 'guru')
+            ->put(route('guru.soal.update', $soal), [
                 'pertanyaan' => 'Pertanyaan diubah?',
                 'pilihan_a' => 'Opsi A baru',
                 'pilihan_b' => 'Opsi B baru',
@@ -333,7 +333,7 @@ class GuruManagementTest extends TestCase
                 'jawaban_benar' => 'b',
             ]);
 
-        $response->assertRedirect(route('admin.soal.index', $quiz));
+        $response->assertRedirect(route('guru.soal.index', $quiz));
         $this->assertDatabaseHas('soal', [
             'id_soal' => $soal->id_soal,
             'pertanyaan' => 'Pertanyaan diubah?',
@@ -365,12 +365,12 @@ class GuruManagementTest extends TestCase
 
         $file = UploadedFile::fake()->createWithContent('soal.csv', $csvContent);
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->post(route('admin.soal.import', $quiz), [
+        $response = $this->actingAs($this->guru, 'guru')
+            ->post(route('guru.soal.import', $quiz), [
                 'csv_file' => $file,
             ]);
 
-        $response->assertRedirect(route('admin.soal.index', $quiz));
+        $response->assertRedirect(route('guru.soal.index', $quiz));
         $this->assertEquals(2, $quiz->soal()->count());
         $this->assertDatabaseHas('pilihan_jawaban', [
             'label' => 'a',
@@ -395,10 +395,10 @@ class GuruManagementTest extends TestCase
             'is_shuffle' => false,
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->patch(route('admin.quiz.toggle-shuffle', $quiz));
+        $response = $this->actingAs($this->guru, 'guru')
+            ->patch(route('guru.quiz.toggle-shuffle', $quiz));
 
-        $response->assertRedirect(route('admin.soal.index', $quiz));
+        $response->assertRedirect(route('guru.soal.index', $quiz));
         $this->assertTrue($quiz->fresh()->is_shuffle);
     }
 
@@ -429,10 +429,10 @@ class GuruManagementTest extends TestCase
             'pilihan_d' => 'D',
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
-            ->delete(route('admin.soal.destroy', $soal));
+        $response = $this->actingAs($this->guru, 'guru')
+            ->delete(route('guru.soal.destroy', $soal));
 
-        $response->assertRedirect(route('admin.soal.index', $quiz));
+        $response->assertRedirect(route('guru.soal.index', $quiz));
         $this->assertDatabaseMissing('soal', ['id_soal' => $soal->id_soal]);
         $this->assertDatabaseMissing('pilihan_jawaban', ['id_soal' => $soal->id_soal]);
     }
@@ -446,7 +446,7 @@ class GuruManagementTest extends TestCase
             'id_kelas' => $this->kelas->id_kelas,
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
+        $response = $this->actingAs($this->guru, 'guru')
             ->getJson(route('sertifikat.siswa-json', [
                 'kelas' => '10 1',
                 'jurusan' => 'Teknik Komputer & Jaringan',
@@ -471,7 +471,7 @@ class GuruManagementTest extends TestCase
         ]);
 
         // 1. Select student in create flow
-        $response = $this->actingAs($this->guru, 'admin')
+        $response = $this->actingAs($this->guru, 'guru')
             ->post(route('sertifikat.create'), [
                 'student_ids' => [$siswa->nisn],
             ]);
@@ -482,7 +482,7 @@ class GuruManagementTest extends TestCase
         // 2. Upload sertifikat
         $file = UploadedFile::fake()->create('sertifikat.pdf', 200, 'application/pdf');
 
-        $storeResponse = $this->actingAs($this->guru, 'admin')
+        $storeResponse = $this->actingAs($this->guru, 'guru')
             ->post(route('sertifikat.store'), [
                 'judul_sertifikat' => 'Sertifikat Kelulusan Jaringan Komputer',
                 'penerbit' => 'SMKN 2 Jember',
@@ -515,7 +515,7 @@ class GuruManagementTest extends TestCase
             'tipe_sertifikat' => 'mandiri',
         ]);
 
-        $response = $this->actingAs($this->guru, 'admin')
+        $response = $this->actingAs($this->guru, 'guru')
             ->delete(route('sertifikat.destroy', $sertifikat));
 
         $response->assertRedirect();
@@ -526,8 +526,8 @@ class GuruManagementTest extends TestCase
 
     public function test_guru_can_access_leaderboard_with_filter(): void
     {
-        $response = $this->actingAs($this->guru, 'admin')
-            ->get(route('admin.leaderboard.index', [
+        $response = $this->actingAs($this->guru, 'guru')
+            ->get(route('guru.leaderboard.index', [
                 'kelas' => '10 1',
                 'jurusan' => 'Teknik Komputer & Jaringan',
             ]));
@@ -538,14 +538,14 @@ class GuruManagementTest extends TestCase
 
     public function test_guru_can_view_profile_and_change_password(): void
     {
-        $response = $this->actingAs($this->guru, 'admin')
-            ->get(route('admin.profil'));
+        $response = $this->actingAs($this->guru, 'guru')
+            ->get(route('guru.profil'));
 
         $response->assertStatus(200);
         $response->assertSee($this->guru->nama_lengkap);
 
-        $pwResponse = $this->actingAs($this->guru, 'admin')
-            ->post(route('admin.profil.password'), [
+        $pwResponse = $this->actingAs($this->guru, 'guru')
+            ->post(route('guru.profil.password'), [
                 'password_lama' => 'password123',
                 'password_baru' => 'newpassword123',
             ]);

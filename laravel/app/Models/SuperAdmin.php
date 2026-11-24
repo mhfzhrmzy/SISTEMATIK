@@ -34,7 +34,7 @@ class SuperAdmin extends Authenticatable
 
     public function guruDibuat()
     {
-        return $this->hasMany(AdminGuru::class, 'dibuat_oleh', 'nip');
+        return $this->hasMany(Guru::class, 'dibuat_oleh', 'nip');
     }
 
     public function siswaDibuat()

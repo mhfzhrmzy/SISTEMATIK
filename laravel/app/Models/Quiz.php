@@ -96,8 +96,8 @@ class Quiz extends Model
         return $this->hasMany(Leaderboard::class, 'id_quiz', 'id_quiz');
     }
 
-    public function getAdminGuruAttribute(): ?AdminGuru
+    public function getGuruAttribute(): ?Guru
     {
-        return $this->materi?->adminGuru;
+        return $this->materi?->guru;
     }
 }

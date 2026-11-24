@@ -12,7 +12,7 @@
             <p class="text-xs sm:text-sm text-slate-500">Perbarui teks pertanyaan, pilihan ganda, atau ubah kunci jawaban.</p>
         </div>
 
-        <a href="{{ route('admin.soal.index', $soal->id_quiz) }}"
+        <a href="{{ route('guru.soal.index', $soal->id_quiz) }}"
            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -35,7 +35,7 @@
 
     {{-- Form Edit Soal --}}
     <div class="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-6 sm:p-7 shadow-2xs">
-        <form action="{{ route('admin.soal.update', $soal) }}" method="POST" class="space-y-4">
+        <form action="{{ route('guru.soal.update', $soal) }}" method="POST" class="space-y-4">
             @csrf
             @method('PUT')
 
@@ -110,7 +110,7 @@
                     </svg>
                     Simpan Perubahan Soal
                 </button>
-                <a href="{{ route('admin.soal.index', $soal->id_quiz) }}"
+                <a href="{{ route('guru.soal.index', $soal->id_quiz) }}"
                    class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-200/80 hover:bg-slate-300 transition">
                     Batal
                 </a>

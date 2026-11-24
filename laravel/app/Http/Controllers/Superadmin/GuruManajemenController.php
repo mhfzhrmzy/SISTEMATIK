@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,21 +14,21 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class GuruManajemenController extends Controller
 {
     /**
-     * Menampilkan daftar akun guru (digunakan dari halaman standalone /admin).
+     * Menampilkan daftar akun guru (digunakan dari halaman standalone /guru).
      */
     public function index()
     {
-        $gurus = AdminGuru::latest()->get();
+        $gurus = Guru::latest()->get();
 
-        return view('admin.index', compact('gurus'));
+        return view('guru.index', compact('gurus'));
     }
 
     /**
      * Menampilkan form edit akun guru.
      */
-    public function edit(AdminGuru $guru)
+    public function edit(Guru $guru)
     {
-        return view('admin.edit', ['admin' => $guru]);
+        return view('guru.edit', ['admin' => $guru]);
     }
 
     /**
@@ -37,7 +37,7 @@ class GuruManajemenController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nip' => ['required', 'digits:18', 'unique:admin_guru,nip'],
+            'nip' => ['required', 'digits:18', 'unique:guru,nip'],
             'nama_lengkap' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s.,]+$/'],
             'password' => ['required', 'string', 'min:6'],
             'foto_profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
@@ -54,9 +54,9 @@ class GuruManajemenController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         $validated['dibuat_oleh'] = Auth::guard('superadmin')->id();
 
-        AdminGuru::create($validated);
+        Guru::create($validated);
 
-        $redirectRoute = $request->input('from') === 'superadmin' ? 'superadmin.index' : 'admin.index';
+        $redirectRoute = $request->input('from') === 'superadmin' ? 'superadmin.index' : 'guru.index';
         $redirectParameters = $request->input('from') === 'superadmin' ? ['menu' => 'guru'] : [];
 
         return redirect()->route($redirectRoute, $redirectParameters)->with('success', 'Akun guru berhasil ditambahkan.');
@@ -65,10 +65,10 @@ class GuruManajemenController extends Controller
     /**
      * Memperbarui data akun guru.
      */
-    public function update(Request $request, AdminGuru $guru)
+    public function update(Request $request, Guru $guru)
     {
         $validated = $request->validate([
-            'nip' => ['required', 'digits:18', Rule::unique('admin_guru', 'nip')->ignore($guru->nip, 'nip')],
+            'nip' => ['required', 'digits:18', Rule::unique('guru', 'nip')->ignore($guru->nip, 'nip')],
             'nama_lengkap' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s.,]+$/'],
             'password' => ['nullable', 'string', 'min:6'],
             'foto_profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
@@ -93,7 +93,7 @@ class GuruManajemenController extends Controller
 
         $guru->update($validated);
 
-        $redirectRoute = $request->input('from') === 'superadmin' ? 'superadmin.index' : 'admin.index';
+        $redirectRoute = $request->input('from') === 'superadmin' ? 'superadmin.index' : 'guru.index';
         $redirectParameters = $request->input('from') === 'superadmin' ? ['menu' => 'guru'] : [];
 
         return redirect()->route($redirectRoute, $redirectParameters)->with('success', 'Akun guru berhasil diperbarui.');
@@ -102,7 +102,7 @@ class GuruManajemenController extends Controller
     /**
      * Menghapus akun guru beserta foto profilnya.
      */
-    public function destroy(AdminGuru $guru)
+    public function destroy(Guru $guru)
     {
         if ($guru->foto_profile) {
             Storage::disk('public')->delete($guru->foto_profile);
@@ -110,7 +110,7 @@ class GuruManajemenController extends Controller
 
         $guru->delete();
 
-        $redirectRoute = request()->input('from') === 'superadmin' ? 'superadmin.index' : 'admin.index';
+        $redirectRoute = request()->input('from') === 'superadmin' ? 'superadmin.index' : 'guru.index';
         $redirectParameters = request()->input('from') === 'superadmin' ? ['menu' => 'guru'] : [];
 
         return redirect()->route($redirectRoute, $redirectParameters)->with('success', 'Akun guru berhasil dihapus.');
@@ -165,7 +165,7 @@ class GuruManajemenController extends Controller
             if (strlen($nip) === 18 && $namaLengkap !== '') {
                 $password = $passwordRaw !== '' ? Hash::make($passwordRaw) : Hash::make('password123');
 
-                AdminGuru::updateOrCreate(
+                Guru::updateOrCreate(
                     ['nip' => $nip],
                     [
                         'nama_lengkap' => $namaLengkap,
@@ -180,7 +180,7 @@ class GuruManajemenController extends Controller
 
         fclose($handle);
 
-        $redirectRoute = $request->input('from') === 'superadmin' ? 'superadmin.index' : 'admin.index';
+        $redirectRoute = $request->input('from') === 'superadmin' ? 'superadmin.index' : 'guru.index';
         $redirectParameters = $request->input('from') === 'superadmin' ? ['menu' => 'guru'] : [];
 
         return redirect()->route($redirectRoute, $redirectParameters)

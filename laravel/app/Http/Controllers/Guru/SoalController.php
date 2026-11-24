@@ -75,7 +75,7 @@ class SoalController extends Controller
         }
 
         return redirect()
-            ->route('admin.soal.index', $quiz)
+            ->route('guru.soal.index', $quiz)
             ->with($added > 0 ? 'success' : 'error', $message);
     }
 
@@ -151,7 +151,7 @@ class SoalController extends Controller
         fclose($handle);
 
         return redirect()
-            ->route('admin.soal.index', $quiz)
+            ->route('guru.soal.index', $quiz)
             ->with('success', "Berhasil meng-import {$importedCount} soal dari file spreadsheet/CSV.");
     }
 
@@ -207,7 +207,7 @@ class SoalController extends Controller
 
         $soal->syncPilihan($validated);
 
-        return redirect()->route('admin.soal.index', $soal->id_quiz)->with('success', 'Soal berhasil diperbarui.');
+        return redirect()->route('guru.soal.index', $soal->id_quiz)->with('success', 'Soal berhasil diperbarui.');
     }
 
     /**
@@ -218,7 +218,7 @@ class SoalController extends Controller
         $idQuiz = $soal->id_quiz;
         $soal->delete();
 
-        return redirect()->route('admin.soal.index', $idQuiz)->with('success', 'Soal berhasil dihapus.');
+        return redirect()->route('guru.soal.index', $idQuiz)->with('success', 'Soal berhasil dihapus.');
     }
 
     /**
@@ -232,6 +232,6 @@ class SoalController extends Controller
 
         $status = $quiz->is_shuffle ? 'diaktifkan' : 'dinonaktifkan';
 
-        return redirect()->route('admin.soal.index', $quiz)->with('success', "Fitur acak soal & jawaban untuk siswa berhasil {$status}.");
+        return redirect()->route('guru.soal.index', $quiz)->with('success', "Fitur acak soal & jawaban untuk siswa berhasil {$status}.");
     }
 }

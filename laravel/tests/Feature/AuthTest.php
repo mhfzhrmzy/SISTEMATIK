@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\PenggunaSiswa;
@@ -32,7 +32,7 @@ class AuthTest extends TestCase
 
     public function test_admin_can_login(): void
     {
-        $admin = AdminGuru::create([
+        $admin = Guru::create([
             'nip' => '198501012010011002',
             'nama_lengkap' => 'Guru Ani',
             'email' => 'ani@sekolah.sch.id',
@@ -45,13 +45,13 @@ class AuthTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $this->assertAuthenticatedAs($admin->fresh(), 'admin');
+        $this->assertAuthenticatedAs($admin->fresh(), 'guru');
         $response->assertRedirect('/materi');
     }
 
     public function test_admin_can_logout(): void
     {
-        $admin = AdminGuru::create([
+        $admin = Guru::create([
             'nip' => '198501012010011003',
             'nama_lengkap' => 'Guru Candra',
             'email' => 'candra@sekolah.sch.id',
@@ -59,11 +59,11 @@ class AuthTest extends TestCase
             'role' => 'guru',
         ]);
 
-        $this->actingAs($admin, 'admin');
+        $this->actingAs($admin, 'guru');
 
         $response = $this->post('/logout/guru');
 
-        $this->assertGuest('admin');
+        $this->assertGuest('guru');
         $response->assertRedirect(route('siswa.login'));
     }
 

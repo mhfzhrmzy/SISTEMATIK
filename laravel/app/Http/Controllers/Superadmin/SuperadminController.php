@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Materi;
 use App\Models\PenggunaSiswa;
 use App\Models\Quiz;
@@ -25,7 +25,7 @@ class SuperadminController extends Controller
             $menu = 'dashboard';
         }
 
-        $guruQuery = AdminGuru::orderBy('nama_lengkap');
+        $guruQuery = Guru::orderBy('nama_lengkap');
         if ($search !== '') {
             $guruQuery->where(function ($q) use ($search) {
                 $q->where('nip', 'like', "%{$search}%")

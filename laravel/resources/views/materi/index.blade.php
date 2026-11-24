@@ -154,7 +154,7 @@
                                         <span class="text-gray-400 italic text-xs">Tidak ada deskripsi</span>
                                     @endif
                                 </td>
-                                <td class="py-3 px-4">{{ $item->adminGuru->nama_lengkap ?? '-' }}</td>
+                                <td class="py-3 px-4">{{ $item->Guru->nama_lengkap ?? '-' }}</td>
                                 <td class="py-3 px-4">
                                     @if($item->kelas)
                                         <span class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded">

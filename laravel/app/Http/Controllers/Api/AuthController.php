@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\PenggunaSiswa;
 use App\Models\SuperAdmin;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\PersonalAccessToken;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AuthController extends Controller
 {
@@ -70,7 +71,7 @@ class AuthController extends Controller
             ]);
         }
 
-        $guru = AdminGuru::where('nip', $validated['nip'])->first();
+        $guru = Guru::where('nip', $validated['nip'])->first();
 
         if ($guru && Hash::check($validated['password'], $guru->password)) {
             $token = $guru->createToken('guru-token')->plainTextToken;
@@ -139,7 +140,7 @@ class AuthController extends Controller
 
         $fotoUrl = null;
         if ($siswa->foto_profile) {
-            $fotoUrl = $baseUrl . '/api/siswa/foto/' . ltrim($siswa->foto_profile, '/');
+            $fotoUrl = $baseUrl.'/api/siswa/foto/'.ltrim($siswa->foto_profile, '/');
         }
 
         return [
@@ -170,7 +171,7 @@ class AuthController extends Controller
         $siswa->update(['foto_profile' => $path]);
 
         $baseUrl = $request->getSchemeAndHttpHost();
-        $fotoUrl = $baseUrl . '/api/siswa/foto/' . ltrim($path, '/');
+        $fotoUrl = $baseUrl.'/api/siswa/foto/'.ltrim($path, '/');
 
         return response()->json([
             'message' => 'Foto profil berhasil diperbarui.',
@@ -197,7 +198,7 @@ class AuthController extends Controller
     /**
      * Menyajikan foto profil siswa dengan header CORS penuh untuk mobile & web.
      */
-    public function serveFoto(Request $request, string $path): \Symfony\Component\HttpFoundation\BinaryFileResponse|JsonResponse
+    public function serveFoto(Request $request, string $path): BinaryFileResponse|JsonResponse
     {
         // Sanitasi path untuk mencegah directory traversal
         $cleanPath = str_replace(['..', '\\'], '', $path);

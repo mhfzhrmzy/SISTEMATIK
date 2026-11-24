@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\Leaderboard;
@@ -123,7 +123,7 @@ class LeaderboardApiTest extends TestCase
 
     private function buatMateri(Kelas $kelas, string $judul): Materi
     {
-        $guru = AdminGuru::firstOrCreate(['nip' => '198712345678901234'], [
+        $guru = Guru::firstOrCreate(['nip' => '198712345678901234'], [
             'nama_lengkap' => 'Budi Santoso, S.Pd',
             'password' => Hash::make('password123'),
         ]);

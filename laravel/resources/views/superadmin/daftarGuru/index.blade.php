@@ -6,7 +6,7 @@
             <p class="text-xs text-slate-500 mt-1">Tambah, perbarui, atau hapus data akun guru pengampu.</p>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
-            <a href="{{ route('admin.template') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-xs flex items-center gap-1.5 transition">
+            <a href="{{ route('guru.template') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-xs flex items-center gap-1.5 transition">
                 <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                 </svg>
@@ -35,7 +35,7 @@
                 </svg>
             Tambah Akun Guru Baru
         </h2>
-        <form action="{{ route('admin.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <form action="{{ route('guru.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 gap-4 md:grid-cols-2">
             @csrf
             <input type="hidden" name="from" value="superadmin">
             <div>
@@ -101,7 +101,7 @@
                                     <button type="button"
                                             onclick="openEditGuruModal('{{ $guru->nip }}', '{{ addslashes($guru->nama_lengkap) }}')"
                                             class="text-amber-600 font-medium hover:underline cursor-pointer">Edit</button>
-                                    <form action="{{ route('admin.destroy', $guru) }}" method="POST" onsubmit="return confirm('Hapus akun guru ini?')">
+                                    <form action="{{ route('guru.destroy', $guru) }}" method="POST" onsubmit="return confirm('Hapus akun guru ini?')">
                                         @csrf @method('DELETE')
                                         <input type="hidden" name="from" value="superadmin">
                                         <button type="submit" class="text-red-600 font-medium hover:underline cursor-pointer">Hapus</button>

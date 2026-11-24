@@ -6,7 +6,7 @@
 <div class="max-w-xl mx-auto bg-white rounded-lg shadow p-6">
     <h2 class="text-lg font-semibold mb-4">Edit Data Admin (Guru)</h2>
 
-    <form action="{{ route('admin.update', $admin) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+    <form action="{{ route('guru.update', $admin) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf
         @method('PUT')
 
@@ -56,7 +56,7 @@
                     class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">
                 Simpan Perubahan
             </button>
-            <a href="{{ route('admin.index') }}"
+            <a href="{{ route('guru.index') }}"
                class="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium px-4 py-2 rounded-md transition">
                 Batal
             </a>

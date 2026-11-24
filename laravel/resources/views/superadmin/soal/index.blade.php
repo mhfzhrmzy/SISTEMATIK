@@ -20,7 +20,7 @@
                         <h2 class="text-xl font-bold text-slate-900">Kelola Soal Quiz</h2>
                         <p class="text-xs text-slate-500 mt-1">
                             Materi: <strong>{{ $quiz->materi->judul_materi }}</strong> ({{ ucfirst($quiz->tipe_test) }}) &bull; 
-                            Guru: <strong>{{ $quiz->adminGuru->nama_lengkap ?? $quiz->materi->adminGuru->nama_lengkap ?? '-' }}</strong>
+                            Guru: <strong>{{ $quiz->Guru->nama_lengkap ?? $quiz->materi->Guru->nama_lengkap ?? '-' }}</strong>
                         </p>
                     </div>
                     <a href="{{ route('superadmin.quiz.index') }}" class="text-xs font-semibold text-[#6D1837] hover:underline flex items-center gap-1">

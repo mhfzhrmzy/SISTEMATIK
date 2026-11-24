@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('upload_file')->nullable();
             $table->timestamps();
 
-            $table->foreign('nip')->references('nip')->on('admin_guru')->onDelete('cascade');
+            $table->foreign('nip')->references('nip')->on('guru')->onDelete('cascade');
             $table->foreign('nip_superadmin')->references('nip')->on('super_admin')->onDelete('set null');
             $table->foreign('id_kelas')->references('id_kelas')->on('kelas')->onDelete('set null');
             $table->index(['id_kelas', 'created_at'], 'idx_materi_kelas_created');

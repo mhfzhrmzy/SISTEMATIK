@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminGuru;
+use App\Models\Guru;
 use App\Models\Materi;
 use App\Models\Quiz;
 use Carbon\Carbon;
@@ -19,9 +19,9 @@ class QuizManajemenController extends Controller
      */
     public function index(): View
     {
-        $quizzes = Quiz::with(['materi.adminGuru', 'soal'])->latest()->get();
-        $materis = Materi::with(['adminGuru', 'kelas'])->orderBy('judul_materi')->get();
-        $admins = AdminGuru::orderBy('nama_lengkap', 'asc')->get();
+        $quizzes = Quiz::with(['materi.Guru', 'soal'])->latest()->get();
+        $materis = Materi::with(['Guru', 'kelas'])->orderBy('judul_materi')->get();
+        $admins = Guru::orderBy('nama_lengkap', 'asc')->get();
 
         // Kombinasi id_materi => [tipe_test, ...] yang sudah ada (untuk mencegah duplikat)
         $existingCombinations = Quiz::select('id_materi', 'tipe_test')
@@ -41,7 +41,7 @@ class QuizManajemenController extends Controller
 
         $rules = [
             'id_materi' => ['required', 'exists:materi,id_materi'],
-            'nip' => ['nullable', 'exists:admin_guru,nip'],
+            'nip' => ['nullable', 'exists:guru,nip'],
             'tipe_test' => [
                 'required',
                 'in:pretest,posttest',

@@ -70,7 +70,7 @@
                             <option value="">-- Pilih Materi --</option>
                             @foreach ($materis as $m)
                                 <option value="{{ $m->id_materi }}" data-nip="{{ $m->nip }}" {{ old('id_materi') == $m->id_materi ? 'selected' : '' }}>
-                                    {{ $m->judul_materi }} (Kelas {{ $m->kelas }} - {{ $m->adminGuru->nama_lengkap ?? 'Guru' }})
+                                    {{ $m->judul_materi }} (Kelas {{ $m->kelas }} - {{ $m->Guru->nama_lengkap ?? 'Guru' }})
                                 </option>
                             @endforeach
                         </select>
@@ -198,7 +198,7 @@
                                         {{ $quiz->materi->judul_materi ?? '-' }}
                                     </td>
                                     <td class="px-3 py-3 text-slate-700">
-                                        {{ $quiz->adminGuru->nama_lengkap ?? $quiz->materi->adminGuru->nama_lengkap ?? '-' }}
+                                        {{ $quiz->Guru->nama_lengkap ?? $quiz->materi->Guru->nama_lengkap ?? '-' }}
                                     </td>
                                     <td class="px-3 py-3">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold {{ $quiz->tipe_test == 'pretest' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-green-100 text-green-800 border border-green-200' }}">

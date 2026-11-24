@@ -18,7 +18,7 @@
             </svg>
             Tambah Akun Guru Baru
         </h2>
-        <form action="{{ route('admin.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <form action="{{ route('guru.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 gap-4 md:grid-cols-2">
             @csrf
             <input type="hidden" name="from" value="superadmin">
             <div>
@@ -84,7 +84,7 @@
                                     <button type="button"
                                             onclick="openEditGuruModal('{{ $guru->nip }}', '{{ addslashes($guru->nama_lengkap) }}')"
                                             class="text-amber-600 font-medium hover:underline cursor-pointer">Edit</button>
-                                    <form action="{{ route('admin.destroy', $guru) }}" method="POST" onsubmit="return confirm('Hapus akun guru ini?')">
+                                    <form action="{{ route('guru.destroy', $guru) }}" method="POST" onsubmit="return confirm('Hapus akun guru ini?')">
                                         @csrf @method('DELETE')
                                         <input type="hidden" name="from" value="superadmin">
                                         <button type="submit" class="text-red-600 font-medium hover:underline cursor-pointer">Hapus</button>

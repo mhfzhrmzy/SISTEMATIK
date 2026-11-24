@@ -58,8 +58,8 @@
                                 <span class="text-sm font-bold text-gray-600 uppercase tracking-wider block">
                                     GURU PENGAMPU
                                 </span>
-                                <span class="text-sm font-semibold text-gray-700 truncate block" title="{{ $materi->adminGuru->nama_lengkap ?? 'Guru Pengampu' }}">
-                                    {{ $materi->adminGuru->nama_lengkap ?? 'Guru Pengampu' }}
+                                <span class="text-sm font-semibold text-gray-700 truncate block" title="{{ $materi->Guru->nama_lengkap ?? 'Guru Pengampu' }}">
+                                    {{ $materi->Guru->nama_lengkap ?? 'Guru Pengampu' }}
                                 </span>
                             </div>
                         </div>
@@ -77,7 +77,7 @@
                     </div>
 
                     {{-- 4. Tiga Tombol Aksi di Bawah (Pre-test | Bahan Ajar | Post-test) --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2">
+                    <div class="grid grid-cols-3 gap-2.5 pt-2">
 
                         {{-- Kolom 1: PRE-TEST --}}
                         @if ($materi->pretestDone && $materi->hasPretest)
