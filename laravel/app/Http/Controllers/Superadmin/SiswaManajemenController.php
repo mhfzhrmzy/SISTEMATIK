@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class SiswaManajemenController extends Controller
 {
     /** Daftar kelas yang tersedia di SMK. */
-    private const DAFTAR_KELAS = ['10-1', '10-2', '10 1', '10 2'];
+    private const DAFTAR_KELAS = ['X-1', 'X-2', 'X 1', 'X 2', '10-1', '10-2', '10 1', '10 2'];
 
     /** Daftar jurusan yang tersedia di SMK. */
     private const DAFTAR_JURUSAN = [
@@ -69,7 +69,7 @@ class SiswaManajemenController extends Controller
         ]);
 
         $parts = preg_split('/[\s\-]+/', (string) $validated['kelas']);
-        $tingkat = (int) ($parts[0] ?? 10);
+        $tingkat = Kelas::parseTingkat($parts[0] ?? 10);
         $rombel = (int) ($parts[1] ?? 1);
 
         $kelasModel = Kelas::findOrCreateByNama($validated['jurusan'], $tingkat, $rombel, $validated['tahun']);
@@ -117,7 +117,7 @@ class SiswaManajemenController extends Controller
         ]);
 
         $parts = preg_split('/[\s\-]+/', (string) $validated['kelas']);
-        $tingkat = (int) ($parts[0] ?? 10);
+        $tingkat = Kelas::parseTingkat($parts[0] ?? 10);
         $rombel = (int) ($parts[1] ?? 1);
 
         $kelasModel = Kelas::findOrCreateByNama($validated['jurusan'], $tingkat, $rombel, $validated['tahun']);
@@ -215,7 +215,7 @@ class SiswaManajemenController extends Controller
 
             if (strlen($nisn) === 10 && $namaLengkap !== '') {
                 if (! in_array($kelas, self::DAFTAR_KELAS, true)) {
-                    $kelas = '10 1';
+                    $kelas = 'X-1';
                 }
                 if (! preg_match('/^\d{4}$/', $tahun)) {
                     $tahun = date('Y');
@@ -224,8 +224,8 @@ class SiswaManajemenController extends Controller
                     $jurusan = 'Teknik Komputer & Jaringan';
                 }
 
-                $parts = explode(' ', $kelas);
-                $tingkat = (int) ($parts[0] ?? 10);
+                $parts = preg_split('/[\s\-]+/', $kelas);
+                $tingkat = Kelas::parseTingkat($parts[0] ?? 10);
                 $rombel = (int) ($parts[1] ?? 1);
 
                 $kelasModel = Kelas::findOrCreateByNama($jurusan, $tingkat, $rombel, $tahun);
@@ -268,8 +268,8 @@ class SiswaManajemenController extends Controller
         return response()->stream(function () {
             $handle = fopen('php://output', 'w');
             fputcsv($handle, ['nisn', 'nama_lengkap', 'kelas', 'tahun', 'jurusan', 'password']);
-            fputcsv($handle, ['0051234567', 'Ahmad Subagyo', '10 1', '2026', 'Teknik Komputer & Jaringan', 'password123']);
-            fputcsv($handle, ['0051234568', 'Budi Utomo', '10 2', '2026', 'Desain Komunikasi Visual', 'password123']);
+            fputcsv($handle, ['0051234567', 'Ahmad Subagyo', 'X-1', '2026', 'Teknik Komputer & Jaringan', 'password123']);
+            fputcsv($handle, ['0051234568', 'Budi Utomo', 'X-2', '2026', 'Desain Komunikasi Visual', 'password123']);
             fclose($handle);
         }, 200, $headers);
     }

@@ -89,7 +89,7 @@ class SuperadminManagementTest extends TestCase
             ]);
 
         $response->assertRedirect(route('superadmin.index', ['menu' => 'guru']));
-        $this->assertDatabaseHas('admin_guru', [
+        $this->assertDatabaseHas('guru', [
             'nip' => '198803152012022002',
             'nama_lengkap' => 'Siti Rahmawati, M.Kom',
             'dibuat_oleh' => $this->superadmin->nip,
@@ -106,7 +106,7 @@ class SuperadminManagementTest extends TestCase
             ]);
 
         $response->assertRedirect(route('superadmin.index', ['menu' => 'guru']));
-        $this->assertDatabaseHas('admin_guru', [
+        $this->assertDatabaseHas('guru', [
             'nip' => $this->guru->nip,
             'nama_lengkap' => 'Budi Santoso, M.Pd',
         ]);
@@ -120,7 +120,7 @@ class SuperadminManagementTest extends TestCase
             ]);
 
         $response->assertRedirect(route('superadmin.index', ['menu' => 'guru']));
-        $this->assertDatabaseMissing('admin_guru', [
+        $this->assertDatabaseMissing('guru', [
             'nip' => $this->guru->nip,
         ]);
     }

@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Layer caching data JSON ke [SharedPreferences] untuk akses offline.
 ///
 /// Menyimpan respons API terakhir dalam bentuk string JSON (di-serialize)
-/// berdasarkan key tertentu (misalnya 'materi_kelas_10', 'leaderboard_keseluruhan').
+/// berdasarkan key tertentu (misalnya 'materi_kelas_X', 'leaderboard_keseluruhan').
 class CacheLokal {
   CacheLokal._();
 

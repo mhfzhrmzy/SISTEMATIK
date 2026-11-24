@@ -31,7 +31,7 @@ class AuthApiTest extends TestCase
             ->assertJsonPath('role', 'siswa')
             ->assertJsonPath('user.nisn', $siswa->nisn)
             ->assertJsonPath('user.nama_lengkap', 'Andi Pratama')
-            ->assertJsonPath('user.kelas', '10 1')
+            ->assertJsonPath('user.kelas', 'X-1')
             ->assertJsonPath('user.jurusan', 'Teknik Komputer & Jaringan')
             ->assertJsonPath('user.tahun', '2026')
             ->assertJsonPath('user.poin', 0)
@@ -99,7 +99,7 @@ class AuthApiTest extends TestCase
             ->getJson('/api/siswa/profil')
             ->assertOk()
             ->assertJsonPath('user.nisn', $siswa->nisn)
-            ->assertJsonPath('user.kelas', '10 1')
+            ->assertJsonPath('user.kelas', 'X-1')
             ->assertJsonPath('user.jurusan', 'Teknik Komputer & Jaringan');
     }
 

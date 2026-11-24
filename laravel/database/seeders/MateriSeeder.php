@@ -21,7 +21,7 @@ class MateriSeeder extends Seeder
         $jurusan = Jurusan::where('nama_jurusan', 'Teknik Komputer & Jaringan')->first();
         $kelas = $jurusan
             ? Kelas::where('id_jurusan', $jurusan->id_jurusan)
-                ->where('tingkat', 10)
+                ->where('tingkat', Kelas::parseTingkat('X'))
                 ->where('rombel', 1)
                 ->first()
             : null;

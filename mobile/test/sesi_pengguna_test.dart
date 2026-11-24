@@ -12,7 +12,7 @@ void main() {
       pengguna: const {
         'nisn': '0051234561',
         'nama_lengkap': 'Andi Pratama',
-        'kelas': '10 1',
+        'kelas': 'X-1',
         'jurusan': 'Teknik Komputer & Jaringan',
       },
       kedaluwarsa: DateTime.now().add(const Duration(days: 30)),
@@ -23,7 +23,7 @@ void main() {
     expect(SesiPengguna.nama, 'Andi Pratama');
     expect(
       SesiPengguna.kelas,
-      'Kelas 10 1 - Teknik Komputer & Jaringan',
+      'Kelas X-1 - Teknik Komputer & Jaringan',
     );
   });
 

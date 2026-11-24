@@ -34,7 +34,7 @@ class MateriController extends Controller
             ->keyBy('id_materi');
 
         $jurusanClean = strtoupper(substr(preg_replace('/[^a-zA-Z0-9]/', '', $siswa->jurusan ?? 'TKJ'), 0, 4));
-        $kelasPrefix = str_replace(' ', '', $siswa->kelas?->tingkat ?? '10');
+        $kelasPrefix = $siswa->kelas?->tingkat_romawi ?? 'X';
 
         $data = $materis->values()->map(function (Materi $materi, int $index) use ($attempts, $progressMap, $jurusanClean, $kelasPrefix) {
             $quizzes = $materi->quiz;

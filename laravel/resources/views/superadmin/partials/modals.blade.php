@@ -55,8 +55,8 @@
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Kelas</label>
                 <select id="edit-siswa-kelas" name="kelas" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition bg-white">
-                    <option value="10 1">Kelas 10 1</option>
-                    <option value="10 2">Kelas 10 2</option>
+                    <option value="X-1">Kelas X-1</option>
+                    <option value="X-2">Kelas X-2</option>
                 </select>
             </div>
             <div>
@@ -213,7 +213,10 @@
         document.getElementById('edit-siswa-form').action = "/siswa/" + encodeURIComponent(nisn);
         document.getElementById('edit-siswa-nisn').value = nisn;
         document.getElementById('edit-siswa-nama').value = nama;
-        document.getElementById('edit-siswa-kelas').value = kelas;
+        let normalizedKelas = kelas;
+        if (kelas === '10 1' || kelas === '10-1' || kelas === 'X 1') normalizedKelas = 'X-1';
+        if (kelas === '10 2' || kelas === '10-2' || kelas === 'X 2') normalizedKelas = 'X-2';
+        document.getElementById('edit-siswa-kelas').value = normalizedKelas;
         document.getElementById('edit-siswa-tahun').value = tahun;
         document.getElementById('edit-siswa-tahun-display').value = tahun;
         document.getElementById('edit-siswa-jurusan').value = jurusan;

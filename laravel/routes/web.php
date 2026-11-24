@@ -152,7 +152,7 @@ Route::middleware('role:superadmin')->group(function () {
         Route::controller(SoalManajemenController::class)->group(function () {
             Route::get('/quiz/{quiz}/soal', 'index')->name('soal.index');
             Route::post('/quiz/{quiz}/soal', 'store')->name('soal.store');
-            Route::patch('/quiz/{quiz}/toggle-shuffle', 'toggleShuffle')->name('soal.toggle-shuffle');
+            Route::patch('/quiz/{quiz}/toggle-shuffle', 'toggleShuffle')->name('quiz.toggle-shuffle');
             Route::post('/quiz/{quiz}/soal/import', 'importCsv')->name('soal.import');
             Route::get('/soal/template', 'downloadTemplate')->name('soal.template');
             Route::get('/soal/{soal}/edit', 'edit')->name('soal.edit');

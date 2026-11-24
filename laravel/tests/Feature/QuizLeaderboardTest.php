@@ -63,12 +63,14 @@ class QuizLeaderboardTest extends TestCase
             'tipe_test' => 'pretest',
             'poin' => 10,
             'timer' => 30,
+            'tanggal' => now()->toDateString(),
+            'jam_mulai' => now()->addHours(1)->format('H:i'),
         ]);
 
         $this->assertDatabaseHas('quiz', [
             'id_materi' => $materi->id_materi,
             'tipe_test' => 'pretest',
-            'tanggal' => now()->startOfDay()->toDateTimeString(),
+            'tanggal' => now()->toDateString().' 00:00:00',
         ]);
 
         $quiz = Quiz::where('id_materi', $materi->id_materi)
@@ -200,7 +202,7 @@ class QuizLeaderboardTest extends TestCase
         $response->assertSee('Siswa Kelas 10 TKJ');
         $response->assertDontSee('Siswa Kelas 10 Mesin');
         $response->assertSee('Teknik Komputer & Jaringan');
-        $response->assertSee('Kelas 10 1');
+        $response->assertSee('Kelas X-1');
     }
 
     public function test_guru_can_view_leaderboard_permateri_with_pretest_and_posttest(): void
@@ -430,8 +432,8 @@ class QuizLeaderboardTest extends TestCase
         ]));
 
         $response->assertStatus(200);
-        // Tetap terkunci ke kelas siswa tersebut (10 1 TKJ)
+        // Tetap terkunci ke kelas siswa tersebut (X-1 TKJ)
         $response->assertDontSee('Siswa Mesin Tersembunyi');
-        $response->assertSee('Kelas 10 1 | Teknik Komputer & Jaringan');
+        $response->assertSee('Kelas X-1 | Teknik Komputer & Jaringan');
     }
 }

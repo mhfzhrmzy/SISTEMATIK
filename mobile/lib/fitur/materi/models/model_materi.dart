@@ -13,7 +13,7 @@ class ModelMateri {
   /// Daftar halaman konten materi (teks per halaman).
   final List<String> halamanKonten;
 
-  /// Kode modul (misal: 10TKJ-01)
+  /// Kode modul (misal: XTKJ-01)
   final String? kodeModul;
 
   /// URL file materi PDF (jika tersedia)
@@ -63,8 +63,11 @@ class ModelMateri {
   int get totalHalaman => halamanKonten.isEmpty ? 1 : halamanKonten.length;
 
   /// Label tampilan kode/kelas untuk kartu materi.
-  String get labelTampilanKelas =>
-      kodeModul != null && kodeModul!.isNotEmpty ? kodeModul! : kelas;
+  String get labelTampilanKelas {
+    final label =
+        kodeModul != null && kodeModul!.isNotEmpty ? kodeModul! : kelas;
+    return label.replaceFirst(RegExp(r'^10'), 'X');
+  }
 
   // ── Factory dari JSON (API Laravel & Dummy) ───────────────────────────────
   factory ModelMateri.fromJson(Map<String, dynamic> json) {

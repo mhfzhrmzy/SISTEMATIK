@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kelas;
 use App\Models\Leaderboard;
 use App\Models\Materi;
 use Carbon\Carbon;
@@ -11,7 +12,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LeaderboardController extends Controller
 {
-    public const DAFTAR_KELAS = ['10-1', '10-2'];
+    public const DAFTAR_KELAS = ['X-1', 'X-2', '10-1', '10-2'];
 
     public const DAFTAR_JURUSAN = [
         'Teknik Alat Berat',
@@ -156,6 +157,11 @@ class LeaderboardController extends Controller
 
             if ($kelas) {
                 $kelas = str_replace(' ', '-', (string) $kelas);
+                $kelas = match (strtoupper($kelas)) {
+                    '10-1', 'X-1' => 'X-1',
+                    '10-2', 'X-2' => 'X-2',
+                    default => $kelas,
+                };
             }
 
             if ($kelas && ! in_array($kelas, self::DAFTAR_KELAS)) {
@@ -174,7 +180,7 @@ class LeaderboardController extends Controller
             $materiQuery = Materi::with(['quiz', 'kelas.jurusan']);
             if ($kelas) {
                 $parts = preg_split('/[\s\-]+/', (string) $kelas);
-                $tingkat = (int) ($parts[0] ?? 0);
+                $tingkat = Kelas::parseTingkat($parts[0] ?? 0);
                 $rombel = (int) ($parts[1] ?? 0);
                 $materiQuery->where(function ($q) use ($tingkat, $rombel) {
                     $q->whereHas('kelas', function ($kq) use ($tingkat, $rombel) {
@@ -199,7 +205,7 @@ class LeaderboardController extends Controller
         $filterPengguna = function ($q) use ($kelas, $jurusan) {
             if ($kelas) {
                 $parts = preg_split('/[\s\-]+/', (string) $kelas);
-                $tingkat = (int) ($parts[0] ?? 0);
+                $tingkat = Kelas::parseTingkat($parts[0] ?? 0);
                 $rombel = (int) ($parts[1] ?? 0);
                 $q->whereHas('kelas', function ($kq) use ($tingkat, $rombel) {
                     $kq->where('tingkat', $tingkat);

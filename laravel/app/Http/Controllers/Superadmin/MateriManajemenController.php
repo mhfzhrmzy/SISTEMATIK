@@ -34,7 +34,7 @@ class MateriManajemenController extends Controller
     {
         $request->validate([
             'nip' => 'required|exists:guru,nip',
-            'kelas' => 'required|in:10 1,10 2,10-1,10-2',
+            'kelas' => 'required|in:X-1,X-2,X 1,X 2,10 1,10 2,10-1,10-2',
             'tahun' => 'required|digits:4|integer|min:2020|max:2099',
             'jurusan' => 'required|in:Teknik Alat Berat,Teknik Kendaraan Ringan,Teknik Sepeda Motor,Teknik Pemesinan,Teknik Instalasi Listrik,Teknik Pembangkit Listrik,Teknik Mekatronika,Teknik Audio Video,Teknik Komputer & Jaringan,Teknik Konstruksi & Perumahan,Desain Permodelan & Informasi Bangunan,Desain Komunikasi Visual',
             'isi_materi' => 'nullable|string',
@@ -55,7 +55,7 @@ class MateriManajemenController extends Controller
         ]);
 
         $parts = preg_split('/[\s\-]+/', (string) $request->input('kelas'));
-        $tingkat = (int) ($parts[0] ?? 10);
+        $tingkat = Kelas::parseTingkat($parts[0] ?? 10);
         $rombel = (int) ($parts[1] ?? 1);
         $kelasModel = Kelas::findOrCreateByNama($request->input('jurusan'), $tingkat, $rombel, (string) $request->input('tahun'));
 
@@ -120,7 +120,7 @@ class MateriManajemenController extends Controller
     {
         $request->validate([
             'nip' => 'required|exists:guru,nip',
-            'kelas' => 'required|in:10 1,10 2,10-1,10-2',
+            'kelas' => 'required|in:X-1,X-2,X 1,X 2,10 1,10 2,10-1,10-2',
             'tahun' => 'required|digits:4|integer|min:2020|max:2099',
             'jurusan' => 'required|in:Teknik Alat Berat,Teknik Kendaraan Ringan,Teknik Sepeda Motor,Teknik Pemesinan,Teknik Instalasi Listrik,Teknik Pembangkit Listrik,Teknik Mekatronika,Teknik Audio Video,Teknik Komputer & Jaringan,Teknik Konstruksi & Perumahan,Desain Permodelan & Informasi Bangunan,Desain Komunikasi Visual',
             'isi_materi' => 'nullable|string',
@@ -138,7 +138,7 @@ class MateriManajemenController extends Controller
         ]);
 
         $parts = preg_split('/[\s\-]+/', (string) $request->input('kelas'));
-        $tingkat = (int) ($parts[0] ?? 10);
+        $tingkat = Kelas::parseTingkat($parts[0] ?? 10);
         $rombel = (int) ($parts[1] ?? 1);
         $kelasModel = Kelas::findOrCreateByNama($request->input('jurusan'), $tingkat, $rombel, (string) $request->input('tahun'));
 

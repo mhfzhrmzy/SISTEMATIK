@@ -456,7 +456,7 @@ class GuruManagementTest extends TestCase
         $response->assertJsonFragment([
             'nisn' => '0051112221',
             'nama_lengkap' => 'Ahmad Siswa 1',
-            'kelas' => '10 1',
+            'kelas' => 'X-1',
             'jurusan' => 'Teknik Komputer & Jaringan',
         ]);
     }
@@ -533,7 +533,7 @@ class GuruManagementTest extends TestCase
             ]));
 
         $response->assertStatus(200);
-        $response->assertSee('Leaderboard dan Peringkat Nilai Siswa');
+        $response->assertSee('Peringkat Poin Siswa');
     }
 
     public function test_guru_can_view_profile_and_change_password(): void

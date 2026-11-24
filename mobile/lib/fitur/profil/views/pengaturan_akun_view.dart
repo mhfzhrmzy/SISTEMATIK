@@ -22,7 +22,7 @@ class PengaturanAkunView extends StatefulWidget {
   /// NISN siswa.
   final String nisn;
 
-  /// Kelas siswa (misal: "10").
+  /// Kelas siswa (misal: "X-1").
   final String kelas;
 
   /// Jurusan siswa (misal: "TKJ").
@@ -33,7 +33,7 @@ class PengaturanAkunView extends StatefulWidget {
     super.key,
     this.namaAwal,
     this.nisn = '0084729103',
-    this.kelas = '10',
+    this.kelas = 'X-1',
     this.jurusan = 'TKJ',
     this.layananProfil,
   });

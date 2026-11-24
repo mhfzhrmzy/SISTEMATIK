@@ -64,7 +64,7 @@ class LeaderboardApiTest extends TestCase
                     'is_me',
                 ]],
             ])
-            ->assertJsonPath('kelas', '10 1')
+            ->assertJsonPath('kelas', 'X-1')
             ->assertJsonPath('jurusan', 'Teknik Komputer & Jaringan')
             ->assertJsonPath('total_siswa', 2)
             ->assertJsonPath('data.0.nisn', $siswa->nisn)

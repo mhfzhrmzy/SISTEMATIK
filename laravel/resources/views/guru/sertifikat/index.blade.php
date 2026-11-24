@@ -58,8 +58,8 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1">Filter Kelas</label>
                     <select id="filterKelas" class="hidden">
                         <option value="" selected>Semua Kelas</option>
-                        @foreach(['10 1', '10 2'] as $k)
-                            <option value="{{ $k }}">Kelas {{ str_replace(' ', '.', $k) }}</option>
+                        @foreach(['X-1', 'X-2'] as $k)
+                            <option value="{{ $k }}">Kelas {{ $k }}</option>
                         @endforeach
                     </select>
                     <button type="button"
@@ -79,10 +79,10 @@
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                             </span>
                         </div>
-                        @foreach(['10 1', '10 2'] as $k)
+                        @foreach(['X-1', 'X-2'] as $k)
                             <div class="dropdown-item px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 cursor-pointer transition flex items-center justify-between"
                                  data-value="{{ $k }}">
-                                <span>Kelas {{ str_replace(' ', '.', $k) }}</span>
+                                <span>Kelas {{ $k }}</span>
                                 <span class="chk-icon hidden">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                 </span>

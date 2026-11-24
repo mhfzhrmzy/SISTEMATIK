@@ -39,8 +39,14 @@ class PenggunaSiswa {
 
   /// Label kelas untuk ditampilkan di Beranda dan Profil.
   String get labelKelas {
+    String? cleanKelas = kelas;
+    if (cleanKelas != null) {
+      cleanKelas = cleanKelas
+          .replaceFirst(RegExp(r'^10[\s\-]'), 'X-')
+          .replaceFirst(RegExp(r'^10$'), 'X');
+    }
     final bagian = <String>[
-      if (kelas != null && kelas!.isNotEmpty) 'Kelas $kelas',
+      if (cleanKelas != null && cleanKelas.isNotEmpty) 'Kelas $cleanKelas',
       if (jurusan != null && jurusan!.isNotEmpty) jurusan!,
     ];
 

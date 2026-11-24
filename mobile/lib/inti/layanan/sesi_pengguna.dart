@@ -21,7 +21,13 @@ class SesiPengguna {
       (_pengguna?['foto_profile'] ?? _pengguna?['foto_profil'])?.toString();
 
   static String? get kelas {
-    final namaKelas = _pengguna?['kelas']?.toString();
+    var namaKelas = _pengguna?['kelas']?.toString();
+    if (namaKelas != null) {
+      namaKelas = namaKelas
+          .replaceFirst(RegExp(r'^10[\s\-]'), 'X-')
+          .replaceFirst(RegExp(r'^Kelas 10[\s\-]'), 'Kelas X-')
+          .replaceFirst(RegExp(r'^10$'), 'X');
+    }
     final jurusan = _pengguna?['jurusan']?.toString();
     final parts = <String>[
       if (namaKelas != null && namaKelas.isNotEmpty)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kelas;
 use App\Models\PenggunaSiswa;
 use App\Models\Sertifikat;
 use Illuminate\Http\Request;
@@ -32,8 +33,8 @@ class SertifikatController extends Controller
         $query = PenggunaSiswa::with('kelas.jurusan')->orderBy('nama_lengkap');
 
         if ($request->filled('kelas')) {
-            $parts = explode(' ', $request->kelas);
-            $tingkat = (int) ($parts[0] ?? 0);
+            $parts = preg_split('/[\s\-]+/', (string) $request->kelas);
+            $tingkat = Kelas::parseTingkat($parts[0] ?? 0);
             $rombel = (int) ($parts[1] ?? 0);
             $query->whereHas('kelas', function ($q) use ($tingkat, $rombel) {
                 $q->where('tingkat', $tingkat);

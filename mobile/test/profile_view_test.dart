@@ -18,7 +18,7 @@ class _LayananProfilPalsu extends LayananProfil {
   PenggunaSiswa _pengguna(String nama) => PenggunaSiswa(
         nisn: '0084729103',
         namaLengkap: nama,
-        kelas: '10',
+        kelas: 'X-1',
         jurusan: 'TKJ',
       );
 }
@@ -31,14 +31,14 @@ void main() {
       MaterialApp(
         home: ProfilView(
           nama: 'Seto Son Horeg',
-          kelas: 'Kelas 10 TKJ - SMKN 2 Jember',
+          kelas: 'Kelas X TKJ - SMKN 2 Jember',
           layananProfil: _LayananProfilPalsu(),
         ),
       ),
     );
 
     expect(find.text('Seto Son Horeg'), findsOneWidget);
-    expect(find.text('Kelas 10 TKJ - SMKN 2 Jember'), findsOneWidget);
+    expect(find.text('Kelas X TKJ - SMKN 2 Jember'), findsOneWidget);
     expect(find.text('S'), findsOneWidget);
     expect(find.text('Pengaturan akun siswa'), findsOneWidget);
     expect(find.text('Sertifikat & Portofolio'), findsOneWidget);
