@@ -45,5 +45,24 @@ void main() {
       expect(materi.halamanKonten, ['Halaman 1', 'Halaman 2']);
       expect(materi.totalHalaman, 2);
     });
+
+    test('labelTampilanKelas menghasilkan kode modul dengan singkatan TKJ dan kelas X-1', () {
+      final materi = ModelMateri.fromJson({
+        'id_materi': 1,
+        'judul_materi': 'Dasar Jaringan',
+        'kode_modul': 'X-1TKJ-01',
+      });
+
+      expect(materi.labelTampilanKelas, 'X-1TKJ-01');
+
+      // Normalisasi jika masih ada data lama dengan TEKN
+      final materiLama = ModelMateri.fromJson({
+        'id_materi': 2,
+        'judul_materi': 'Dasar Jaringan',
+        'kode_modul': 'X-1TEKN-01',
+      });
+
+      expect(materiLama.labelTampilanKelas, 'X-1TKJ-01');
+    });
   });
 }

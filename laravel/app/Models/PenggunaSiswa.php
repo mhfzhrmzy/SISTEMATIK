@@ -84,6 +84,11 @@ class PenggunaSiswa extends Authenticatable
         return $this->kelas?->tahun;
     }
 
+    public function getSingkatanJurusanAttribute(): string
+    {
+        return Jurusan::getSingkatan($this->jurusan);
+    }
+
     /**
      * Poin terhitung otomatis dari akumulasi kuis (pre-test & post-test) yang sudah diselesaikan siswa di leaderboard.
      * Jika siswa belum mengerjakan kuis, poin bernilai 0.

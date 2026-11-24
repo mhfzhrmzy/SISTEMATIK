@@ -36,8 +36,8 @@
                 @csrf
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Diampu Oleh (Guru)</label>
-                    <input type="text" value="{{ auth('admin')->user()->nama_lengkap ?? 'Guru Terautentikasi' }}" readonly class="w-full border rounded px-3 py-2 text-gray-600 bg-gray-100 cursor-not-allowed">
-                    <input type="hidden" name="nip" value="{{ auth('admin')->id() }}">
+                    <input type="text" value="{{ auth('guru')->user()->nama_lengkap ?? 'Guru Terautentikasi' }}" readonly class="w-full border rounded px-3 py-2 text-gray-600 bg-gray-100 cursor-not-allowed">
+                    <input type="hidden" name="nip" value="{{ auth('guru')->id() }}">
                 </div>
 
                 <div class="mb-4">
@@ -154,7 +154,7 @@
                                         <span class="text-gray-400 italic text-xs">Tidak ada deskripsi</span>
                                     @endif
                                 </td>
-                                <td class="py-3 px-4">{{ $item->Guru->nama_lengkap ?? '-' }}</td>
+                                <td class="py-3 px-4">{{ $item->guru?->nama_lengkap ?? '-' }}</td>
                                 <td class="py-3 px-4">
                                     @if($item->kelas)
                                         <span class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded">

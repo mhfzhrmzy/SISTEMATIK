@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Jurusan;
 use App\Models\Leaderboard;
 use App\Models\Materi;
 use App\Models\MateriSiswa;
@@ -18,7 +19,7 @@ class MateriController extends Controller
         $siswa = $request->user();
         $siswa->loadMissing('kelas.jurusan');
 
-        $materis = Materi::with(['Guru', 'quiz', 'kelas.jurusan'])
+        $materis = Materi::with(['guru', 'quiz', 'kelas.jurusan'])
             ->where('id_kelas', $siswa->id_kelas)
             ->latest()
             ->get();
@@ -33,10 +34,10 @@ class MateriController extends Controller
             ->get()
             ->keyBy('id_materi');
 
-        $jurusanClean = strtoupper(substr(preg_replace('/[^a-zA-Z0-9]/', '', $siswa->jurusan ?? 'TKJ'), 0, 4));
-        $kelasPrefix = $siswa->kelas?->tingkat_romawi ?? 'X';
+        $singkatanJurusan = Jurusan::getSingkatan($siswa->jurusan);
+        $kelasPrefix = $siswa->kelas?->nama_kelas ?? ($siswa->kelas?->tingkat_romawi ?? 'X-1');
 
-        $data = $materis->values()->map(function (Materi $materi, int $index) use ($attempts, $progressMap, $jurusanClean, $kelasPrefix) {
+        $data = $materis->values()->map(function (Materi $materi, int $index) use ($attempts, $progressMap, $singkatanJurusan, $kelasPrefix) {
             $quizzes = $materi->quiz;
             $pretest = $quizzes->firstWhere('tipe_test', 'pretest');
             $posttest = $quizzes->firstWhere('tipe_test', 'posttest');
@@ -75,7 +76,7 @@ class MateriController extends Controller
             }
 
             $progress = (int) round(($completedComponents / $totalComponents) * 100);
-            $kodeModul = $kelasPrefix.$jurusanClean.'-'.sprintf('%02d', $index + 1);
+            $kodeModul = $kelasPrefix.$singkatanJurusan.'-'.sprintf('%02d', $index + 1);
 
             return [
                 'id_materi' => $materi->id_materi,
@@ -87,8 +88,8 @@ class MateriController extends Controller
                 'upload_file' => $materi->upload_file
                     ? Storage::disk('public')->url($materi->upload_file)
                     : null,
-                'guru_pengajar' => $materi->Guru
-                    ? $materi->Guru->nama_lengkap
+                'guru_pengajar' => $materi->guru
+                    ? $materi->guru->nama_lengkap
                     : null,
                 'quiz_count' => $quizzes->count(),
                 'pretest_count' => $quizzes->where('tipe_test', 'pretest')->count(),
@@ -120,7 +121,7 @@ class MateriController extends Controller
             ], 403);
         }
 
-        $materi->load(['Guru', 'quiz.soal']);
+        $materi->load(['guru', 'quiz.soal']);
 
         $pretests = $materi->quiz->where('tipe_test', 'pretest');
         $pretestCompleted = false;
@@ -167,8 +168,8 @@ class MateriController extends Controller
                 'upload_file' => $materi->upload_file
                     ? Storage::disk('public')->url($materi->upload_file)
                     : null,
-                'guru_pengajar' => $materi->Guru
-                    ? $materi->Guru->nama_lengkap
+                'guru_pengajar' => $materi->guru
+                    ? $materi->guru->nama_lengkap
                     : null,
                 'pretest_completed' => $pretestCompleted,
                 'is_dibuka' => (bool) $materiSiswaRecord->is_dibuka,

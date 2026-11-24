@@ -49,8 +49,8 @@
                 <form action="{{ route('guru.login.attempt') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1.5">Nomor Induk Pegawai (NIP)</label>
-                        <input type="text" name="nip" value="{{ old('nip') }}" maxlength="18" placeholder="Masukkan 18 digit NIP Anda"
+                        <label class="block text-xs font-medium text-slate-600 mb-1.5">NIK (16 digit) atau NIP (18 digit)</label>
+                        <input type="text" name="nip" value="{{ old('nip') }}" maxlength="18" placeholder="Masukkan NIK atau NIP Anda"
                             class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-[#6D1837] focus:border-[#6D1837] outline-none transition text-slate-800 placeholder-slate-400" required>
                     </div>
 

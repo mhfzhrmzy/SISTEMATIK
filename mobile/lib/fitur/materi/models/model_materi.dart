@@ -62,11 +62,15 @@ class ModelMateri {
   /// Jumlah halaman materi.
   int get totalHalaman => halamanKonten.isEmpty ? 1 : halamanKonten.length;
 
-  /// Label tampilan kode/kelas untuk kartu materi.
+  /// Label tampilan kode/kelas untuk kartu materi (misal: "X-1TKJ-01").
   String get labelTampilanKelas {
-    final label =
+    var label =
         kodeModul != null && kodeModul!.isNotEmpty ? kodeModul! : kelas;
-    return label.replaceFirst(RegExp(r'^10'), 'X');
+    label = label
+        .replaceFirst(RegExp(r'^10-'), 'X-')
+        .replaceFirst(RegExp(r'^10'), 'X-1')
+        .replaceFirst('TEKN', 'TKJ');
+    return label;
   }
 
   // ── Factory dari JSON (API Laravel & Dummy) ───────────────────────────────

@@ -66,8 +66,8 @@
                                 <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">
                                     GURU PENGAMPU
                                 </span>
-                                <span class="text-sm font-semibold text-gray-700 truncate block" title="{{ $materi->Guru->nama_lengkap ?? 'Guru Pengampu' }}">
-                                    {{ $materi->Guru->nama_lengkap ?? 'Guru Pengampu' }}
+                                <span class="text-sm font-semibold text-gray-700 truncate block" title="{{ $materi->guru?->nama_lengkap ?? 'Guru Pengampu' }}">
+                                    {{ $materi->guru?->nama_lengkap ?? 'Guru Pengampu' }}
                                 </span>
                             </div>
                         </div>

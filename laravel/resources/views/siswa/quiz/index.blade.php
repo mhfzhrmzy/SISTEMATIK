@@ -33,7 +33,7 @@
             </h1>
             <p class="text-base text-gray-600 flex items-center gap-1.5">
                 <span>Diampu oleh</span>
-                <strong class="text-[#1F2937] font-semibold">{{ $materi->Guru->nama_lengkap ?? 'Guru Pengampu' }}</strong>
+                <strong class="text-[#1F2937] font-semibold">{{ $materi->guru?->nama_lengkap ?? 'Guru Pengampu' }}</strong>
             </p>
         </div>
 

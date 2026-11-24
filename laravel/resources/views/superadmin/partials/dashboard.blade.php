@@ -98,7 +98,7 @@
                                 <td class="px-3 py-2">
                                     <div class="flex items-center justify-end gap-2">
                                         <button type="button"
-                                                onclick="openEditGuruModal('{{ $guru->nip }}', '{{ addslashes($guru->nama_lengkap) }}')"
+                                                onclick="openEditGuruModal('{{ $guru->nip }}', '{{ $guru->nik }}', '{{ addslashes($guru->nama_lengkap) }}')"
                                                 class="text-amber-600 font-medium hover:underline cursor-pointer">Edit</button>
                                         <form action="{{ route('guru.destroy', $guru) }}" method="POST" onsubmit="return confirm('Hapus akun guru ini?')">
                                             @csrf @method('DELETE')

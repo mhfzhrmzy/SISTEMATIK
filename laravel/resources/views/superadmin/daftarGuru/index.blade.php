@@ -39,21 +39,27 @@
             @csrf
             <input type="hidden" name="from" value="superadmin">
             <div>
-                <label class="mb-1 block text-xs font-bold text-slate-700">NIP (18 Digit)</label>
-                <input type="text" name="nip" value="{{ old('nip') }}" maxlength="18" inputmode="numeric" pattern="[0-9]*" required 
+                <label class="mb-1 block text-xs font-bold text-slate-700">NIP (18 Digit) <span class="font-normal text-slate-400">(minimal salah satu)</span></label>
+                <input type="text" name="nip" value="{{ old('nip') }}" maxlength="18" inputmode="numeric" pattern="[0-9]*"
                        placeholder="Masukkan NIP 18 digit"
                        class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition">
             </div>
             <div>
+                <label class="mb-1 block text-xs font-bold text-slate-700">NIK (16 Digit) <span class="font-normal text-slate-400">(minimal salah satu)</span></label>
+                <input type="text" name="nik" value="{{ old('nik') }}" maxlength="16" inputmode="numeric" pattern="[0-9]*"
+                       placeholder="Masukkan NIK 16 digit"
+                       class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition">
+            </div>
+            <div>
                 <label class="mb-1 block text-xs font-bold text-slate-700">Nama Lengkap</label>
-                <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required 
+                <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required
                        placeholder="Masukkan Nama Lengkap"
                        class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition">
             </div>
 
             <div>
                 <label class="mb-1 block text-xs font-bold text-slate-700">Password</label>
-                <input type="password" name="password" required 
+                <input type="password" name="password" required
                        placeholder="Minimal 6 karakter"
                        class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#4a101d]/20 transition">
             </div>
@@ -78,6 +84,7 @@
                     <tr class="border-b border-slate-200 bg-slate-50/80 text-slate-700 uppercase tracking-wider font-bold">
                         <th class="px-4 py-3 rounded-l-xl">Foto</th>
                         <th class="px-4 py-3">NIP</th>
+                        <th class="px-4 py-3">NIK</th>
                         <th class="px-4 py-3">Nama Lengkap</th>
                         <th class="px-4 py-3 text-right rounded-r-xl">Aksi</th>
                     </tr>
@@ -95,11 +102,12 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 font-normal text-slate-500 font-mono tracking-tight">{{ $guru->nip }}</td>
+                            <td class="px-4 py-3 font-normal text-slate-500 font-mono tracking-tight">{{ $guru->nik ?? '-' }}</td>
                             <td class="px-4 py-3 font-normal text-slate-700">{{ $guru->nama_lengkap }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end gap-3">
                                     <button type="button"
-                                            onclick="openEditGuruModal('{{ $guru->nip }}', '{{ addslashes($guru->nama_lengkap) }}')"
+                                            onclick="openEditGuruModal('{{ $guru->nip }}', '{{ $guru->nik }}', '{{ addslashes($guru->nama_lengkap) }}')"
                                             class="text-amber-600 font-medium hover:underline cursor-pointer">Edit</button>
                                     <form action="{{ route('guru.destroy', $guru) }}" method="POST" onsubmit="return confirm('Hapus akun guru ini?')">
                                         @csrf @method('DELETE')
@@ -111,7 +119,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-4 py-8 text-center text-slate-400 font-medium">Belum ada akun guru registered.</td>
+                            <td colspan="5" class="px-4 py-8 text-center text-slate-400 font-medium">Belum ada akun guru registered.</td>
                         </tr>
                     @endforelse
                 </tbody>

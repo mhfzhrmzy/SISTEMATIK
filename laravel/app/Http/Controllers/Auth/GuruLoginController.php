@@ -21,39 +21,59 @@ class GuruLoginController extends Controller
     /**
      * Memproses percobaan login Guru atau Superadmin.
      * Login superadmin diprioritaskan terlebih dahulu.
+     * Guru bisa login dengan NIK atau NIP.
      */
     public function store(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'nip' => ['required', 'digits:18'],
+        $request->validate([
+            'nip' => ['required', 'string', 'min:16', 'max:18'],
             'password' => ['required', 'string'],
         ], [
-            'nip.required' => 'NIP wajib diisi.',
-            'nip.digits' => 'NIP wajib 18 digit angka.',
+            'nip.required' => 'NIK/NIP wajib diisi.',
+            'nip.min' => 'NIK/NIP minimal 16 digit.',
+            'nip.max' => 'NIK/NIP maksimal 18 digit.',
             'password.required' => 'Password wajib diisi.',
         ]);
 
-        // Coba login sebagai superadmin terlebih dahulu
-        if (Auth::guard('superadmin')->attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            $superadmin = Auth::guard('superadmin')->user();
+        $identifier = $request->input('nip');
+        $password = $request->input('password');
 
-            return redirect()->route('superadmin.index')
-                ->with('success', 'Selamat datang kembali, Superadmin '.$superadmin->nama_lengkap.'.');
+        // Coba login sebagai superadmin terlebih dahulu (hanya dengan NIP)
+        if (strlen($identifier) === 18) {
+            if (Auth::guard('superadmin')->attempt(['nip' => $identifier, 'password' => $password], $request->boolean('remember'))) {
+                $request->session()->regenerate();
+                $superadmin = Auth::guard('superadmin')->user();
+
+                return redirect()->route('superadmin.index')
+                    ->with('success', 'Selamat datang kembali, Superadmin '.$superadmin->nama_lengkap.'.');
+            }
         }
 
-        // Coba login sebagai guru
-        if (Auth::guard('guru')->attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            $guru = Auth::guard('guru')->user();
+        // Coba login sebagai guru dengan NIP (18 digit)
+        if (strlen($identifier) === 18) {
+            $guru = \App\Models\Guru::where('nip', $identifier)->first();
+            if ($guru && Auth::guard('guru')->attempt(['id' => $guru->id, 'password' => $password], $request->boolean('remember'))) {
+                $request->session()->regenerate();
 
-            return redirect()->route('materi.index')
-                ->with('success', 'Selamat datang kembali, Guru '.$guru->nama_lengkap.'.');
+                return redirect()->route('materi.index')
+                    ->with('success', 'Selamat datang kembali, Guru '.$guru->nama_lengkap.'.');
+            }
+        }
+
+        // Coba login sebagai guru dengan NIK (16 digit)
+        if (strlen($identifier) === 16) {
+            $guru = \App\Models\Guru::where('nik', $identifier)->first();
+            if ($guru && Auth::guard('guru')->attempt(['id' => $guru->id, 'password' => $password], $request->boolean('remember'))) {
+                $request->session()->regenerate();
+
+                return redirect()->route('materi.index')
+                    ->with('success', 'Selamat datang kembali, Guru '.$guru->nama_lengkap.'.');
+            }
         }
 
         return back()
             ->withInput($request->only('nip'))
-            ->withErrors(['nip' => 'NIP atau password salah.']);
+            ->withErrors(['nip' => 'NIK/NIP atau password salah.']);
     }
 
     /**

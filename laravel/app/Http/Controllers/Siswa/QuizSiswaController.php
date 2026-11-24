@@ -15,7 +15,7 @@ class QuizSiswaController extends Controller
      */
     public function index(Materi $materi)
     {
-        $materi->load('Guru');
+        $materi->load('guru');
         $quizzes = $materi->quiz()->with('soal')->latest()->get();
 
         // Filter: posttest tanpa jadwal lengkap tidak ditampilkan

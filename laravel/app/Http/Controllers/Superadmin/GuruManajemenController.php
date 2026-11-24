@@ -37,12 +37,18 @@ class GuruManajemenController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nip' => ['required', 'digits:18', 'unique:guru,nip'],
+            'nip' => ['nullable', 'digits:18', 'unique:guru,nip', 'required_without:nik'],
+            'nik' => ['nullable', 'digits:16', 'unique:guru,nik', 'required_without:nip'],
             'nama_lengkap' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s.,]+$/'],
             'password' => ['required', 'string', 'min:6'],
             'foto_profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ], [
             'nip.digits' => 'NIP wajib tepat 18 digit angka.',
+            'nip.unique' => 'NIP sudah terdaftar.',
+            'nip.required_without' => 'NIP atau NIK wajib diisi.',
+            'nik.digits' => 'NIK wajib tepat 16 digit angka.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+            'nik.required_without' => 'NIK atau NIP wajib diisi.',
             'nama_lengkap.regex' => 'Nama lengkap hanya boleh berisi huruf, spasi, titik (.), dan koma (,).',
             'foto_profile.max' => 'Ukuran foto profil tidak boleh lebih dari 5 MB.',
         ]);
@@ -68,12 +74,18 @@ class GuruManajemenController extends Controller
     public function update(Request $request, Guru $guru)
     {
         $validated = $request->validate([
-            'nip' => ['required', 'digits:18', Rule::unique('guru', 'nip')->ignore($guru->nip, 'nip')],
+            'nip' => ['nullable', 'digits:18', Rule::unique('guru', 'nip')->ignore($guru->id), 'required_without:nik'],
+            'nik' => ['nullable', 'digits:16', Rule::unique('guru', 'nik')->ignore($guru->id), 'required_without:nip'],
             'nama_lengkap' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s.,]+$/'],
             'password' => ['nullable', 'string', 'min:6'],
             'foto_profile' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ], [
             'nip.digits' => 'NIP wajib tepat 18 digit angka.',
+            'nip.unique' => 'NIP sudah terdaftar.',
+            'nip.required_without' => 'NIP atau NIK wajib diisi.',
+            'nik.digits' => 'NIK wajib tepat 16 digit angka.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+            'nik.required_without' => 'NIK atau NIP wajib diisi.',
             'nama_lengkap.regex' => 'Nama lengkap hanya boleh berisi huruf, spasi, titik (.), dan koma (,).',
             'foto_profile.max' => 'Ukuran foto profil tidak boleh lebih dari 5 MB.',
         ]);
@@ -146,6 +158,7 @@ class GuruManajemenController extends Controller
         }
 
         $importedCount = 0;
+        $skippedCount = 0;
 
         while (($row = fgetcsv($handle, 2000, $delimiter)) !== false) {
             if (empty(array_filter($row))) {
@@ -157,24 +170,54 @@ class GuruManajemenController extends Controller
                 continue;
             }
 
+            // Parse NIP
             $digitsOnly = preg_replace('/[^0-9]/', '', $nipRaw);
-            $nip = str_pad($digitsOnly, 18, '0', STR_PAD_LEFT);
-            $namaLengkap = trim($row[1] ?? '');
-            $passwordRaw = trim($row[2] ?? '');
+            $nip = strlen($digitsOnly) === 18 ? $digitsOnly : null;
 
-            if (strlen($nip) === 18 && $namaLengkap !== '') {
+            // Parse NIK
+            $nikRaw = trim($row[1] ?? '');
+            $nikDigitsOnly = preg_replace('/[^0-9]/', '', $nikRaw);
+            $nik = strlen($nikDigitsOnly) === 16 ? $nikDigitsOnly : null;
+
+            $namaLengkap = trim($row[2] ?? '');
+            $passwordRaw = trim($row[3] ?? '');
+
+            // Minimal salah satu (NIP atau NIK) harus ada dan nama lengkap harus ada
+            if (($nip || $nik) && $namaLengkap !== '') {
                 $password = $passwordRaw !== '' ? Hash::make($passwordRaw) : Hash::make('password123');
 
-                Guru::updateOrCreate(
-                    ['nip' => $nip],
-                    [
+                // Cari berdasarkan NIP atau NIK
+                $existing = null;
+                if ($nip) {
+                    $existing = Guru::where('nip', $nip)->first();
+                }
+                if (!$existing && $nik) {
+                    $existing = Guru::where('nik', $nik)->first();
+                }
+
+                if ($existing) {
+                    // Update existing
+                    $existing->update([
+                        'nip' => $nip,
+                        'nik' => $nik,
                         'nama_lengkap' => $namaLengkap,
                         'password' => $password,
                         'dibuat_oleh' => Auth::guard('superadmin')->id(),
-                    ]
-                );
+                    ]);
+                } else {
+                    // Create new
+                    Guru::create([
+                        'nip' => $nip,
+                        'nik' => $nik,
+                        'nama_lengkap' => $namaLengkap,
+                        'password' => $password,
+                        'dibuat_oleh' => Auth::guard('superadmin')->id(),
+                    ]);
+                }
 
                 $importedCount++;
+            } else {
+                $skippedCount++;
             }
         }
 
@@ -183,8 +226,12 @@ class GuruManajemenController extends Controller
         $redirectRoute = $request->input('from') === 'superadmin' ? 'superadmin.index' : 'guru.index';
         $redirectParameters = $request->input('from') === 'superadmin' ? ['menu' => 'guru'] : [];
 
-        return redirect()->route($redirectRoute, $redirectParameters)
-            ->with('success', "Berhasil meng-import {$importedCount} data akun guru dari file CSV.");
+        $message = "Berhasil meng-import {$importedCount} data akun guru dari file CSV.";
+        if ($skippedCount > 0) {
+            $message .= " ({$skippedCount} baris dilewati karena data tidak valid)";
+        }
+
+        return redirect()->route($redirectRoute, $redirectParameters)->with('success', $message);
     }
 
     /**
@@ -199,9 +246,10 @@ class GuruManajemenController extends Controller
 
         return response()->stream(function () {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['nip', 'nama_lengkap', 'password']);
-            fputcsv($handle, ['198501012010011001', 'Budi Santoso S.Pd', 'password123']);
-            fputcsv($handle, ['198803152012022002', 'Siti Rahmawati M.Kom', 'password123']);
+            fputcsv($handle, ['nip', 'nik', 'nama_lengkap', 'password']);
+            fputcsv($handle, ['198501012010011001', '3509010185010001', 'Budi Santoso S.Pd', 'password123']);
+            fputcsv($handle, ['', '3509031588030002', 'Siti Rahmawati M.Kom', 'password123']);
+            fputcsv($handle, ['199005202015031003', '', 'Ahmad Fauzi S.T', 'password123']);
             fclose($handle);
         }, 200, $headers);
     }

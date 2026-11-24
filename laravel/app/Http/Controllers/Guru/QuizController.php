@@ -18,8 +18,8 @@ class QuizController extends Controller
      */
     public function index(): View
     {
-        $quizzes = Quiz::with(['materi.Guru', 'materi.kelas.jurusan', 'soal'])->latest()->get();
-        $materis = Materi::with(['Guru', 'kelas.jurusan'])->orderBy('judul_materi')->get();
+        $quizzes = Quiz::with(['materi.guru', 'materi.kelas.jurusan', 'soal'])->latest()->get();
+        $materis = Materi::with(['guru', 'kelas.jurusan'])->orderBy('judul_materi')->get();
 
         // Kombinasi id_materi => [tipe_test, ...] yang sudah ada (untuk mencegah duplikat)
         $existingCombinations = Quiz::select('id_materi', 'tipe_test')
