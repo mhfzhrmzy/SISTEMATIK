@@ -42,7 +42,9 @@ class BerandaView extends StatefulWidget {
 class _BerandaViewState extends State<BerandaView> {
   int _indeksFooter = 0;
   late final LayananMateri _layananMateri;
-  late Future<List<ModelMateri>> _materiFuture;
+  List<ModelMateri> _materis = const [];
+  bool _muatMateri = false;
+  Object? _galatMateri;
 
   String get _namaPengguna => SesiPengguna.nama ?? widget.nama ?? 'Siswa';
 
@@ -50,17 +52,48 @@ class _BerandaViewState extends State<BerandaView> {
   void initState() {
     super.initState();
     _layananMateri = widget.layananMateri ?? LayananMateri();
-    _materiFuture = _layananMateri.daftar();
+    _muatMateri = true;
+    _layananMateri
+        .daftar()
+        .then((data) {
+          if (!mounted) return;
+          setState(() {
+            _materis = data;
+            _muatMateri = false;
+          });
+        })
+        .catchError((Object e) {
+          if (!mounted) return;
+          setState(() {
+            _galatMateri = e;
+            _muatMateri = false;
+          });
+        });
   }
 
   String get _kelasPengguna => SesiPengguna.kelas ?? widget.kelas ?? 'Kelas -';
 
   void _muatUlangMateri() {
-    // Jangan pakai closure panah: nilainya Future dan setState() di mode
-    // debug menolak callback yang mengembalikan Future.
     setState(() {
-      _materiFuture = _layananMateri.daftar();
+      _muatMateri = true;
+      _galatMateri = null;
     });
+    _layananMateri
+        .daftar()
+        .then((data) {
+          if (!mounted) return;
+          setState(() {
+            _materis = data;
+            _muatMateri = false;
+          });
+        })
+        .catchError((Object e) {
+          if (!mounted) return;
+          setState(() {
+            _galatMateri = e;
+            _muatMateri = false;
+          });
+        });
   }
 
   Future<void> _saatFooterDiketuk(int idx) async {
@@ -133,113 +166,96 @@ class _BerandaViewState extends State<BerandaView> {
               fotoUrl: KonfigurasiApi.perbaikiUrlFoto(SesiPengguna.fotoProfil),
             ),
 
-            // ── Konten Scrollable ─────────────────────────────────────────
+            // ── Konten: Card statistik fixed + Grid materi scrollable ────
             Expanded(
               child: LayoutBuilder(
                 builder: (ctx, constraints) {
-                  // hp dihitung dari lebar AKTUAL widget (bukan MediaQuery parent)
-                  // agar selalu fresh saat navigasi masuk/keluar
                   final double hp =
                       (constraints.maxWidth * 0.075).clamp(22.0, 40.0);
-                  return SingleChildScrollView(
-                    clipBehavior: Clip.none,
-                    physics: const BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(hp, 0, hp, 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Card statistik — berada persis di tengah antara header maroon dan konten
-                          FutureBuilder<List<ModelMateri>>(
-                            future: _materiFuture,
-                            builder: (context, snapshot) {
-                              final materis = snapshot.data ?? const [];
-                              final totalQuiz = materis.fold<int>(
-                                0,
-                                (total, materi) => total + materi.jumlahQuiz,
-                              );
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    height: 36,
-                                    child: OverflowBox(
-                                      minHeight: 72,
-                                      maxHeight: 72,
-                                      alignment: Alignment.bottomCenter,
-                                      child: _KartuStatistik(
-                                        totalMateri: materis.length,
-                                        totalQuiz: totalQuiz,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 14),
-                                  const Text(
-                                    'Materi Tersedia',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: WarnaAplikasi.utama,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting)
-                                    const Center(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(24),
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    )
-                                  else if (snapshot.hasError)
-                                    _PesanMateri(
-                                      pesan: snapshot.error is KesalahanApi
-                                          ? (snapshot.error as KesalahanApi)
-                                              .pesan
+                  final int crossAxis = constraints.maxWidth > 600 ? 4 : 2;
+                  final totalQuiz = _materis.fold<int>(
+                    0,
+                    (total, materi) => total + materi.jumlahQuiz,
+                  );
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: hp),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Card statistik — fixed, tidak ikut scroll
+                        SizedBox(
+                          height: 36,
+                          child: OverflowBox(
+                            minHeight: 72,
+                            maxHeight: 72,
+                            alignment: Alignment.bottomCenter,
+                            child: _KartuStatistik(
+                              totalMateri: _materis.length,
+                              totalQuiz: totalQuiz,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        // Label "Materi Tersedia" — fixed, tidak ikut scroll
+                        const Text(
+                          'Materi Tersedia',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: WarnaAplikasi.utama,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        // Hanya grid materi yang bisa di-scroll
+                        Expanded(
+                          child: _muatMateri
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : _galatMateri != null
+                                  ? _PesanMateri(
+                                      pesan: _galatMateri is KesalahanApi
+                                          ? (_galatMateri
+                                                as KesalahanApi)
+                                                .pesan
                                           : 'Gagal memuat materi dari server.',
                                       ulangi: _muatUlangMateri,
                                     )
-                                  else if (materis.isEmpty)
-                                    const Padding(
-                                      padding: EdgeInsets.all(20),
-                                      child: Center(
-                                        child:
-                                            Text('Belum ada materi tersedia.'),
-                                      ),
-                                    )
-                                  else
-                                    GridView.builder(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      padding: EdgeInsets.zero,
-                                      itemCount: materis.length,
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount:
-                                            constraints.maxWidth > 600 ? 4 : 2,
-                                        mainAxisSpacing: 14,
-                                        crossAxisSpacing: 14,
-                                        childAspectRatio: 0.84,
-                                      ),
-                                      itemBuilder: (gridCtx, i) {
-                                        final materi = materis[i];
-                                        return _KartuMateri(
-                                          materi: materi,
-                                          saatDiketuk: () =>
-                                              _tampilkanLembarAksiMateri(
-                                            gridCtx,
-                                            materi,
+                                  : _materis.isEmpty
+                                      ? const Padding(
+                                          padding: EdgeInsets.all(20),
+                                          child: Center(
+                                            child: Text(
+                                                'Belum ada materi tersedia.'),
                                           ),
-                                        );
-                                      },
-                                    ),
-                                ],
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                                        )
+                                      : GridView.builder(
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          padding: const EdgeInsets.only(
+                                              bottom: 24),
+                                          itemCount: _materis.length,
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: crossAxis,
+                                            mainAxisSpacing: 14,
+                                            crossAxisSpacing: 14,
+                                            childAspectRatio: 0.84,
+                                          ),
+                                          itemBuilder: (gridCtx, i) {
+                                            final materi = _materis[i];
+                                            return _KartuMateri(
+                                              materi: materi,
+                                              saatDiketuk: () =>
+                                                  _tampilkanLembarAksiMateri(
+                                                gridCtx,
+                                                materi,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                        ),
+                      ],
                     ),
                   );
                 },
