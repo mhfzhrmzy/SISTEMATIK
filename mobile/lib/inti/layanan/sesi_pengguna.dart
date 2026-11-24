@@ -20,18 +20,39 @@ class SesiPengguna {
   static String? get fotoProfil =>
       (_pengguna?['foto_profile'] ?? _pengguna?['foto_profil'])?.toString();
 
-  static String? get kelas {
-    var namaKelas = _pengguna?['kelas']?.toString();
-    if (namaKelas != null) {
-      namaKelas = namaKelas
-          .replaceFirst(RegExp(r'^10[\s\-]'), 'X-')
-          .replaceFirst(RegExp(r'^Kelas 10[\s\-]'), 'Kelas X-')
-          .replaceFirst(RegExp(r'^10$'), 'X');
+  /// Mengambil nama kelas murni (misal: "X-1") tanpa prefiks atau nama jurusan.
+  static String? get namaKelasMurni {
+    var rawKelas = _pengguna?['kelas']?.toString().trim();
+    if (rawKelas == null || rawKelas.isEmpty) return null;
+
+    final jurusan = _pengguna?['jurusan']?.toString().trim();
+    if (jurusan != null &&
+        jurusan.isNotEmpty &&
+        rawKelas.toLowerCase().contains(jurusan.toLowerCase())) {
+      rawKelas = rawKelas
+          .replaceAll(
+              RegExp(' - ${RegExp.escape(jurusan)}', caseSensitive: false), '')
+          .replaceAll(RegExp(RegExp.escape(jurusan), caseSensitive: false), '')
+          .trim();
+      if (rawKelas.endsWith('-')) {
+        rawKelas = rawKelas.substring(0, rawKelas.length - 1).trim();
+      }
     }
-    final jurusan = _pengguna?['jurusan']?.toString();
+
+    rawKelas = rawKelas
+        .replaceFirst(RegExp(r'^Kelas\s+', caseSensitive: false), '')
+        .replaceFirst(RegExp(r'^10[\s\-]'), 'X-')
+        .replaceFirst(RegExp(r'^10$'), 'X');
+
+    return rawKelas.isEmpty ? null : rawKelas;
+  }
+
+  static String? get kelas {
+    final murni = namaKelasMurni;
+    final jurusan = _pengguna?['jurusan']?.toString().trim();
+
     final parts = <String>[
-      if (namaKelas != null && namaKelas.isNotEmpty)
-        namaKelas.startsWith('Kelas ') ? namaKelas : 'Kelas $namaKelas',
+      if (murni != null && murni.isNotEmpty) 'Kelas $murni',
       if (jurusan != null && jurusan.isNotEmpty) jurusan,
     ];
     return parts.isEmpty ? null : parts.join(' - ');

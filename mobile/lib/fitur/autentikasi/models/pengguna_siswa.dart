@@ -39,17 +39,34 @@ class PenggunaSiswa {
 
   /// Label kelas untuk ditampilkan di Beranda dan Profil.
   String get labelKelas {
-    String? cleanKelas = kelas;
-    if (cleanKelas != null) {
-      cleanKelas = cleanKelas
-          .replaceFirst(RegExp(r'^10[\s\-]'), 'X-')
-          .replaceFirst(RegExp(r'^10$'), 'X');
+    var rawKelas = kelas?.trim();
+    if (rawKelas == null || rawKelas.isEmpty) {
+      return (jurusan != null && jurusan!.isNotEmpty) ? jurusan! : 'Kelas -';
     }
-    final bagian = <String>[
-      if (cleanKelas != null && cleanKelas.isNotEmpty) 'Kelas $cleanKelas',
+
+    if (jurusan != null &&
+        jurusan!.isNotEmpty &&
+        rawKelas.toLowerCase().contains(jurusan!.toLowerCase())) {
+      rawKelas = rawKelas
+          .replaceAll(
+              RegExp(' - ${RegExp.escape(jurusan!)}', caseSensitive: false), '')
+          .replaceAll(RegExp(RegExp.escape(jurusan!), caseSensitive: false), '')
+          .trim();
+      if (rawKelas.endsWith('-')) {
+        rawKelas = rawKelas.substring(0, rawKelas.length - 1).trim();
+      }
+    }
+
+    rawKelas = rawKelas
+        .replaceFirst(RegExp(r'^Kelas\s+', caseSensitive: false), '')
+        .replaceFirst(RegExp(r'^10[\s\-]'), 'X-')
+        .replaceFirst(RegExp(r'^10$'), 'X');
+
+    final parts = <String>[
+      if (rawKelas.isNotEmpty) 'Kelas $rawKelas',
       if (jurusan != null && jurusan!.isNotEmpty) jurusan!,
     ];
 
-    return bagian.isEmpty ? 'Kelas -' : bagian.join(' - ');
+    return parts.isEmpty ? 'Kelas -' : parts.join(' - ');
   }
 }

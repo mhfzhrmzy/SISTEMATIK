@@ -58,4 +58,23 @@ void main() {
     expect(SesiPengguna.nama, isNull);
     expect(SesiPengguna.kedaluwarsa, isFalse);
   });
+
+  test('sesi dengan kelas yang sudah mengandung nama jurusan tidak menghasilkan jurusan dobel', () async {
+    await SesiPengguna.simpan(
+      token: 'token-tes',
+      pengguna: const {
+        'nisn': '0051234561',
+        'nama_lengkap': 'Andi Pratama',
+        'kelas': 'Kelas X-1 - Teknik Komputer & Jaringan',
+        'jurusan': 'Teknik Komputer & Jaringan',
+      },
+      kedaluwarsa: DateTime.now().add(const Duration(days: 30)),
+    );
+
+    expect(SesiPengguna.namaKelasMurni, 'X-1');
+    expect(
+      SesiPengguna.kelas,
+      'Kelas X-1 - Teknik Komputer & Jaringan',
+    );
+  });
 }

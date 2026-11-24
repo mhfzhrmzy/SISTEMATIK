@@ -71,7 +71,7 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
     _kontrolerNama =
         TextEditingController(text: SesiPengguna.nama ?? widget.namaAwal ?? '');
     _kontrolerKelas =
-        TextEditingController(text: SesiPengguna.kelas ?? widget.kelas);
+        TextEditingController(text: SesiPengguna.namaKelasMurni ?? widget.kelas);
     _kontrolerJurusan =
         TextEditingController(text: SesiPengguna.jurusan ?? widget.jurusan);
     _fotoProfil = SesiPengguna.fotoProfil;
@@ -123,7 +123,7 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
       });
       await SesiPengguna.perbaruiProfil(
         nama: pengguna.namaLengkap,
-        kelas: pengguna.labelKelas,
+        kelas: pengguna.kelas,
         jurusan: pengguna.jurusan,
         fotoProfil: pengguna.fotoProfil,
       );
