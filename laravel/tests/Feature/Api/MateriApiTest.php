@@ -69,6 +69,7 @@ class MateriApiTest extends TestCase
 
         $dasar = $data->firstWhere('judul_materi', 'Dasar Jaringan');
         $this->assertSame('X-1', $dasar['kelas']);
+        $this->assertSame('X-1TKJ-02', $dasar['kode_modul']);
         $this->assertSame('Teknik Komputer & Jaringan', $dasar['jurusan']);
         $this->assertSame($guru->nama_lengkap, $dasar['guru_pengajar']);
         $this->assertSame(1, $dasar['quiz_count']);
@@ -76,6 +77,7 @@ class MateriApiTest extends TestCase
         $this->assertFalse($dasar['pretest_completed']);
 
         $sistem = $data->firstWhere('judul_materi', 'Sistem Operasi');
+        $this->assertSame('X-1TKJ-01', $sistem['kode_modul']);
         $this->assertSame(0, $sistem['quiz_count']);
         $this->assertSame(0, $sistem['pretest_count']);
         $this->assertTrue($sistem['pretest_completed']);

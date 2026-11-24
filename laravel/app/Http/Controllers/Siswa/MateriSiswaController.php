@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
+use App\Models\Jurusan;
 use App\Models\Leaderboard;
 use App\Models\Materi;
 use App\Models\MateriSiswa;
@@ -35,7 +36,8 @@ class MateriSiswaController extends Controller
             ->get()
             ->keyBy('id_materi');
 
-        $jurusanClean = strtoupper(substr(preg_replace('/[^a-zA-Z0-9]/', '', $siswa->jurusan ?? 'TKJ'), 0, 4));
+        $singkatanJurusan = Jurusan::getSingkatan($siswa->jurusan);
+        $kelasPrefix = str_replace(' ', '', (string) ($siswa->kelas ?? 'X-1'));
 
         foreach ($materis as $index => $materi) {
             $pretest = $materi->quiz->where('tipe_test', 'pretest')->first();
@@ -82,7 +84,7 @@ class MateriSiswaController extends Controller
                 $progress = (int) round(($completedComponents / $totalComponents) * 100);
             }
 
-            $materi->kode_modul = str_replace(' ', '', $siswa->kelas ?? '10').$jurusanClean.'-'.sprintf('%02d', $index + 1);
+            $materi->kode_modul = $kelasPrefix.$singkatanJurusan.'-'.sprintf('%02d', $index + 1);
             $materi->pretest = $pretest;
             $materi->posttest = $posttest;
             $materi->pretestAttempt = $pretestAttempt;

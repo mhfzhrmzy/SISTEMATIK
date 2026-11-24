@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Jurusan;
 use App\Models\Leaderboard;
 use App\Models\Materi;
 use App\Models\MateriSiswa;
@@ -33,10 +34,10 @@ class MateriController extends Controller
             ->get()
             ->keyBy('id_materi');
 
-        $jurusanClean = strtoupper(substr(preg_replace('/[^a-zA-Z0-9]/', '', $siswa->jurusan ?? 'TKJ'), 0, 4));
-        $kelasPrefix = $siswa->kelas?->tingkat_romawi ?? 'X';
+        $singkatanJurusan = Jurusan::getSingkatan($siswa->jurusan);
+        $kelasPrefix = $siswa->kelas?->nama_kelas ?? ($siswa->kelas?->tingkat_romawi ?? 'X-1');
 
-        $data = $materis->values()->map(function (Materi $materi, int $index) use ($attempts, $progressMap, $jurusanClean, $kelasPrefix) {
+        $data = $materis->values()->map(function (Materi $materi, int $index) use ($attempts, $progressMap, $singkatanJurusan, $kelasPrefix) {
             $quizzes = $materi->quiz;
             $pretest = $quizzes->firstWhere('tipe_test', 'pretest');
             $posttest = $quizzes->firstWhere('tipe_test', 'posttest');
@@ -75,7 +76,7 @@ class MateriController extends Controller
             }
 
             $progress = (int) round(($completedComponents / $totalComponents) * 100);
-            $kodeModul = $kelasPrefix.$jurusanClean.'-'.sprintf('%02d', $index + 1);
+            $kodeModul = $kelasPrefix.$singkatanJurusan.'-'.sprintf('%02d', $index + 1);
 
             return [
                 'id_materi' => $materi->id_materi,
