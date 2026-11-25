@@ -4,6 +4,77 @@
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
 
+/* Tampilan area guru: teks lebih nyaman dibaca tanpa mengubah layout siswa/superadmin. */
+.guru-session main .text-\[10px\],
+.guru-session main .text-\[11px\] {
+    font-size: 12px !important;
+}
+
+.guru-session main .text-\[12px\],
+.guru-session main .text-\[13px\] {
+    font-size: 13px !important;
+}
+
+.guru-session main .text-xs {
+    font-size: 13px !important;
+}
+
+.guru-session main .text-sm {
+    font-size: 14px !important;
+}
+
+.guru-session main .text-base {
+    font-size: 15px !important;
+}
+
+.guru-session main .text-lg {
+    font-size: 18px !important;
+}
+
+.guru-session main .text-xl {
+    font-size: 20px !important;
+}
+
+.guru-session main .text-2xl {
+    font-size: 24px !important;
+}
+
+.guru-session main input,
+.guru-session main select,
+.guru-session main textarea {
+    font-size: 14px !important;
+}
+
+.guru-session main button,
+.guru-session main label,
+.guru-session main th,
+.guru-session main td {
+    font-size: 14px;
+}
+
+.guru-session main label {
+    line-height: 1.35;
+}
+
+.guru-session main th {
+    font-weight: 700;
+}
+
+.guru-session main button {
+    line-height: 1.35;
+}
+
+.guru-session #sidebar-admin nav,
+.guru-session #sidebar-admin nav a,
+.guru-session #sidebar-admin button,
+.guru-session #sidebar-admin .text-sm {
+    font-size: 15px;
+}
+
+.guru-session #sidebar-admin .text-\[11px\] {
+    font-size: 12px;
+}
+
 :root {
     --text-gray-900: #1F2937;
     --text-gray-700: #374151;

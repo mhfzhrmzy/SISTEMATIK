@@ -44,7 +44,7 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-[#F3F4F6] min-h-screen text-[#1F2937] antialiased font-sans tracking-normal selection:bg-[#7B1038] selection:text-white {{ request()->routeIs('portal.quiz.kerjakan') ? 'h-screen overflow-hidden' : (request()->routeIs('portal.quiz.submit') ? 'h-screen overflow-hidden flex flex-col' : '') }}">
+<body class="bg-[#F3F4F6] min-h-screen text-[#1F2937] antialiased font-sans tracking-normal selection:bg-[#7B1038] selection:text-white {{ auth('guru')->check() ? 'guru-session' : '' }} {{ request()->routeIs('portal.quiz.kerjakan') ? 'h-screen overflow-hidden' : (request()->routeIs('portal.quiz.submit') ? 'h-screen overflow-hidden flex flex-col' : '') }}">
     @if (request()->routeIs('superadmin.*'))
         @yield('content')
     @else
