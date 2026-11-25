@@ -43,18 +43,18 @@
 @endpush
 
 @section('content')
-<div class="w-full h-full flex-1 flex flex-col min-h-0 gap-3 sm:gap-4">
+<div class="portal-stack w-full h-full flex-1 min-h-0">
 
     {{-- Header Quiz (Compact & Clean) --}}
-    <div class="bg-white rounded-2xl shadow-xs p-6 sm:p-7 shrink-0">
+    <div class="portal-card bg-white shadow-xs shrink-0">
         <div class="flex items-center justify-between gap-4">
             <div class="min-w-0">
                 <div class="flex items-center gap-2 flex-wrap mb-1.5">
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white shadow-2xs">
+                    <span class="portal-badge text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white shadow-2xs">
                         {{ ucfirst($quiz->tipe_test) }}
                     </span>
                     @if($quiz->jadwalLengkap())
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#E8F8F0] text-[#1F9254]">
+                        <span class="portal-badge inline-flex items-center text-xs font-semibold bg-[#E8F8F0] text-[#1F9254]">
                             Sedang Berlangsung
                         </span>
                     @endif
@@ -74,7 +74,7 @@
             <div class="flex items-end flex-col gap-1.5 shrink-0">
                 @if(isset($sisaDetik) && $sisaDetik !== null)
                     <div id="absolute-timer-box"
-                         class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-700 px-3.5 py-1.5 rounded-xl font-mono text-sm font-bold shadow-2xs transition-colors"
+                         class="quiz-timer-box flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-700 px-3.5 py-1.5 font-mono text-sm font-bold shadow-2xs transition-colors"
                          data-sisa-detik="{{ $sisaDetik }}">
                         <svg class="w-4 h-4 shrink-0 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
@@ -90,16 +90,16 @@
         </div>
 
         {{-- Progress Bar --}}
-        <div class="w-full bg-gray-100 h-2 rounded-full mt-3 overflow-hidden">
+        <div class="portal-progress-track w-full bg-gray-100 h-2 mt-3 overflow-hidden">
             <div id="quiz-progress-bar"
-                 class="bg-[#7B1038] h-full rounded-full transition-all duration-300 ease-out"
+                 class="portal-progress-fill bg-[#7B1038] h-full transition-all duration-300 ease-out"
                  style="width: 0%;"></div>
         </div>
     </div>
 
     {{-- Overlay waktu habis --}}
     <div id="waktu-habis-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 hidden items-center justify-center">
-        <div class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm mx-4">
+        <div class="portal-card bg-white shadow-xl text-center max-w-sm mx-4">
             <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -112,7 +112,7 @@
 
     {{-- Form / Soal --}}
     @if ($quiz->soal->isEmpty())
-        <div class="bg-white rounded-2xl shadow-xs p-10 text-center">
+        <div class="portal-card bg-white shadow-xs text-center">
             <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-slate-100 text-gray-600 flex items-center justify-center">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
@@ -129,7 +129,7 @@
             @csrf
 
             @foreach ($quiz->soal as $index => $soal)
-                <div class="soal-slide bg-white rounded-2xl shadow-xs p-6 sm:p-8 flex-1 flex flex-col min-h-0 {{ $index > 0 ? 'hidden' : '' }}"
+                <div class="soal-slide portal-card bg-white shadow-xs flex-1 flex flex-col min-h-0 {{ $index > 0 ? 'hidden' : '' }}"
                      data-index="{{ $index }}">
 
                     {{-- Question text + tombol TTS --}}
@@ -152,7 +152,7 @@
                     </div>
 
                     {{-- Answer choices --}}
-                    <div class="space-y-3 shrink-0 overflow-y-auto pr-1 py-1" id="choices-{{ $index }}">
+                    <div class="quiz-choices-list shrink-0 overflow-y-auto pr-1 py-1" id="choices-{{ $index }}">
                         @php
                             $optionLabels = ['A', 'B', 'C', 'D'];
                             $optIdx = 0;
@@ -168,7 +168,7 @@
                                 $displayLetter = $optionLabels[$optIdx] ?? strtoupper($origKey);
                                 $optIdx++;
                             @endphp
-                            <label class="answer-label flex items-center gap-3.5 p-3.5 sm:p-4 rounded-xl cursor-pointer transition-all duration-150 {{ old('jawaban.'.$soal->id_soal) === $origKey ? 'is-selected' : '' }}"
+                            <label class="answer-label flex items-center gap-3.5 cursor-pointer transition-all duration-150 {{ old('jawaban.'.$soal->id_soal) === $origKey ? 'is-selected' : '' }}"
                                    id="label-{{ $index }}-{{ $origKey }}">
                                 <input type="radio"
                                        name="jawaban[{{ $soal->id_soal }}]"
@@ -176,7 +176,7 @@
                                        class="hidden answer-radio"
                                        id="radio-{{ $index }}-{{ $origKey }}"
                                        {{ old('jawaban.'.$soal->id_soal) === $origKey ? 'checked' : '' }}>
-                                <span class="choice-circle shrink-0 w-8 h-8 rounded-xl bg-white text-gray-600 border border-gray-200 flex items-center justify-center text-sm font-bold shadow-xs transition-all"
+                                <span class="choice-circle shrink-0 w-8 h-8 bg-white text-gray-600 border border-gray-200 flex items-center justify-center text-sm font-bold shadow-xs transition-all"
                                       id="circle-{{ $index }}-{{ $origKey }}">
                                     {{ $displayLetter }}
                                 </span>
@@ -191,7 +191,7 @@
                     <div class="shrink-0 flex justify-between items-center pt-4 border-t border-gray-100 gap-3 mt-auto">
                         @if ($index > 0)
                             <button type="button" onclick="prevSoal()"
-                                    class="nav-btn flex items-center bg-gray-100 hover:bg-gray-200 text-slate-700 hover:text-slate-900 text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+                                    class="nav-btn portal-btn bg-gray-100 hover:bg-gray-200 text-slate-700 hover:text-slate-900">
                                 <span>Sebelumnya</span>
                             </button>
                         @else
@@ -200,12 +200,12 @@
 
                         @if ($index < $quiz->soal->count() - 1)
                             <button type="button" onclick="nextSoal()"
-                                    class="nav-btn flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-xs transition">
+                                    class="nav-btn btn-primary bg-[#7B1038] text-white shadow-xs">
                                 <span>Selanjutnya</span>
                             </button>
                         @else
                             <button type="submit"
-                                    class="nav-btn flex items-center bg-[#1F9254] hover:bg-[#167442] text-white text-sm font-bold px-7 py-2.5 rounded-xl shadow-xs transition">
+                                    class="nav-btn portal-btn bg-[#1F9254] hover:bg-[#167442] text-white shadow-xs">
                                 <span>Kumpulkan Jawaban</span>
                             </button>
                         @endif

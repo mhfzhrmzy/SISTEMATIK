@@ -3,7 +3,7 @@
 @section('title', $materi->judul_materi . ' — Detail Modul')
 
 @section('content')
-<div class="space-y-6">
+<div class="portal-stack">
 
     {{-- Breadcrumb --}}
     <nav class="flex items-center gap-2 text-sm text-gray-600">
@@ -13,9 +13,9 @@
     </nav>
 
     {{-- Header Modul --}}
-    <x-card class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <x-card padding="" class="portal-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
+            <span class="portal-badge text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
                 BAHAN AJAR &amp; MODUL
             </span>
             <h1 class="text-2xl sm:text-3xl font-bold text-[#1F2937] leading-snug mb-1">
@@ -29,20 +29,20 @@
 
         <div class="shrink-0">
             <a href="{{ route('portal.quiz.index', $materi) }}"
-               class="inline-flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-base font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
+               class="btn-primary bg-[#7B1038] text-white shadow-xs">
                 <span>Evaluasi Quiz</span>
             </a>
         </div>
     </x-card>
 
     {{-- Deskripsi Materi --}}
-    <x-card class="space-y-2">
+    <x-card padding="" class="portal-card space-y-2">
         <h2 class="text-base font-semibold text-[#7B1038] uppercase tracking-wider">Deskripsi Pembelajaran</h2>
         <p class="text-sm sm:text-base text-[#1F2937] leading-relaxed break-words">{{ trim($materi->isi_materi) ?: 'Membahas pengenalan konsep dasar, penerapan langsung di bidang keahlian, latihan mandiri, dan evaluasi pemahaman standar industri.' }}</p>
     </x-card>
 
     {{-- Modul / File Materi --}}
-    <x-card class="space-y-4">
+    <x-card padding="" class="portal-card space-y-4">
         @if ($materi->upload_file)
             @if ($pretestCompleted)
                 @php
@@ -54,7 +54,7 @@
                     <div class="flex items-center justify-end pb-1">
                         <a href="{{ route('portal.materi.file', $materi) }}"
                            download="{{ basename($materi->upload_file) }}"
-                           class="inline-flex items-center gap-2 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-xs transition duration-150 cursor-pointer">
+                           class="btn-primary bg-[#7B1038] text-white shadow-xs cursor-pointer">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                             </svg>
@@ -63,7 +63,7 @@
                     </div>
 
                     {{-- PDF.js Interactive Reader (1 Kotak Scrollable Sesuai Orientasi PDF) --}}
-                    <div id="pdf-container-wrap" class="w-full bg-gray-50 rounded-2xl p-4 sm:p-8 flex flex-col items-center">
+                    <div id="pdf-container-wrap" class="portal-panel w-full bg-gray-50 flex flex-col items-center">
                         <div id="pdf-loading" class="py-12 flex flex-col items-center justify-center gap-2.5 text-gray-500 text-sm font-medium">
                             <svg class="animate-spin h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -75,26 +75,26 @@
 
                         {{-- 1 Kotak Viewer Scrollable --}}
                         <div id="pdf-scroll-box"
-                             class="hidden w-full overflow-y-auto overscroll-contain rounded-xl border border-gray-200 bg-white/70 shadow-sm p-3 sm:p-4 my-2">
+                             class="portal-pdf-preview hidden w-full overflow-y-auto overscroll-contain border border-gray-200 bg-white/70 shadow-sm p-3 sm:p-4 my-2">
                             <div id="pdf-pages" class="flex flex-col items-center gap-4 w-full"></div>
                         </div>
                     </div>
                 @else
                     {{-- Non-PDF file banner --}}
-                    <div class="p-6 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="portal-panel bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h4 class="text-sm font-bold text-slate-800">{{ basename($materi->upload_file) }}</h4>
                             <p class="text-sm text-gray-600">Berkas ini dalam format dokumen Office. Silakan unduh untuk membaca atau membuka materi secara offline.</p>
                         </div>
                         <a href="{{ route('portal.materi.file', $materi) }}" download
-                           class="inline-flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition shrink-0">
+                           class="btn-primary bg-[#7B1038] text-white shrink-0">
                             Unduh Berkas Modul
                         </a>
                     </div>
                 @endif
             @else
                 {{-- Siswa belum mengerjakan pre-test: tampilkan kartu terkunci (Clean & Minimalis) --}}
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                <div class="portal-panel bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                     <div class="space-y-1">
                         <h3 class="text-sm sm:text-base font-bold text-[#7B1038]">Berkas Materi Terkunci</h3>
                         <p class="text-sm text-gray-600 leading-relaxed max-w-xl">
@@ -103,14 +103,14 @@
                     </div>
                     <div class="shrink-0">
                         <a href="{{ route('portal.quiz.index', $materi) }}"
-                           class="inline-flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
+                           class="btn-primary bg-[#7B1038] text-white shadow-xs">
                             <span>Kerjakan Pre-Test Sekarang</span>
                         </a>
                     </div>
                 </div>
             @endif
         @else
-            <div class="p-8 text-center bg-gray-50 rounded-2xl text-sm text-gray-600">
+            <div class="portal-panel text-center bg-gray-50 text-sm text-gray-600">
                 Belum ada berkas modul yang diunggah untuk materi ini.
             </div>
         @endif
@@ -118,15 +118,15 @@
 
     {{-- Aksi Konfirmasi Penyelesaian Modul Belajar --}}
     @if ($pretestCompleted)
-        <x-card class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <x-card padding="" class="portal-card flex flex-col sm:flex-row sm:items-center justify-between gap-5">
             <div class="space-y-1">
                 <div class="flex items-center gap-2">
                     @if ($materiSiswaRecord && $materiSiswaRecord->is_selesai)
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-[#E8F8F0] text-[#1F9254]">
+                        <span class="portal-badge inline-flex items-center text-sm font-bold uppercase tracking-wider bg-[#E8F8F0] text-[#1F9254]">
                             SELESAI DIPELAJARI
                         </span>
                     @else
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider bg-slate-100 text-[#7B1038] border border-slate-200">
+                        <span class="portal-badge inline-flex items-center text-sm font-bold uppercase tracking-wider bg-slate-100 text-[#7B1038] border border-slate-200">
                             SEDANG DIPELAJARI
                         </span>
                     @endif
@@ -152,12 +152,12 @@
                 @if ($materiSiswaRecord && $materiSiswaRecord->is_selesai)
                     <button type="submit"
                             title="Klik untuk menandai modul belum selesai"
-                            class="inline-flex items-center bg-[#E8F8F0] hover:bg-slate-100 text-[#1F9254] hover:text-slate-700 border border-[#1F9254]/30 hover:border-slate-300 text-sm font-semibold px-5 py-2.5 rounded-xl transition duration-150 cursor-pointer">
+                            class="portal-btn bg-[#E8F8F0] hover:bg-slate-100 text-[#1F9254] hover:text-slate-700 border border-[#1F9254]/30 hover:border-slate-300 cursor-pointer">
                         <span>Tandai Belum Selesai</span>
                     </button>
                 @else
                     <button type="submit"
-                            class="inline-flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition duration-150 cursor-pointer">
+                            class="btn-primary bg-[#7B1038] text-white shadow-xs cursor-pointer">
                         <span>Tandai Selesai Membaca</span>
                     </button>
                 @endif

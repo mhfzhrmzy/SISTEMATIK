@@ -15,6 +15,13 @@
 
 @php
     $persen = $total > 0 ? round(($benar / $total) * 100) : 0;
+    $poinTampil = (int) ($totalPoin ?? 0);
+    $jumlahDigitPoin = strlen((string) abs($poinTampil));
+    $poinSizeClass = match (true) {
+        $jumlahDigitPoin >= 4 => 'hasil-poin-num--4digit',
+        $jumlahDigitPoin === 3 => 'hasil-poin-num--3digit',
+        default => '',
+    };
     $grade = match(true) {
         $persen >= 90 => ['label' => 'Sempurna!',    'color' => 'text-[#1F9254]', 'bg' => 'bg-[#E8F8F0]'],
         $persen >= 75 => ['label' => 'Bagus Sekali!', 'color' => 'text-[#1F9254]', 'bg' => 'bg-[#E8F8F0]'],
@@ -32,9 +39,9 @@
 
         {{-- Maroon Accent Header --}}
         <div class="bg-[#7B1038] rounded-2xl px-6 sm:px-8 pt-6 sm:pt-7 pb-11 sm:pb-13 text-center text-white">
-            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-white/20 text-white mb-2 shadow-2xs">
+            <p class="text-xs font-semibold uppercase tracking-widest text-white/85 mb-1.5">
                 HASIL {{ strtoupper($quiz->tipe_test) }}
-            </span>
+            </p>
             <h1 class="text-2xl sm:text-3xl font-bold leading-snug truncate">
                 {{ $quiz->materi->judul_materi ?? 'Quiz' }}
             </h1>
@@ -53,47 +60,39 @@
                             style="transition: stroke-dasharray 1s ease;"/>
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                    <span class="text-xl sm:text-2xl font-black text-[#1F2937] leading-none mb-0.5">{{ $persen }}%</span>
-                    <span class="text-sm text-gray-600 font-semibold uppercase tracking-wider">Skor</span>
+                    <span class="hasil-poin-num {{ $poinSizeClass }}">{{ $poinTampil }}</span>
+                    <span class="hasil-poin-label">POIN</span>
                 </div>
             </div>
         </div>
 
-        <div class="px-6 sm:px-8 pb-6 sm:pb-7 text-center space-y-3.5 sm:space-y-4">
+        <div class="px-6 sm:px-8 pb-6 sm:pb-7 text-center">
 
             {{-- Grade badge --}}
-            <div>
+            <div class="hasil-grade-wrap">
                 <span class="inline-flex items-center gap-1.5 {{ $grade['bg'] }} {{ $grade['color'] }} text-sm font-bold px-4 py-1.5 rounded-full">
                     {{ $grade['label'] }}
                 </span>
             </div>
 
             {{-- Stats Grid (Benar, Salah, Total) --}}
-            <div class="grid grid-cols-3 gap-3 sm:gap-4">
-                <div class="bg-[#E8F8F0] rounded-2xl p-3 sm:p-3.5 text-center">
+            <div class="hasil-stats-grid">
+                <div class="hasil-stat-card bg-[#E8F8F0]">
                     <div class="text-xl sm:text-2xl font-black text-[#1F9254]">{{ $benar }}</div>
                     <div class="text-sm text-[#1F9254] font-medium mt-0.5">Benar</div>
                 </div>
-                <div class="bg-rose-50 rounded-2xl p-3 sm:p-3.5 text-center">
+                <div class="hasil-stat-card bg-rose-50">
                     <div class="text-xl sm:text-2xl font-black text-rose-600">{{ $total - $benar }}</div>
                     <div class="text-sm text-rose-700 font-medium mt-0.5">Salah</div>
                 </div>
-                <div class="bg-gray-50 rounded-2xl p-3 sm:p-3.5 text-center">
+                <div class="hasil-stat-card bg-gray-50">
                     <div class="text-xl sm:text-2xl font-black text-[#1F2937]">{{ $total }}</div>
                     <div class="text-sm text-gray-600 font-medium mt-0.5">Total Soal</div>
                 </div>
             </div>
 
-            {{-- Total Points Card --}}
-            <div class="bg-slate-50 border border-slate-200 rounded-2xl py-3 sm:py-3.5 px-4 text-center shadow-2xs">
-                <div class="text-3xl sm:text-4xl font-semibold text-gray-600">
-                    {{ $totalPoin }}
-                    <span class="text-base font-semibold text-gray-600">Poin</span>
-                </div>
-            </div>
-
             {{-- Action Buttons --}}
-            <div class="space-y-2 pt-1">
+            <div class="hasil-actions">
                 @if ($quiz->tipe_test === 'posttest')
                 <a href="{{ route('leaderboard.index') }}"
                    class="w-full flex items-center justify-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-semibold py-3 rounded-xl shadow-xs transition duration-150 text-sm sm:text-base">

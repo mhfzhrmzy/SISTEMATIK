@@ -3,7 +3,7 @@
 @section('title', 'Daftar Quiz — ' . $materi->judul_materi)
 
 @section('content')
-<div class="w-full space-y-6">
+<div class="portal-stack w-full">
 
     {{-- Breadcrumb --}}
     <nav class="flex items-center gap-2 text-sm text-gray-600">
@@ -23,9 +23,9 @@
     </div>
 
     {{-- Header Banner Materi --}}
-    <x-card class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+    <x-card padding="" class="portal-card flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div>
-            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
+            <span class="portal-badge text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
                 MODUL EVALUASI
             </span>
             <h1 class="text-2xl sm:text-3xl font-bold text-[#1F2937] leading-tight mb-1">
@@ -38,11 +38,11 @@
         </div>
 
         <div class="flex items-center gap-3 shrink-0">
-            <div class="bg-gray-50 rounded-xl px-4 py-2.5 text-center">
+            <div class="portal-stat-box bg-gray-50 px-4 py-2.5 text-center">
                 <span class="text-sm text-gray-600 uppercase tracking-wider block font-semibold">Tersedia</span>
                 <span class="text-base font-bold text-[#1F2937]">{{ $quizzes->count() }} Quiz</span>
             </div>
-            <div class="bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-center">
+            <div class="portal-stat-box bg-slate-100 border border-slate-200 px-4 py-2.5 text-center">
                 <span class="text-sm text-gray-600 uppercase tracking-wider block font-semibold">Selesai</span>
                 <span class="text-base font-bold text-[#7B1038]">{{ $attemptedIds->count() }} Dikerjakan</span>
             </div>
@@ -50,7 +50,7 @@
     </x-card>
 
     @if ($quizzes->isEmpty())
-        <x-card class="text-center">
+        <x-card padding="" class="portal-card text-center">
             <h3 class="text-base font-bold text-[#1F2937] mb-1">Belum Ada Quiz</h3>
             <p class="text-sm text-gray-600">Guru belum menambahkan quiz untuk modul materi ini.</p>
             <a href="{{ route('portal.materi.index') }}"
@@ -78,30 +78,30 @@
                             $poin      = $attemptedIds->get($quiz->id_quiz);
                             $statusJadwal = $quiz->statusJadwal();
                         @endphp
-                        <x-card class="hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <x-card padding="" class="portal-card hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div class="space-y-2 flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="px-3 py-1 rounded-full text-sm font-bold bg-[#7B1038] text-white shadow-2xs">Pre-Test</span>
+                                    <span class="portal-badge text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white shadow-2xs">Pre-Test</span>
                                     @if($statusJadwal === 'terjadwal')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">
+                                        <span class="portal-badge text-xs font-semibold bg-gray-100 text-gray-600">
                                             Terjadwal
                                         </span>
                                     @elseif($statusJadwal === 'berlangsung')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#E8F8F0] text-[#1F9254]">
+                                        <span class="portal-badge text-xs font-semibold bg-[#E8F8F0] text-[#1F9254]">
                                             Sedang Berlangsung
                                         </span>
                                     @elseif($statusJadwal === 'selesai')
-                                        <span class="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">
+                                        <span class="portal-badge text-xs font-semibold bg-gray-100 text-gray-600">
                                             Jadwal Berakhir
                                         </span>
                                     @endif
 
                                     @if ($attempted)
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#E8F8F0] text-[#1F9254]">
+                                        <span class="portal-badge text-xs font-semibold bg-[#E8F8F0] text-[#1F9254]">
                                             Sudah Dikerjakan
                                         </span>
                                     @elseif(!$statusJadwal)
-                                        <span class="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">
+                                        <span class="portal-badge text-xs font-semibold bg-gray-100 text-gray-600">
                                             Belum Dikerjakan
                                         </span>
                                     @endif
@@ -139,20 +139,20 @@
                                 @if ($quiz->soal->isEmpty())
                                     <span class="text-sm text-gray-600 italic">Soal belum siap</span>
                                 @elseif ($attempted)
-                                    <span class="inline-flex items-center bg-[#E8F8F0] text-[#1F9254] text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
+                                    <span class="portal-btn bg-[#E8F8F0] text-[#1F9254] cursor-not-allowed">
                                         Sudah Dikerjakan
                                     </span>
                                 @elseif ($statusJadwal === 'terjadwal')
-                                    <span class="inline-flex items-center bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
+                                    <span class="portal-btn bg-gray-100 text-gray-600 cursor-not-allowed">
                                         Belum Dimulai
                                     </span>
                                 @elseif ($statusJadwal === 'selesai')
-                                    <span class="inline-flex items-center bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
+                                    <span class="portal-btn bg-gray-100 text-gray-600 cursor-not-allowed">
                                         Waktu Berakhir
                                     </span>
                                 @else
                                     <a href="{{ route('portal.quiz.kerjakan', $quiz) }}"
-                                       class="inline-flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
+                                       class="btn-primary bg-[#7B1038] text-white shadow-xs">
                                         Mulai Pre-Test
                                     </a>
                                 @endif
@@ -177,26 +177,26 @@
                             $poin      = $attemptedIds->get($quiz->id_quiz);
                             $statusJadwal = $quiz->statusJadwal();
                         @endphp
-                        <x-card class="hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <x-card padding="" class="portal-card hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div class="space-y-2 flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="px-3 py-1 rounded-full text-sm font-bold bg-[#7B1038] text-white shadow-2xs">Post-Test</span>
+                                    <span class="portal-badge text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white shadow-2xs">Post-Test</span>
                                     @if($statusJadwal === 'terjadwal')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">
+                                        <span class="portal-badge text-xs font-semibold bg-gray-100 text-gray-600">
                                             Terjadwal
                                         </span>
                                     @elseif($statusJadwal === 'berlangsung')
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#E8F8F0] text-[#1F9254]">
+                                        <span class="portal-badge text-xs font-semibold bg-[#E8F8F0] text-[#1F9254]">
                                             Sedang Berlangsung
                                         </span>
                                     @elseif($statusJadwal === 'selesai')
-                                        <span class="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">
+                                        <span class="portal-badge text-xs font-semibold bg-gray-100 text-gray-600">
                                             Jadwal Berakhir
                                         </span>
                                     @endif
 
                                     @if ($attempted)
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-[#E8F8F0] text-[#1F9254]">
+                                        <span class="portal-badge text-xs font-semibold bg-[#E8F8F0] text-[#1F9254]">
                                             Sudah Dikerjakan
                                         </span>
                                     @endif
@@ -234,27 +234,27 @@
                                 @if ($quiz->soal->isEmpty())
                                     <span class="text-sm text-gray-600 italic">Soal belum siap</span>
                                 @elseif($statusJadwal === 'terjadwal')
-                                    <span class="inline-flex items-center bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
+                                    <span class="portal-btn bg-gray-100 text-gray-600 cursor-not-allowed">
                                         Belum Dimulai
                                     </span>
                                 @elseif($statusJadwal === 'berlangsung')
                                     @if($attempted)
-                                        <span class="inline-flex items-center bg-[#E8F8F0] text-[#1F9254] text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
+                                        <span class="portal-btn bg-[#E8F8F0] text-[#1F9254] cursor-not-allowed">
                                             Sudah Dikerjakan
                                         </span>
                                     @else
                                         <a href="{{ route('portal.quiz.kerjakan', $quiz) }}"
-                                           class="inline-flex items-center bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xs transition">
+                                           class="btn-primary bg-[#7B1038] text-white shadow-xs">
                                             Mulai Post-Test
                                         </a>
                                     @endif
                                 @elseif($statusJadwal === 'selesai')
                                     @if($attempted)
-                                        <span class="inline-flex items-center bg-[#E8F8F0] text-[#1F9254] text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
+                                        <span class="portal-btn bg-[#E8F8F0] text-[#1F9254] cursor-not-allowed">
                                             Sudah Dikerjakan
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center bg-gray-100 text-gray-600 text-sm font-semibold px-4 py-2.5 rounded-xl cursor-not-allowed">
+                                        <span class="portal-btn bg-gray-100 text-gray-600 cursor-not-allowed">
                                             Waktu Berakhir
                                         </span>
                                     @endif

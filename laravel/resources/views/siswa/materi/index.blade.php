@@ -8,7 +8,7 @@
     {{-- Header Bagian --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
         <div>
-            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
+            <span class="portal-badge text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
                 PORTAL BELAJAR
             </span>
             <h1 class="text-3xl font-bold text-[#1F2937] mb-1">
@@ -22,8 +22,8 @@
 
     {{-- 3. Daftar Kartu Materi (Grid 2 Kolom Responsif Sesuai Referensi) --}}
     @if ($materis->isEmpty())
-        <x-card class="text-center">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-gray-600">
+        <x-card padding="" class="portal-card text-center">
+            <div class="portal-empty-icon w-16 h-16 mx-auto mb-4 bg-slate-100 border border-slate-200 flex items-center justify-center text-gray-600">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
@@ -32,14 +32,14 @@
             <p class="text-sm text-gray-600">Guru belum menambahkan materi untuk kelas dan jurusan Anda.</p>
         </x-card>
     @else
-        <div id="materiGrid" class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6">
+        <div id="materiGrid" class="portal-card-grid grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
             @foreach ($materis as $materi)
-                <x-card class="materi-card hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+                <x-card padding="" class="portal-card materi-card hover:shadow-md transition-all duration-200 flex flex-col justify-between">
 
                     <div>
                         {{-- Baris Atas: Kode Modul --}}
                         <div class="mb-3">
-                            <span class="inline-block px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 tracking-wide">
+                            <span class="portal-chip inline-block text-xs font-semibold bg-gray-100 text-gray-600 tracking-wide">
                                 {{ $materi->kode_modul }}
                             </span>
                         </div>
@@ -55,7 +55,7 @@
                         </p>
 
                         {{-- Kartu Guru Pengampu --}}
-                        <div class="bg-[#F8F9FA] rounded-xl p-3 flex items-center gap-3 mb-4">
+                        <div class="portal-panel bg-[#F8F9FA] flex items-center gap-3 mb-4">
                             <div class="w-9 h-9 rounded-full bg-[#7B1038] text-white flex items-center justify-center shrink-0 shadow-xs">
                                 <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 14l9-5-9-5-9 5 9 5z" />
@@ -78,8 +78,8 @@
                                 <span class="text-gray-600">Kemajuan Belajar</span>
                                 <span class="text-gray-700 font-bold">{{ $materi->progress }}% Selesai</span>
                             </div>
-                            <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-[#7B1038] rounded-full transition-all duration-300" style="width: {{ $materi->progress }}%;"></div>
+                            <div class="portal-progress-track w-full h-1.5 bg-gray-100 overflow-hidden">
+                                <div class="portal-progress-fill h-full bg-[#7B1038] transition-all duration-300" style="width: {{ $materi->progress }}%;"></div>
                             </div>
                         </div>
                     </div>
@@ -91,22 +91,22 @@
                         @if ($materi->pretestDone && $materi->hasPretest)
                             {{-- Pre-Test Selesai -> MAROON UTAMA --}}
                             <a href="{{ route('portal.quiz.index', $materi) }}"
-                               class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-2xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group"
+                               class="materi-step-btn bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-center transition flex flex-col items-center justify-center shadow-xs group"
                                title="Lihat riwayat Pre-Test">
-                                <span class="font-bold text-sm text-white">Pre-test</span>
+                                <span class="materi-step-title text-white">Pre-test</span>
                                 <span class="text-sm text-white/80 mt-0.5">Selesai</span>
                             </a>
                         @elseif ($materi->hasPretest)
                             {{-- Pre-Test Belum Dikerjakan -> BORDER MAROON ELEGAN --}}
                             <a href="{{ route('portal.quiz.kerjakan', $materi->pretest) }}"
-                               class="bg-white hover:bg-[#7B1038] text-[var(--text-gray-700)] hover:text-white border-2 border-[#7B1038] rounded-xl p-3 text-center transition flex flex-col items-center justify-center group shadow-2xs">
-                                <span class="font-bold text-sm text-[var(--text-gray-700)] group-hover:text-white transition">Pre-test</span>
+                               class="materi-step-btn bg-white hover:bg-[#7B1038] text-[var(--text-gray-700)] hover:text-white border-2 border-[#7B1038] text-center transition flex flex-col items-center justify-center group shadow-2xs">
+                                <span class="materi-step-title text-[var(--text-gray-700)] group-hover:text-white transition">Pre-test</span>
                                 <span class="text-sm text-gray-600 group-hover:text-white/90 font-medium transition mt-0.5">Mulai</span>
                             </a>
                         @else
                             {{-- Tidak ada Pre-Test (Bebas Akses) -> NETRAL --}}
-                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center flex flex-col items-center justify-center text-gray-600">
-                                <span class="font-bold text-sm text-[var(--text-gray-700)]">Pre-test</span>
+                            <div class="materi-step-btn bg-slate-50 border border-slate-200 text-center flex flex-col items-center justify-center text-gray-600">
+                                <span class="materi-step-title text-[var(--text-gray-700)]">Pre-test</span>
                                 <span class="text-sm text-gray-600 mt-0.5">Bebas Akses</span>
                             </div>
                         @endif
@@ -116,24 +116,24 @@
                             @if ($materi->isMateriSelesai)
                                 {{-- Bahan Ajar Selesai Dibaca -> MAROON UTAMA --}}
                                 <a href="{{ route('portal.materi.show', $materi) }}"
-                                   class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-2xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group"
+                                   class="materi-step-btn bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-center transition flex flex-col items-center justify-center shadow-xs group"
                                    title="Buka kembali modul materi yang telah dipelajari">
-                                    <span class="font-bold text-sm text-white">Bahan Ajar</span>
+                                    <span class="materi-step-title text-white">Bahan Ajar</span>
                                     <span class="text-sm text-white/80 mt-0.5">Selesai</span>
                                 </a>
                             @else
                                 {{-- Bahan Ajar Belum Selesai (Mulai Baca) -> MAROON UTAMA --}}
                                 <a href="{{ route('portal.materi.show', $materi) }}"
-                                   class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-2xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group">
-                                    <span class="font-bold text-sm text-white">Bahan Ajar</span>
+                                   class="materi-step-btn bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-center transition flex flex-col items-center justify-center shadow-xs group">
+                                    <span class="materi-step-title text-white">Bahan Ajar</span>
                                     <span class="text-sm text-white/80 mt-0.5">Baca</span>
                                 </a>
                             @endif
                         @else
                             {{-- Terkunci (Pre-Test Dulu) -> ABU-ABU --}}
-                            <div class="bg-gray-100 rounded-xl p-3 text-center flex flex-col items-center justify-center cursor-not-allowed text-gray-600 border border-gray-200"
+                            <div class="materi-step-btn bg-gray-100 text-center flex flex-col items-center justify-center cursor-not-allowed text-gray-600 border border-gray-200"
                                  title="Kerjakan Pre-Test terlebih dahulu untuk membuka bahan ajar">
-                                <span class="font-bold text-sm text-gray-600">Bahan Ajar</span>
+                                <span class="materi-step-title text-gray-600">Bahan Ajar</span>
                                 <span class="text-sm text-gray-600 mt-0.5">Terkunci</span>
                             </div>
                         @endif
@@ -141,30 +141,30 @@
                         {{-- Kolom 3: POST-TEST --}}
                         @if (! $materi->pretestDone)
                             {{-- Terkunci karena Pre-Test belum selesai -> ABU-ABU --}}
-                            <div class="bg-gray-100 rounded-xl p-3 text-center flex flex-col items-center justify-center cursor-not-allowed text-gray-600 border border-gray-200"
+                            <div class="materi-step-btn bg-gray-100 text-center flex flex-col items-center justify-center cursor-not-allowed text-gray-600 border border-gray-200"
                                  title="Pre-Test harus diselesaikan sebelum dapat mengikuti Post-Test">
-                                <span class="font-bold text-sm text-gray-600">Post-test</span>
+                                <span class="materi-step-title text-gray-600">Post-test</span>
                                 <span class="text-sm text-gray-600 mt-0.5">Terkunci</span>
                             </div>
                         @elseif ($materi->posttestDone)
                             {{-- Post-Test Selesai -> MAROON UTAMA --}}
                             <a href="{{ route('portal.quiz.index', $materi) }}"
-                               class="bg-[#7B1038] hover:bg-[#5E0C2B] text-white rounded-2xl p-3 text-center transition flex flex-col items-center justify-center shadow-xs group"
+                               class="materi-step-btn bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-center transition flex flex-col items-center justify-center shadow-xs group"
                                title="Lihat riwayat Post-Test">
-                                <span class="font-bold text-sm text-white">Post-test</span>
+                                <span class="materi-step-title text-white">Post-test</span>
                                 <span class="text-sm text-white/80 mt-0.5">Selesai</span>
                             </a>
                         @elseif ($materi->hasPosttest)
                             {{-- Post-Test Belum Dikerjakan (Siap Diuji) -> BORDER MAROON ELEGAN --}}
                             <a href="{{ route('portal.quiz.index', $materi) }}"
-                               class="bg-white hover:bg-[#7B1038] text-[var(--text-gray-700)] hover:text-white border-2 border-[#7B1038] rounded-xl p-3 text-center transition flex flex-col items-center justify-center group shadow-2xs">
-                                <span class="font-bold text-sm text-[var(--text-gray-700)] group-hover:text-white transition">Post-test</span>
+                               class="materi-step-btn bg-white hover:bg-[#7B1038] text-[var(--text-gray-700)] hover:text-white border-2 border-[#7B1038] text-center transition flex flex-col items-center justify-center group shadow-2xs">
+                                <span class="materi-step-title text-[var(--text-gray-700)] group-hover:text-white transition">Post-test</span>
                                 <span class="text-sm text-gray-600 group-hover:text-white/90 font-medium transition mt-0.5">Mulai</span>
                             </a>
                         @else
                             {{-- Belum ada Post-Test -> ABU-ABU --}}
-                            <div class="bg-gray-100 rounded-xl p-3 text-center flex flex-col items-center justify-center text-gray-600 border border-gray-200">
-                                <span class="font-bold text-sm text-gray-600">Post-test</span>
+                            <div class="materi-step-btn bg-gray-100 text-center flex flex-col items-center justify-center text-gray-600 border border-gray-200">
+                                <span class="materi-step-title text-gray-600">Post-test</span>
                                 <span class="text-sm text-gray-600 mt-0.5">Belum Ada</span>
                             </div>
                         @endif
