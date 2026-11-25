@@ -70,7 +70,7 @@
 
         <button type="button" onclick="document.getElementById('form-password').classList.toggle('hidden')"
                 class="bg-gray-100 hover:bg-[#7B1038]/10 transition text-xs font-semibold px-4 py-2.5 rounded-lg">
-            🔑 Ganti Kata Sandi
+            Ganti Kata Sandi
         </button>
 
         <form id="form-password" action="{{ route('guru.profil.password') }}" method="POST"
