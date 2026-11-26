@@ -11,8 +11,9 @@ import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
 import 'package:pretest_posttest_app/fitur/profil/screens/profil_screen.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/services/api_leaderboard.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/models/model_leaderboard.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/widgets/batang_podium.dart'
-    show BatangPodium, BatangPodiumKosong, AvatarSiswa;
+import 'package:pretest_posttest_app/fitur/leaderboard/widgets/batang_podium.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/widgets/kartu_peringkat.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/widgets/filter_leaderboard.dart';
 
 /// Halaman Leaderboard (papan peringkat).
 ///
@@ -36,11 +37,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   int _indeksMateriTerpilih = 0;
   List<ModelMateri> _daftarMateri = const [];
 
-  bool _sedangMemuat = true;
-  bool _sedangMuatMateri = true;
+  bool _sedangMemuat = true;     // status fetch data leaderboard (di-reset tiap ganti tab/materi/retry)
+  bool _sedangMuatMateri = true; // status fetch daftar materi (sekali di initState, tidak di-reset lagi)
+  bool _sedangMuatLanjutan = false; // status fetch batch lanjutan (scroll sampai bawah)
+  bool _semuaDataDimuat = false;    // true jika tidak ada data lagi yang bisa di-load
   String? _pesanGagal;
   HasilLeaderboard? _hasil;
+  int _offset = 0;               // offset batch saat ini
   Timer? _timerRefresh;
+  final ScrollController _scrollController = ScrollController();
+
+  static const int _batasHalaman = 10;
 
   int get _materiIdTerpilih => _daftarMateri.isEmpty
       ? 0
@@ -53,15 +60,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     _pulihkanPreferensi();
     _muatDaftarMateri();
     _muatLeaderboard();
-    _timerRefresh = Timer.periodic(
-      _intervalRefresh,
-      (_) => _muatLeaderboard(autoRefresh: true),
-    );
+    _timerRefresh =
+        Timer.periodic(_intervalRefresh, (_) => _muatLeaderboard(autoRefresh: true));
   }
 
   @override
   void dispose() {
     _timerRefresh?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -95,9 +101,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   void _pilihMateri(int indeks) {
-    setState(() {
-      _indeksMateriTerpilih = indeks;
-    });
+    setState(() => _indeksMateriTerpilih = indeks);
     PreferensiLokal.simpanInt('materi_idx_leaderboard', indeks);
     _muatLeaderboard();
   }
@@ -115,23 +119,30 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   Future<void> _muatLeaderboard({bool autoRefresh = false}) async {
     final mode = _tabTerpilih;
 
-    setState(() {
-      if (!autoRefresh) {
+    // Reset pagination saat fetch batch pertama
+    _offset = 0;
+    _semuaDataDimuat = false;
+
+    if (!autoRefresh) {
+      setState(() {
         _sedangMemuat = true;
         _pesanGagal = null;
-      }
-    });
+      });
+    }
 
     try {
       final hasil = mode == _tabPermateri
-          ? await _layanan.ambilLeaderboardPermateri(_materiIdTerpilih)
-          : await _layanan.ambilLeaderboardKeseluruhan();
+          ? await _layanan.ambilLeaderboardPermateri(_materiIdTerpilih, offset: 0)
+          : await _layanan.ambilLeaderboardKeseluruhan(offset: 0);
       if (!mounted) return;
       setState(() {
         _hasil = hasil;
-        if (!autoRefresh) {
-          _sedangMemuat = false;
+        if (hasil.data.length < hasil.totalSiswa) {
+          _offset = hasil.data.length;
+        } else {
+          _semuaDataDimuat = true;
         }
+        if (!autoRefresh) _sedangMemuat = false;
       });
     } catch (e) {
       if (!mounted) return;
@@ -144,21 +155,44 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     }
   }
 
+  /// Load batch berikutnya saat user scroll sampai bawah.
+  Future<void> _muatLanjutan() async {
+    if (_sedangMuatLanjutan || _semuaDataDimuat || _hasil == null) return;
+
+    setState(() => _sedangMuatLanjutan = true);
+
+    try {
+      final mode = _tabTerpilih;
+      final hasil = mode == _tabPermateri
+          ? await _layanan.ambilLeaderboardPermateri(_materiIdTerpilih, offset: _offset)
+          : await _layanan.ambilLeaderboardKeseluruhan(offset: _offset);
+      if (!mounted) return;
+      setState(() {
+        _hasil = _hasil!;
+        _hasil!.data.addAll(hasil.data);
+        _offset += hasil.data.length;
+        if (_hasil!.data.length >= _hasil!.totalSiswa) {
+          _semuaDataDimuat = true;
+        }
+        _sedangMuatLanjutan = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _sedangMuatLanjutan = false);
+    }
+  }
+
   void _saatFooterDiketuk(int idx) {
     if (idx == 1) return;
 
     if (idx == 0) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => const BerandaScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const BerandaScreen()),
         (route) => false,
       );
     } else if (idx == 2) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => const ProfilScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const ProfilScreen()),
       );
     }
   }
@@ -166,8 +200,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
-    // Padding horizontal proporsional sama persis dengan Pre-Test dan Post-Test
     final double paddingHorizontal = (size.width * 0.075).clamp(22.0, 40.0);
 
     return Scaffold(
@@ -185,52 +217,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           bottom: false,
           child: Column(
             children: [
-              // â”€â”€ Header Maroon â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-              Container(
-                width: double.infinity,
-                color: WarnaAplikasi.utama,
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      paddingHorizontal,
-                      16,
-                      paddingHorizontal,
-                      24,
-                    ),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Leaderboard',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -0.3,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          _hasil == null
-                              ? ''
-                              : (_hasil!.kelas != null &&
-                                      _hasil!.kelas!.isNotEmpty
-                                  ? (_hasil!.jurusan != null &&
-                                          _hasil!.jurusan!.isNotEmpty
-                                      ? 'Kelas ${_hasil!.kelas} | ${_hasil!.jurusan}'
-                                      : 'Kelas ${_hasil!.kelas}')
-                                  : ''),
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
+              _header(paddingHorizontal),
               Expanded(
                 child: Stack(
                   clipBehavior: Clip.none,
@@ -240,12 +227,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                       left: 0,
                       right: 0,
                       height: 50,
-                      child: Container(
-                        color: WarnaAplikasi.utama,
-                      ),
+                      child: Container(color: WarnaAplikasi.utama),
                     ),
-
-                    // Container putih utama
                     Container(
                       width: double.infinity,
                       height: double.infinity,
@@ -263,7 +246,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                           paddingHorizontal,
                           0,
                         ),
-                        child: _isiKonten(panHorizontal: paddingHorizontal),
+                        child: _isiKonten(),
                       ),
                     ),
                   ],
@@ -276,16 +259,71 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     );
   }
 
-  Widget _isiKonten({required double panHorizontal}) {
-    final children = <Widget>[
-      // â”€â”€ Toggle Keseluruhan / Permateri â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-      _toggleMode(),
+  Widget _header(double paddingHorizontal) {
+    return Container(
+      width: double.infinity,
+      color: WarnaAplikasi.utama,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            paddingHorizontal,
+            16,
+            paddingHorizontal,
+            24,
+          ),
+          child: Column(
+            children: [
+              const Text(
+                'Leaderboard',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                _subtitleKelas,
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
+  String get _subtitleKelas {
+    final h = _hasil;
+    if (h == null) return '';
+    final kelas = h.kelas;
+    final jurusan = h.jurusan;
+    if ((kelas == null || kelas.isEmpty) &&
+        (jurusan == null || jurusan.isEmpty)) {
+      return '';
+    }
+    if (kelas == null || kelas.isEmpty) return 'Jurusan ${jurusan}';
+    if (jurusan == null || jurusan.isEmpty) return 'Kelas ${kelas}';
+    return 'Kelas ${kelas} | ${jurusan}';
+  }
+
+  Widget _isiKonten() {
+    final children = <Widget>[
+      ToggleModeLeaderboard(
+        tabTerpilih: _tabTerpilih,
+        onPilihTab: _pilihTab,
+      ),
       if (_tabTerpilih == _tabPermateri) ...[
         const SizedBox(height: 14),
-        _pillsMateri(),
+        PillsMateriLeaderboard(
+          sedangMemuat: _sedangMuatMateri,
+          daftarMateri: _daftarMateri,
+          indeksTerpilih: _indeksMateriTerpilih,
+          onPilihMateri: _pilihMateri,
+        ),
       ],
-
       const SizedBox(height: 18),
     ];
 
@@ -341,10 +379,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           child: Center(
             child: Text(
               'Memuat...',
-              style: TextStyle(
-                color: WarnaAplikasi.utama,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: WarnaAplikasi.utama, fontSize: 14),
             ),
           ),
         ),
@@ -354,7 +389,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
     final daftar = hasil.data;
     if (daftar.isEmpty) {
-      // Tampilkan podium kosong + tabel placeholder 10 baris
+      // Podium kosong + tabel placeholder 10 baris (Approach A)
       children.add(_podiumKosong());
       children.add(const SizedBox(height: 16));
       children.add(_tabelPlaceholder(7));
@@ -362,13 +397,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     }
 
     children.addAll(_kontenLeaderboard(daftar));
-
     return Column(children: children);
   }
 
-  /// Tabel placeholder (N baris kosong, angka 4-10) — dipakai saat data kosong.
+  // Tabel baris 4–N (N = total siswa di bawah top-3).
+  // Jika N < 7, sisa slot diisi placeholder agar papan tetap terlihat penuh.
+  // Jika N >= 7, semua baris terisi nyata (tidak ada placeholder).
   Widget _tabelPlaceholder(int jumlah) {
-    final daftarPlaceholder = List<ModelLeaderboard>.generate(
+    final daftarPlaceholder = List.generate(
       jumlah,
       (i) => ModelLeaderboard(
         peringkat: i + 4,
@@ -383,59 +419,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         padding: const EdgeInsets.only(bottom: 12),
         itemCount: daftarPlaceholder.length,
         separatorBuilder: (_, __) => const SizedBox(height: 10),
-        itemBuilder: (ctx, idx) {
-          final item = daftarPlaceholder[idx];
-          return Container(
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: WarnaAplikasi.utama,
-                width: 1.2,
-              ),
-            ),
-            child: Row(
-              children: [
-                // Peringkat (kiri)
-                SizedBox(
-                  width: 28,
-                  child: Text(
-                    '${item.peringkat}',
-                    style: TextStyle(
-                      color: WarnaAplikasi.utama.withValues(alpha: 0.4),
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                // Nama (tengah)
-                Expanded(
-                  child: Text(
-                    item.nama,
-                    style: TextStyle(
-                      color: WarnaAplikasi.utama.withValues(alpha: 0.4),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                // Avatar (kanan)
-                AvatarSiswa(
-                  pengguna: item,
-                  ukuran: 36,
-                  placeholder: true,
-                ),
-              ],
-            ),
-          );
-        },
+        itemBuilder: (_, idx) => KartuPeringkat(item: daftarPlaceholder[idx]),
       ),
     );
   }
@@ -463,247 +447,78 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     );
   }
 
-  Widget _toggleMode() {
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: WarnaAplikasi.utama,
-          width: 1.5,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Tab Keseluruhan
-          Expanded(
-            child: InkWell(
-              onTap: () => _pilihTab(_tabKeseluruhan),
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: _tabTerpilih == _tabKeseluruhan
-                      ? WarnaAplikasi.utama
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Keseluruhan',
-                  style: TextStyle(
-                    color: _tabTerpilih == _tabKeseluruhan
-                        ? Colors.white
-                        : WarnaAplikasi.utama,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13.5,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Tab Permateri
-          Expanded(
-            child: InkWell(
-              onTap: () => _pilihTab(_tabPermateri),
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: _tabTerpilih == _tabPermateri
-                      ? WarnaAplikasi.utama
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Permateri',
-                  style: TextStyle(
-                    color: _tabTerpilih == _tabPermateri
-                        ? Colors.white
-                        : WarnaAplikasi.utama,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13.5,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _pillsMateri() {
-    if (_sedangMuatMateri) {
-      return const SizedBox(
-        height: 32,
-        child: Center(
-          child: SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-        ),
-      );
-    }
-
-    if (_daftarMateri.isEmpty) {
-      return const SizedBox(
-        height: 32,
-        child: Center(
-          child: Text(
-            'Tidak ada materi',
-            style: TextStyle(
-              color: WarnaAplikasi.utama,
-              fontSize: 12,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 32,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: _daftarMateri.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (ctx, idx) {
-          final terpilih = idx == _indeksMateriTerpilih;
-
-          return InkWell(
-            onTap: () => _pilihMateri(idx),
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: terpilih ? WarnaAplikasi.utama : const Color(0xFFF1EFF1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                _daftarMateri[idx].judul,
-                style: TextStyle(
-                  color: terpilih
-                      ? Colors.white
-                      : WarnaAplikasi.utama.withValues(alpha: 0.65),
-                  fontSize: 12,
-                  fontWeight: terpilih ? FontWeight.bold : FontWeight.w600,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  List<Widget> _kontenLeaderboard(List<ModelLeaderboard> daftar) {
-    // Top 3 untuk podium
+  /// Podium Top 3 dari daftar asli.
+  Widget _podiumTerisi(List<ModelLeaderboard> daftar) {
     final topTiga = daftar.take(3).toList();
-    final peringkatKedua = topTiga.length > 1
-        ? topTiga[1]
-        : const ModelLeaderboard(peringkat: 2, nisn: '', nama: '-');
     final peringkatSatu = topTiga.isNotEmpty
         ? topTiga[0]
         : const ModelLeaderboard(peringkat: 1, nisn: '', nama: '-');
+    final peringkatKedua = topTiga.length > 1
+        ? topTiga[1]
+        : const ModelLeaderboard(peringkat: 2, nisn: '', nama: '-');
     final peringkatTiga = topTiga.length > 2
         ? topTiga[2]
         : const ModelLeaderboard(peringkat: 3, nisn: '', nama: '-');
 
-    // Current user (pinned)
-    final penggunaSaatIni = daftar.firstWhere((item) => item.saya,
-        orElse: () =>
-            const ModelLeaderboard(peringkat: 0, nisn: '', nama: '-'));
+    return Center(
+      child: SizedBox(
+        height: 160,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              BatangPodium(
+                pengguna:
+                    peringkatKedua.nisn.isEmpty
+                        ? const ModelLeaderboard(
+                            peringkat: 2, nisn: '', nama: '-')
+                        : peringkatKedua,
+                tinggiBatang: 60,
+                lebar: 92,
+              ),
+              const SizedBox(width: 12),
+              BatangPodium(
+                pengguna: peringkatSatu,
+                tinggiBatang: 90,
+                lebar: 100,
+              ),
+              const SizedBox(width: 12),
+              BatangPodium(
+                pengguna:
+                    peringkatTiga.nisn.isEmpty
+                        ? const ModelLeaderboard(
+                            peringkat: 3, nisn: '', nama: '-')
+                        : peringkatTiga,
+                tinggiBatang: 44,
+                lebar: 92,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
+  /// Susunan konten leaderboard (podium + kartu 4–N + kartu pinned bawah).
+  List<Widget> _kontenLeaderboard(List<ModelLeaderboard> daftar) {
     final widgets = <Widget>[];
 
-    if (topTiga.isNotEmpty) {
-      widgets.add(
-        Center(
-          child: SizedBox(
-            height: 160,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // Peringkat 2
-                  BatangPodium(
-                    pengguna: peringkatKedua,
-                    tinggiBatang: 60,
-                    lebar: 92,
-                  ),
+    widgets.add(_podiumTerisi(daftar));
+    widgets.add(const SizedBox(height: 16));
 
-                  const SizedBox(width: 12),
-
-                  // Peringkat 1
-                  BatangPodium(
-                    pengguna: peringkatSatu,
-                    tinggiBatang: 90,
-                    lebar: 100,
-                  ),
-
-                  const SizedBox(width: 12),
-
-                  // Peringkat 3
-                  BatangPodium(
-                    pengguna: peringkatTiga,
-                    tinggiBatang: 44,
-                    lebar: 92,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-      widgets.add(const SizedBox(height: 16));
-    } else {
-      // Podium kosong: tampilkan 3 batang placeholder
-      widgets.add(
-        Center(
-          child: SizedBox(
-            height: 160,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  BatangPodiumKosong(peringkat: 2, tinggiBatang: 60, lebar: 92),
-                  SizedBox(width: 12),
-                  BatangPodiumKosong(peringkat: 1, tinggiBatang: 90, lebar: 100),
-                  SizedBox(width: 12),
-                  BatangPodiumKosong(peringkat: 3, tinggiBatang: 44, lebar: 92),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-      widgets.add(const SizedBox(height: 16));
-    }
-
-    // Tampilkan minimal 10 baris total (podium 3 + tabel).
-    // Jika siswa lebih dari 10, tampilkan semua tanpa placeholder.
-    // Jika kurang dari 10, tabel di bawah podium dilengkapi placeholder kosong
-    // sehingga total baris (podium + tabel) tetap 10.
     final daftarTerisi = daftar.length > 3 ? daftar.sublist(3) : <ModelLeaderboard>[];
-    final jumlahBarisTabel = daftarTerisi.length > 7 ? daftarTerisi.length : 7;
+    final jumlahBarisNyata = daftarTerisi.length;
+    final jumlahSlot = jumlahBarisNyata > 7 ? jumlahBarisNyata : 7;
     final placeholderKosong =
-        (jumlahBarisTabel - daftarTerisi.length).clamp(0, jumlahBarisTabel);
+        (jumlahSlot - jumlahBarisNyata).clamp(0, jumlahSlot);
     final daftarGabungan = [
       ...daftarTerisi,
       ...List.generate(
         placeholderKosong,
         (i) => ModelLeaderboard(
-          peringkat: daftarTerisi.length + i + 4,
+          peringkat: jumlahBarisNyata + i + 4,
           nisn: '',
           nama: '-',
           skor: 0,
@@ -711,131 +526,58 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       ),
     ];
 
+    // Scroll listener untuk infinite scroll / load more
+    _scrollController.removeListener(_listenerScroll);
+    _scrollController.addListener(_listenerScroll);
+
+    // Hitung total item dalam ListView (tambah 1 item loading indicator di bawah jika masih bisa load)
+    final itemCount = daftarGabungan.length + (!_semuaDataDimuat ? 1 : 0);
+
     widgets.add(
       Expanded(
         child: ListView.separated(
+          controller: _scrollController,
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.only(bottom: 12),
-          itemCount: daftarGabungan.length,
+          itemCount: itemCount,
           separatorBuilder: (_, __) => const SizedBox(height: 10),
-          itemBuilder: (ctx, idx) {
-            final item = daftarGabungan[idx];
-            final isPlaceholder = item.nisn.isEmpty;
-
-            final warnaTeks = isPlaceholder
-                ? WarnaAplikasi.utama.withValues(alpha: 0.4)
-                : WarnaAplikasi.utama;
-
-            return Container(
-              height: 50,
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: WarnaAplikasi.utama,
-                  width: 1.2,
+          itemBuilder: (_, idx) {
+            if (idx < daftarGabungan.length) {
+              return KartuPeringkat(item: daftarGabungan[idx]);
+            } else {
+              // Loading spinner kecil di bawah saat memuat batch berikutnya
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  // Peringkat (kiri)
-                  SizedBox(
-                    width: 28,
-                    child: Text(
-                      '${item.peringkat}',
-                      style: TextStyle(
-                        color: warnaTeks,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  // Nama (tengah)
-                  Expanded(
-                    child: Text(
-                      item.nama,
-                      style: TextStyle(
-                        color: warnaTeks,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  // Profil circle (kanan)
-                  AvatarSiswa(
-                    pengguna: item,
-                    ukuran: 36,
-                    placeholder: isPlaceholder,
-                  ),
-                ],
-              ),
-            );
+              );
+            }
           },
         ),
       ),
     );
 
+    // Kartu pinned bawah (user)
+    final penggunaSaatIni = daftar.firstWhere(
+      (item) => item.saya,
+      orElse: () => const ModelLeaderboard(peringkat: 0, nisn: '', nama: '-'),
+    );
     if (penggunaSaatIni.peringkat > 0) {
-      widgets.add(
-        Container(
-          margin: const EdgeInsets.only(bottom: 12, top: 4),
-          height: 58,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-            color: WarnaAplikasi.utama,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: WarnaAplikasi.utama.withValues(alpha: 0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              // Peringkat
-              SizedBox(
-                width: 28,
-                child: Text(
-                  '${penggunaSaatIni.peringkat}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(width: 10),
-              // Nama
-              Expanded(
-                child: Text(
-                  penggunaSaatIni.nama,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 10),
-              // Avatar
-              AvatarSiswa(pengguna: penggunaSaatIni, ukuran: 36),
-            ],
-          ),
-        ),
-      );
+      widgets.add(KartuPeringkat(item: penggunaSaatIni, kartuSayaDiBawah: true));
     }
 
     return widgets;
+  }
+
+  void _listenerScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 100) {
+      _muatLanjutan();
+    }
   }
 }
