@@ -8,6 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
+        \Illuminate\Support\Facades\DB::statement('DROP VIEW IF EXISTS `v_materi`');
+
         // Step 1: Drop foreign key di materi yang mereferensi guru.nip
         Schema::table('materi', function (Blueprint $table) {
             $table->dropForeign(['nip']);
@@ -39,6 +41,22 @@ return new class extends Migration
         Schema::table('materi', function (Blueprint $table) {
             $table->foreign('guru_id')->references('id')->on('guru')->onDelete('cascade');
         });
+
+        $driver = \Illuminate\Support\Facades\DB::getDriverName();
+        $concatExpr = $driver === 'sqlite'
+            ? "k.`tingkat` || ' ' || k.`nomor_kelas`"
+            : "CONCAT(k.`tingkat`, ' ', k.`nomor_kelas`)";
+
+        \Illuminate\Support\Facades\DB::statement("
+            CREATE VIEW `v_materi` AS
+            SELECT m.`id_materi`, m.`nip`, m.`id_kelas`,
+                   j.`nama_jurusan` AS `jurusan`,
+                   {$concatExpr} AS `kelas`,
+                   k.`tahun`, m.`judul_materi`, m.`isi_materi`, m.`upload_file`
+            FROM `materi` m
+            LEFT JOIN `kelas` k   ON k.`id_kelas`   = m.`id_kelas`
+            LEFT JOIN `jurusan` j ON j.`id_jurusan` = k.`id_jurusan`
+        ");
 
         // Step 5: Drop kolom nip lama di materi (setelah migrasi data manual jika diperlukan)
         // Commented out - jalankan manual setelah migrasi data

@@ -305,12 +305,12 @@
                                         @endphp
                                         @if($isItemPdf)
                                             <div class="inline-flex items-center gap-1.5">
-                                                <button type="button"
-                                                        onclick="openMateriPreview('{{ $guruFitUrl }}', '{{ $guruFileUrl }}', @js($item->judul_materi ?? $item->judul))"
-                                                        class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-bold text-[11px] shadow-2xs transition duration-150 cursor-pointer"
-                                                        title="Buka pratinjau pas 1 halaman">
+                                                <a href="{{ $guruFitUrl }}"
+                                                   target="_blank"
+                                                   class="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-[#7B1038] hover:bg-[#5E0C2B] text-white font-bold text-[11px] shadow-2xs transition duration-150"
+                                                   title="Buka pratinjau materi (Pas 1 Halaman)">
                                                     Pratinjau
-                                                </button>
+                                                </a>
                                                 <a href="{{ $guruFitUrl }}"
                                                    target="_blank"
                                                    class="p-1 rounded-lg text-slate-500 hover:text-[#7B1038] hover:bg-slate-100 transition duration-150"

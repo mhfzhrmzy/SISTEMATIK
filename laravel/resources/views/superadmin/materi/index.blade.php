@@ -233,12 +233,12 @@
                                                 @endphp
                                                 @if($isSaPdf)
                                                     <div class="inline-flex items-center gap-1.5">
-                                                        <button type="button"
-                                                                onclick="openMateriPreview('{{ $saFitUrl }}', '{{ $saFileUrl }}', @js($item->judul_materi ?? $item->judul))"
-                                                                class="inline-flex items-center px-2 py-0.5 rounded-md bg-[#6D1837] hover:bg-[#521128] text-white font-bold text-[11px] transition cursor-pointer"
-                                                                title="Pratinjau Pas 1 Halaman">
+                                                        <a href="{{ $saFitUrl }}"
+                                                           target="_blank"
+                                                           class="inline-flex items-center px-2 py-0.5 rounded-md bg-[#6D1837] hover:bg-[#521128] text-white font-bold text-[11px] transition"
+                                                           title="Pratinjau Pas 1 Halaman">
                                                             Pratinjau
-                                                        </button>
+                                                        </a>
                                                         <a href="{{ $saFitUrl }}" target="_blank" class="text-[#6D1837] hover:underline font-bold text-xs" title="Buka di tab baru (Pas 1 Halaman)">
                                                             ↗
                                                         </a>
