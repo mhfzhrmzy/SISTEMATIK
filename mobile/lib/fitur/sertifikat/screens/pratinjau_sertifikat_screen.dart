@@ -5,6 +5,7 @@ import 'package:pdfx/pdfx.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/services/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/jenis_file_sertifikat.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/widgets/dialog_konfirmasi_sertifikat.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
@@ -141,6 +142,14 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
       _tampilkanPesan('ID sertifikat tidak tersedia.');
       return;
     }
+    final konfirmasi = await konfirmasiAksiSertifikat(
+      context,
+      judulDialog: 'Unduh Sertifikat?',
+      pesan: 'Sertifikat "${widget.item.judul}" akan diunduh ke perangkat Anda.',
+      labelAksi: 'Unduh',
+    );
+    if (!konfirmasi || !mounted) return;
+
     setState(() => _sedangMengunduh = true);
     try {
       final bytes = _dataFile ?? await _layananSertifikat.unduh(id);
@@ -148,6 +157,7 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
           ? _jenisFile
           : deteksiJenisFile(bytes, namaFile: widget.item.urlFile);
       await simpanFile(bytes, 'sertifikat_$id.${jenis.ekstensi}');
+      if (mounted) _tampilkanPesan('Sertifikat berhasil diunduh.');
     } on KesalahanApi catch (error) {
       if (mounted) _tampilkanPesan(error.pesan);
     } catch (_) {

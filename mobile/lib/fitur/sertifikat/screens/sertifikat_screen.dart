@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/services/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/jenis_file_sertifikat.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/widgets/dialog_konfirmasi_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/widgets/header_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/widgets/kartu_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/widgets/modal_filter_tanggal.dart';
@@ -167,14 +168,23 @@ class _SertifikatScreenState extends State<SertifikatScreen> {
       _tampilkanPesan('ID sertifikat tidak tersedia.');
       return;
     }
+    final konfirmasi = await konfirmasiAksiSertifikat(
+      context,
+      judulDialog: 'Unduh Sertifikat?',
+      pesan: 'Sertifikat "${item.judul}" akan diunduh ke perangkat Anda.',
+      labelAksi: 'Unduh',
+    );
+    if (!konfirmasi) return;
+
     try {
       final bytes = await _layananSertifikat.unduh(item.id!);
       final jenis = deteksiJenisFile(bytes, namaFile: item.urlFile);
       await simpanFile(bytes, 'sertifikat_${item.id}.${jenis.ekstensi}');
+      if (mounted) _tampilkanPesan('Sertifikat berhasil diunduh.');
     } on KesalahanApi catch (error) {
-      _tampilkanPesan(error.pesan);
+      if (mounted) _tampilkanPesan(error.pesan);
     } catch (_) {
-      _tampilkanPesan('Sertifikat gagal diunduh.');
+      if (mounted) _tampilkanPesan('Sertifikat gagal diunduh.');
     }
   }
 
@@ -194,38 +204,13 @@ class _SertifikatScreenState extends State<SertifikatScreen> {
       _tampilkanPesan('ID sertifikat tidak tersedia.');
       return;
     }
-    final konfirmasi = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20))),
-        title: const Text('Hapus Sertifikat?',
-            style: TextStyle(
-                color: WarnaAplikasi.utama,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
-        content: Text(
-            'Sertifikat "${item.judul}" akan dihapus secara permanen.',
-            style: const TextStyle(fontSize: 13)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Batal', style: TextStyle(color: Colors.grey.shade600)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Hapus',
-              style: TextStyle(
-                  color: WarnaAplikasi.utama, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
+    final konfirmasi = await konfirmasiAksiSertifikat(
+      context,
+      judulDialog: 'Hapus Sertifikat?',
+      pesan: 'Sertifikat "${item.judul}" akan dihapus secara permanen.',
+      labelAksi: 'Hapus',
     );
-    if (konfirmasi != true) return;
+    if (!konfirmasi) return;
 
     try {
       await _layananSertifikat.hapus(item.id!);
