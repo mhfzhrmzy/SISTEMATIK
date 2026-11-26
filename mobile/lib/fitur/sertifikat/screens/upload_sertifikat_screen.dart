@@ -1,7 +1,7 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/fitur/beranda/screens/beranda_screen.dart';
+import 'package:pretest_posttest_app/inti/layanan/pemilih_file.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/screens/leaderboard_screen.dart';
 import 'package:pretest_posttest_app/fitur/profil/screens/profil_screen.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/services/api_sertifikat.dart';
@@ -13,8 +13,6 @@ import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 
 /// Halaman form upload sertifikat.
-///
-/// Berperan sebagai [UploadSertifikatFormController] untuk widget form.
 class UploadSertifikatScreen extends StatefulWidget {
   final List<ItemSertifikat> daftarSertifikat;
   final ValueChanged<List<ItemSertifikat>>? saatDaftarBerubah;
@@ -30,8 +28,7 @@ class UploadSertifikatScreen extends StatefulWidget {
 }
 
 class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
-    with SingleTickerProviderStateMixin
-    implements UploadSertifikatFormController {
+    with SingleTickerProviderStateMixin {
   final _kunciForm = GlobalKey<FormState>();
   final _kontrolerJudul = TextEditingController();
   final _kontrolerPenerbit = TextEditingController();
@@ -40,23 +37,10 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
   late final AnimationController _kontrolerAnim;
   late final Animation<double> _animFade;
 
-  @override
-  DateTime? tanggalTerpilih;
-  @override
-  String? namaFileTerpilih;
+  DateTime? _tanggalTerpilih;
+  String? _namaFileTerpilih;
   Uint8List? _bytesFile;
-  @override
-  bool sedangUnggah = false;
-  int _indeksEdit = -1;
-
-  @override
-  GlobalKey<FormState> get kunciForm => _kunciForm;
-  @override
-  TextEditingController get kontrolerJudul => _kontrolerJudul;
-  @override
-  TextEditingController get kontrolerPenerbit => _kontrolerPenerbit;
-  @override
-  bool get sedangEdit => _indeksEdit >= 0;
+  bool _sedangUnggah = false;
 
   @override
   void initState() {
@@ -81,112 +65,86 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
     super.dispose();
   }
 
-  // ── UploadSertifikatFormController ────────────────────────────────────────
+  // ── Aksi form ──────────────────────────────────────────────────────────────
 
-  @override
-  Future<void> pilihTanggal() async {
+  void _pilihTanggal() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: tanggalTerpilih ?? DateTime.now(),
+      initialDate: _tanggalTerpilih ?? DateTime.now(),
       firstDate: DateTime(2015),
-      lastDate: DateTime(2030),
+      lastDate: DateTime.now(),
       builder: _temaTanggal,
     );
-    if (picked != null) setState(() => tanggalTerpilih = picked);
+    if (picked != null) setState(() => _tanggalTerpilih = picked);
   }
 
-  @override
-  Future<void> pilihFile() async {
+  void _pilihFile() async {
     try {
-      final hasil = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: const ['pdf', 'png', 'jpg', 'jpeg'],
-        withData: true,
-      );
-      if (hasil == null || hasil.files.isEmpty) return;
+      final hasil = await pilihFileSertifikat();
+      if (hasil == null) return;
 
-      final file = hasil.files.single;
-      final bytes = file.bytes;
+      final nama = hasil['name'] as String;
+      final bytes = hasil['bytes'] as Uint8List?;
       if (!mounted) return;
 
       if (bytes == null || bytes.isEmpty) {
-        _snackBar(
-          'Gagal membaca file yang dipilih.',
-          warna: Colors.red.shade700,
-        );
+        _snackBar('Gagal membaca file yang dipilih.',
+            warna: Colors.red.shade700);
         return;
       }
 
-      final jenis = deteksiJenisFile(bytes, namaFile: file.name);
+      final jenis = deteksiJenisFile(bytes, namaFile: nama);
       if (!jenis.didukung) {
         _snackBar(
-          'Format tidak valid. Unggah sertifikat PDF atau gambar PNG/JPG.',
-          warna: Colors.red.shade700,
-        );
+            'Format tidak valid. Unggah sertifikat PDF atau gambar PNG/JPG.',
+            warna: Colors.red.shade700);
         return;
       }
 
       setState(() {
         _bytesFile = bytes;
-        namaFileTerpilih = file.name;
+        _namaFileTerpilih = nama;
       });
-      _snackBar('File "${file.name}" berhasil dipilih');
+      _snackBar('File "$nama" berhasil dipilih');
     } catch (e) {
       if (!mounted) return;
       _snackBar('Gagal memilih file: $e', warna: Colors.red.shade700);
     }
   }
 
-  @override
-  void hapusTanggal() => setState(() => tanggalTerpilih = null);
+  void _hapusTanggal() => setState(() => _tanggalTerpilih = null);
 
-  @override
-  void hapusFile() => setState(() {
-        namaFileTerpilih = null;
+  void _hapusFile() =>
+      setState(() {
+        _namaFileTerpilih = null;
         _bytesFile = null;
       });
 
-  @override
-  void batalEdit() {
-    _kunciForm.currentState?.reset();
-    _kontrolerJudul.clear();
-    _kontrolerPenerbit.clear();
-    setState(() {
-      tanggalTerpilih = null;
-      namaFileTerpilih = null;
-      _bytesFile = null;
-      _indeksEdit = -1;
-    });
-  }
-
-  @override
-  Future<void> simpan() => _simpan();
-
-  // ── Logika form ───────────────────────────────────────────────────────────
-
-  Future<void> _simpan() async {
+  void _simpan() async {
     if (!(_kunciForm.currentState?.validate() ?? false)) return;
-    if (tanggalTerpilih == null) {
-      _snackBar('Tanggal diterbitkan wajib diisi.', warna: Colors.red.shade700);
+    if (_tanggalTerpilih == null) {
+      _snackBar('Tanggal diterbitkan wajib diisi.',
+          warna: Colors.red.shade700);
       return;
     }
     if (_bytesFile == null) {
-      _snackBar('File sertifikat wajib diunggah.', warna: Colors.red.shade700);
+      _snackBar('File sertifikat wajib diunggah.',
+          warna: Colors.red.shade700);
       return;
     }
 
-    setState(() => sedangUnggah = true);
+    setState(() => _sedangUnggah = true);
     try {
       final itemBaru = await _layanan.unggah(
         judul: _kontrolerJudul.text.trim(),
         penerbit: _kontrolerPenerbit.text.trim(),
-        tanggalTerbit: tanggalTerpilih,
-        namaFile: namaFileTerpilih ?? 'sertifikat.pdf',
+        tanggalTerbit: _tanggalTerpilih,
+        namaFile: _namaFileTerpilih ?? 'sertifikat.pdf',
         bytes: _bytesFile!,
       );
       setState(() {
         _daftarLokal.insert(0, itemBaru);
-        sedangUnggah = false;
+        _sedangUnggah = false;
       });
 
       widget.saatDaftarBerubah?.call(List.from(_daftarLokal));
@@ -194,20 +152,20 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
       _kontrolerJudul.clear();
       _kontrolerPenerbit.clear();
       setState(() {
-        tanggalTerpilih = null;
-        namaFileTerpilih = null;
+        _tanggalTerpilih = null;
+        _namaFileTerpilih = null;
         _bytesFile = null;
       });
       if (!mounted) return;
       _snackBar('Sertifikat berhasil diunggah ke server!');
     } catch (e) {
       if (!mounted) return;
-      setState(() => sedangUnggah = false);
+      setState(() => _sedangUnggah = false);
       _snackBar('Gagal mengunggah: $e', warna: Colors.red.shade700);
     }
   }
 
-  // ── Navigasi & utilitas ───────────────────────────────────────────────────
+  // ── Navigasi & utilitas ────────────────────────────────────────────────────
 
   void _kembali() {
     Navigator.of(context).pushReplacement(
@@ -222,16 +180,17 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
 
   void _saatFooterDiketuk(int idx) {
     if (idx == 2) {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const ProfilScreen()));
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (_) => const ProfilScreen()));
     } else if (idx == 0) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const BerandaScreen()),
         (r) => false,
       );
     } else if (idx == 1) {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LeaderboardScreen()));
+      Navigator.of(context)
+          .pushReplacement(
+              MaterialPageRoute(builder: (_) => const LeaderboardScreen()));
     }
   }
 
@@ -265,6 +224,9 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
 
   @override
   Widget build(BuildContext context) {
+    final lebarLayar = MediaQuery.of(context).size.width;
+    final hp = (lebarLayar * 0.075).clamp(22.0, 40.0);
+
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar:
@@ -281,24 +243,31 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
               Expanded(
                 child: FadeTransition(
                   opacity: _animFade,
-                  child: LayoutBuilder(
-                    builder: (ctx, c) {
-                      final hp = (c.maxWidth * 0.075).clamp(22.0, 40.0);
-                      return SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: EdgeInsets.fromLTRB(hp, 16, hp, 28),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _pillKembali(),
-                            const SizedBox(height: 18),
-                            _judulSeksiForm(),
-                            const SizedBox(height: 12),
-                            UploadSertifikatForm(c: this),
-                          ],
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(hp, 16, hp, 28),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _pillKembali(),
+                        const SizedBox(height: 18),
+                        _judulSeksiForm(),
+                        const SizedBox(height: 12),
+                        UploadSertifikatForm(
+                          kunciForm: _kunciForm,
+                          kontrolerJudul: _kontrolerJudul,
+                          kontrolerPenerbit: _kontrolerPenerbit,
+                          tanggalTerpilih: _tanggalTerpilih,
+                          namaFileTerpilih: _namaFileTerpilih,
+                          sedangUnggah: _sedangUnggah,
+                          onPilihTanggal: _pilihTanggal,
+                          onPilihFile: _pilihFile,
+                          onHapusTanggal: _hapusTanggal,
+                          onHapusFile: _hapusFile,
+                          onSimpan: _simpan,
                         ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -344,14 +313,14 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
   }
 
   Widget _judulSeksiForm() {
-    return Row(
+    return const Row(
       children: [
-        const Icon(Icons.workspace_premium_rounded,
+        Icon(Icons.workspace_premium_rounded,
             color: WarnaAplikasi.utama, size: 18),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Text(
-          sedangEdit ? 'Edit Sertifikat' : 'Form Upload Sertifikat',
-          style: const TextStyle(
+          'Form Upload Sertifikat',
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.bold,
             color: WarnaAplikasi.utama,

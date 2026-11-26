@@ -105,15 +105,27 @@ class LayananSertifikat {
       throw const KesalahanApi('Respons upload tidak valid.');
     }
 
+    final rawTanggal = data['tanggal_terbit'];
+    final tanggal = _parseTanggal(rawTanggal) ??
+        tanggalTerbit ??
+        DateTime.tryParse(rawTanggal?.toString() ?? '');
+
     return ItemSertifikat(
       id: data['id_sertifikat'] is num ? data['id_sertifikat'].toInt() : null,
       label: data['penerbit']?.toString() ?? 'Sertifikat',
       judul: data['judul_sertifikat']?.toString() ?? judul,
-      tanggalTerbit:
-          'Diterbitkan pada: ${data['tanggal_terbit']?.toString() ?? ''}',
-      tanggal: tanggalTerbit ?? DateTime.now(),
+      tanggalTerbit: tanggal == null
+          ? 'Tanggal terbit tidak tersedia'
+          : 'Diterbitkan pada: ${ItemSertifikat.formatTanggalPenuh(tanggal)}',
+      tanggal: tanggal ?? DateTime.now(),
       urlFile: data['file_url']?.toString(),
     );
+  }
+
+  static DateTime? _parseTanggal(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is DateTime) return raw;
+    return DateTime.tryParse(raw.toString());
   }
 
   Future<void> hapus(int idSertifikat) async {

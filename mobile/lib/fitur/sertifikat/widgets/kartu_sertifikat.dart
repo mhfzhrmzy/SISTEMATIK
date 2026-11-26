@@ -17,6 +17,9 @@ class KartuSertifikat extends StatelessWidget {
   final VoidCallback onUnduh;
   final VoidCallback onHapus;
 
+  static const _hitam = Color(0xFF1F2937);
+  static const _abu = Color(0xFF4B5563);
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -28,84 +31,99 @@ class KartuSertifikat extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
           decoration: BoxDecoration(
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: WarnaAplikasi.utama, width: 1.0),
+            border: Border.all(color: WarnaAplikasi.utama, width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: WarnaAplikasi.utama.withValues(alpha: 0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                item.label,
-                style: const TextStyle(
-                  color: WarnaAplikasi.utama,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                item.judul,
-                style: const TextStyle(
-                  color: WarnaAplikasi.utama,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                item.tanggalTerbit,
-                style: TextStyle(
-                  color: WarnaAplikasi.utama.withValues(alpha: 0.7),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 12),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: SizedBox(
-                      height: 38,
-                      child: ElevatedButton(
-                        onPressed: onUnduh,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: WarnaAplikasi.utama,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.label,
+                          style: const TextStyle(
+                            color: WarnaAplikasi.utama,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        child: const Text(
-                          'Unduh',
-                          style: TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.bold),
+                        const SizedBox(height: 3),
+                        Text(
+                          item.judul,
+                          style: const TextStyle(
+                            color: _hitam,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
+                        const SizedBox(height: 3),
+                        Text(
+                          item.tanggalTerbit,
+                          style: const TextStyle(
+                            color: _abu,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: SizedBox(
-                      height: 38,
-                      child: OutlinedButton(
-                        onPressed: onHapus,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red.shade700,
-                          side: BorderSide(
-                              color: Colors.red.shade300, width: 1.2),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Hapus',
-                          style: TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.bold),
+                  PopupMenuButton<String>(
+                    tooltip: 'Opsi sertifikat',
+                    enabled: item.id != null,
+                    onSelected: (nilai) {
+                      if (nilai == 'unduh') {
+                        onUnduh();
+                      } else if (nilai == 'hapus') {
+                        onHapus();
+                      }
+                    },
+                    child: Icon(
+                      Icons.more_vert_rounded,
+                      color: item.id == null
+                          ? Colors.grey.shade400
+                          : WarnaAplikasi.utama,
+                    ),
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'unduh',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.download_rounded, size: 18),
+                            const SizedBox(width: 8),
+                            const Text('Unduh'),
+                          ],
                         ),
                       ),
-                    ),
+                      PopupMenuItem(
+                        value: 'hapus',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.delete_outline_rounded, size: 18),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Hapus',
+                              style: TextStyle(color: Colors.redAccent),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

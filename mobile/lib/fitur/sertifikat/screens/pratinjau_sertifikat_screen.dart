@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:pdfx/pdfx.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/services/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/jenis_file_sertifikat.dart';
@@ -12,8 +12,8 @@ import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
 /// Halaman pratinjau sertifikat (PDF atau gambar) di dalam aplikasi.
 ///
 /// File diunduh lebih dulu lewat API agar tetap memakai token siswa,
-/// lalu dirender langsung dari byte: [PDFView] untuk PDF dan [Image.memory]
-/// untuk gambar PNG/JPG.
+/// lalu dirender langsung dari byte: [PdfView] (pdfx) untuk PDF dan
+/// [Image.memory] untuk gambar PNG/JPG.
 class PratinjauSertifikatScreen extends StatefulWidget {
   const PratinjauSertifikatScreen({
     super.key,
@@ -37,14 +37,24 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
   String? _pesanGalat;
   bool _memuat = true;
   bool _sedangMengunduh = false;
-  int _halamanSaatIni = 1;
-  int _jumlahHalaman = 0;
+
+  PdfDocument? _dokumenPdf;
+  PdfController? _pengendaliPdf;
+  bool _memuatPdf = true;
+  String? _galatPdf;
 
   @override
   void initState() {
     super.initState();
     _layananSertifikat = widget.layananSertifikat ?? LayananSertifikat();
     _muatPratinjau();
+  }
+
+  @override
+  void dispose() {
+    _pengendaliPdf?.dispose();
+    _dokumenPdf?.close();
+    super.dispose();
   }
 
   Future<void> _muatPratinjau() async {
@@ -78,6 +88,10 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
         _jenisFile = jenis;
         _memuat = false;
       });
+
+      if (jenis == JenisFileSertifikat.pdf) {
+        await _muatDokumenPdf(bytes);
+      }
     } on KesalahanApi catch (error) {
       if (!mounted) return;
       setState(() {
@@ -93,6 +107,34 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
     }
   }
 
+  Future<void> _muatDokumenPdf(Uint8List bytes) async {
+    setState(() {
+      _memuatPdf = true;
+      _galatPdf = null;
+    });
+
+    try {
+      final dokumen = await PdfDocument.openData(bytes);
+      if (!mounted) {
+        await dokumen.close();
+        return;
+      }
+      _dokumenPdf?.close();
+      _pengendaliPdf?.dispose();
+      setState(() {
+        _dokumenPdf = dokumen;
+        _pengendaliPdf = PdfController(document: Future.value(dokumen));
+        _memuatPdf = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _galatPdf = 'Gagal membuka dokumen PDF: $e';
+        _memuatPdf = false;
+      });
+    }
+  }
+
   Future<void> _unduhSertifikat() async {
     final id = widget.item.id;
     if (id == null) {
@@ -101,7 +143,7 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
     }
     setState(() => _sedangMengunduh = true);
     try {
-      final bytes = await _layananSertifikat.unduh(id);
+      final bytes = _dataFile ?? await _layananSertifikat.unduh(id);
       final jenis = _jenisFile.didukung
           ? _jenisFile
           : deteksiJenisFile(bytes, namaFile: widget.item.urlFile);
@@ -135,19 +177,6 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        actions: [
-          if (_jenisFile == JenisFileSertifikat.pdf && _jumlahHalaman > 1)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Text(
-                  '$_halamanSaatIni / $_jumlahHalaman',
-                  style: const TextStyle(
-                      fontSize: 12.5, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-        ],
       ),
       body: _bangunIsi(),
     );
@@ -159,66 +188,7 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
     }
 
     if (_pesanGalat != null || _dataFile == null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.picture_as_pdf_outlined,
-                  size: 48, color: WarnaAplikasi.utama),
-              const SizedBox(height: 12),
-              Text(
-                _pesanGalat ?? 'Pratinjau sertifikat tidak tersedia.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: WarnaAplikasi.utama.withValues(alpha: 0.75),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  OutlinedButton(
-                    onPressed: _muatPratinjau,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: WarnaAplikasi.utama,
-                      side: BorderSide(
-                          color: WarnaAplikasi.utama.withValues(alpha: 0.35)),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: const Text('Coba lagi'),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: _sedangMengunduh ? null : _unduhSertifikat,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: WarnaAplikasi.utama,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: _sedangMengunduh
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Text('Unduh'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
+      return _layarGalat(_pesanGalat ?? 'Pratinjau sertifikat tidak tersedia.');
     }
 
     if (_jenisFile.adalahGambar) {
@@ -237,29 +207,107 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
       );
     }
 
-    return PDFView(
-      pdfData: _dataFile!,
-      enableSwipe: true,
-      swipeHorizontal: false,
-      autoSpacing: true,
-      pageFling: true,
-      pageSnap: true,
-      fitEachPage: true,
-      onRender: (jumlah) {
-        if (!mounted) return;
-        setState(() => _jumlahHalaman = jumlah ?? 0);
-      },
-      onPageChanged: (halaman, jumlah) {
-        if (!mounted) return;
-        setState(() {
-          _halamanSaatIni = (halaman ?? 0) + 1;
-          _jumlahHalaman = jumlah ?? _jumlahHalaman;
-        });
-      },
-      onError: (galat) {
-        if (!mounted) return;
-        setState(() => _pesanGalat = 'Gagal menampilkan PDF: $galat');
-      },
+    if (_memuatPdf) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_galatPdf != null) {
+      return _layarGalat(_galatPdf!);
+    }
+
+    if (_pengendaliPdf == null) {
+      return const Center(
+        child: Text(
+          'Tidak ada halaman PDF yang dapat ditampilkan.',
+          style: TextStyle(fontSize: 13, color: Colors.grey),
+        ),
+      );
+    }
+
+    return PdfView(
+      controller: _pengendaliPdf!,
+      key: ObjectKey(_dokumenPdf),
+      scrollDirection: Axis.vertical,
+      builders: PdfViewBuilders<DefaultBuilderOptions>(
+        options: const DefaultBuilderOptions(),
+        documentLoaderBuilder: (_) =>
+            const Center(child: CircularProgressIndicator(strokeWidth: 2.5)),
+        pageLoaderBuilder: (_) =>
+            const Center(child: CircularProgressIndicator(strokeWidth: 2.5)),
+        errorBuilder: (_, error) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              'Gagal menampilkan PDF: $error',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _layarGalat(String pesan) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.picture_as_pdf_outlined,
+                size: 48, color: WarnaAplikasi.utama),
+            const SizedBox(height: 12),
+            Text(
+              pesan,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: WarnaAplikasi.utama.withValues(alpha: 0.75),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                OutlinedButton(
+                  onPressed: _muatPratinjau,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: WarnaAplikasi.utama,
+                    side: BorderSide(
+                        color:
+                            WarnaAplikasi.utama.withValues(alpha: 0.35)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Text('Coba lagi'),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: _sedangMengunduh ? null : _unduhSertifikat,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: WarnaAplikasi.utama,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: _sedangMengunduh
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white),
+                          ),
+                        )
+                      : const Text('Unduh'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
