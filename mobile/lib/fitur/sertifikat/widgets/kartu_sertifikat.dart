@@ -86,6 +86,15 @@ class KartuSertifikat extends StatelessWidget {
                   PopupMenuButton<String>(
                     tooltip: 'Opsi sertifikat',
                     enabled: item.id != null,
+                    color: Colors.white,
+                    surfaceTintColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(
+                        color: WarnaAplikasi.utama,
+                        width: 1.2,
+                      ),
+                    ),
                     onSelected: (nilai) {
                       if (nilai == 'unduh') {
                         onUnduh();
