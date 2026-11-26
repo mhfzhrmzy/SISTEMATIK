@@ -85,8 +85,8 @@ class LayananSertifikat {
     if (tanggalTerbit != null) {
       fields['tanggal_terbit'] =
           '${tanggalTerbit.year.toString().padLeft(4, '0')}-'
-              '${tanggalTerbit.month.toString().padLeft(2, '0')}-'
-              '${tanggalTerbit.day.toString().padLeft(2, '0')}';
+          '${tanggalTerbit.month.toString().padLeft(2, '0')}-'
+          '${tanggalTerbit.day.toString().padLeft(2, '0')}';
     }
     if (deskripsi != null && deskripsi.isNotEmpty) {
       fields['deskripsi'] = deskripsi;

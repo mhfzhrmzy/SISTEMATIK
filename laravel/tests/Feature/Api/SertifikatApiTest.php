@@ -180,7 +180,31 @@ class SertifikatApiTest extends TestCase
             ->assertJsonPath('message', 'Anda tidak memiliki akses ke sertifikat ini.');
     }
 
-    public function test_upload_sertifikat_menolak_file_bukan_pdf(): void
+    public function test_upload_sertifikat_menolak_file_tidak_didukung(): void
+    {
+        Storage::fake('public');
+        $jurusan = Jurusan::firstOrCreate(['nama_jurusan' => 'Teknik Komputer & Jaringan']);
+        $kelas = Kelas::create([
+            'id_jurusan' => $jurusan->id_jurusan,
+            'tingkat' => 10,
+            'rombel' => 1,
+            'tahun' => '2026',
+        ]);
+        $siswa = $this->buatSiswa($kelas, '0051234561', 'Andi Pratama');
+
+        $response = $this->withToken($this->tokenSiswa($siswa))
+            ->postJson('/api/siswa/sertifikat', [
+                'judul_sertifikat' => 'Sertifikat Teks',
+                'file_sertifikat' => UploadedFile::fake()
+                    ->create('catatan.txt', 10, 'text/plain'),
+            ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonValidationErrors(['file_sertifikat']);
+        $this->assertDatabaseCount('sertifikat', 0);
+    }
+
+    public function test_upload_sertifikat_dengan_gambar_berhasil(): void
     {
         Storage::fake('public');
         $jurusan = Jurusan::firstOrCreate(['nama_jurusan' => 'Teknik Komputer & Jaringan']);
@@ -195,12 +219,16 @@ class SertifikatApiTest extends TestCase
         $response = $this->withToken($this->tokenSiswa($siswa))
             ->postJson('/api/siswa/sertifikat', [
                 'judul_sertifikat' => 'Sertifikat Gambar',
-                'file_sertifikat' => UploadedFile::fake()->image('foto.jpg'),
+                'file_sertifikat' => UploadedFile::fake()->image('sertifikat.png'),
             ]);
 
-        $response->assertUnprocessable()
-            ->assertJsonValidationErrors(['file_sertifikat']);
-        $this->assertDatabaseCount('sertifikat', 0);
+        $response->assertCreated();
+        $this->assertDatabaseCount('sertifikat', 1);
+        $this->assertDatabaseHas('sertifikat', [
+            'nisn' => $siswa->nisn,
+            'judul_sertifikat' => 'Sertifikat Gambar',
+            'tipe_sertifikat' => 'mandiri',
+        ]);
     }
 
     public function test_upload_sertifikat_dengan_pdf_berhasil(): void

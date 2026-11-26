@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/models/jenis_file_sertifikat.dart';
 
 /// Kontrak yang dipenuhi [UploadSertifikatScreen] agar form dapat memantik
 /// interaksi tanpa tahu detail state-nya.
@@ -32,7 +33,9 @@ class UploadSertifikatForm extends StatelessWidget {
     final kunciForm = c.kunciForm;
     final kontrolerJudul = c.kontrolerJudul;
     final kontrolerPenerbit = c.kontrolerPenerbit;
-    if (kunciForm == null || kontrolerJudul == null || kontrolerPenerbit == null) {
+    if (kunciForm == null ||
+        kontrolerJudul == null ||
+        kontrolerPenerbit == null) {
       return const SizedBox.shrink();
     }
     return Container(
@@ -159,11 +162,12 @@ class UploadSertifikatForm extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    aktif ? _formatTanggal(c.tanggalTerpilih!) : 'Pilih tanggal, bulan, dan tahun',
+                    aktif
+                        ? _formatTanggal(c.tanggalTerpilih!)
+                        : 'Pilih tanggal, bulan, dan tahun',
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight:
-                          aktif ? FontWeight.w600 : FontWeight.normal,
+                      fontWeight: aktif ? FontWeight.w600 : FontWeight.normal,
                       color: aktif ? WarnaAplikasi.utama : Colors.grey.shade500,
                     ),
                   ),
@@ -172,8 +176,8 @@ class UploadSertifikatForm extends StatelessWidget {
                   InkWell(
                     onTap: c.hapusTanggal,
                     borderRadius: BorderRadius.circular(10),
-                    child:
-                        const Icon(Icons.close, size: 16, color: WarnaAplikasi.utama),
+                    child: const Icon(Icons.close,
+                        size: 16, color: WarnaAplikasi.utama),
                   ),
               ],
             ),
@@ -187,7 +191,7 @@ class UploadSertifikatForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Upload File Sertifikat (PDF)'),
+        _label('Upload File Sertifikat (PDF/Gambar)'),
         const SizedBox(height: 8),
         c.namaFileTerpilih == null ? _dropzoneKosong() : _dropzonePenuh(),
       ],
@@ -200,11 +204,11 @@ class UploadSertifikatForm extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 30),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: WarnaAplikasi.utama, width: 1.5),
-      ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: WarnaAplikasi.utama, width: 1.5),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -228,9 +232,8 @@ class UploadSertifikatForm extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-              Text('Format: PDF, maksimal 10 MB',
-                style:
-                    TextStyle(color: Colors.grey.shade500, fontSize: 11.5)),
+            Text('Format: PDF, PNG, JPG — maksimal 2 MB',
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 11.5)),
           ],
         ),
       ),
@@ -238,6 +241,7 @@ class UploadSertifikatForm extends StatelessWidget {
   }
 
   Widget _dropzonePenuh() {
+    final jenis = jenisDariNama(c.namaFileTerpilih);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
@@ -254,8 +258,12 @@ class UploadSertifikatForm extends StatelessWidget {
               color: WarnaAplikasi.utama,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.picture_as_pdf_rounded,
-                color: Colors.white, size: 22),
+            child: Icon(
+                jenis.adalahGambar
+                    ? Icons.image_rounded
+                    : Icons.picture_as_pdf_rounded,
+                color: Colors.white,
+                size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -278,8 +286,8 @@ class UploadSertifikatForm extends StatelessWidget {
           ),
           IconButton(
             onPressed: c.hapusFile,
-            icon:
-                const Icon(Icons.delete_outline_rounded, color: WarnaAplikasi.utama, size: 20),
+            icon: const Icon(Icons.delete_outline_rounded,
+                color: WarnaAplikasi.utama, size: 20),
             tooltip: 'Hapus file',
           ),
         ],
@@ -295,8 +303,8 @@ class UploadSertifikatForm extends StatelessWidget {
             child: OutlinedButton(
               onPressed: c.batalEdit,
               style: OutlinedButton.styleFrom(),
-              child:
-                  const Text('Batal Edit', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text('Batal Edit',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
           const SizedBox(width: 12),
@@ -332,8 +340,18 @@ class UploadSertifikatForm extends StatelessWidget {
 
   String _formatTanggal(DateTime d) {
     const bulan = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     return '${d.day.toString().padLeft(2, '0')} ${bulan[d.month - 1]} ${d.year}';
   }
@@ -353,8 +371,7 @@ class UploadSertifikatForm extends StatelessWidget {
       ),
       filled: true,
       fillColor: const Color(0xFFF6EEF1),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
       border: buatBorder(const Color(0xFFD4A0B0), 1.2),
       enabledBorder: buatBorder(const Color(0xFFD4A0B0), 1.2),
       focusedBorder: buatBorder(WarnaAplikasi.utama, 1.8),

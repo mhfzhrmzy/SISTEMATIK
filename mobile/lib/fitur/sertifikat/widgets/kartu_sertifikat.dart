@@ -78,7 +78,8 @@ class KartuSertifikat extends StatelessWidget {
                         ),
                         child: const Text(
                           'Unduh',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 13, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -91,7 +92,8 @@ class KartuSertifikat extends StatelessWidget {
                         onPressed: onHapus,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.red.shade700,
-                          side: BorderSide(color: Colors.red.shade300, width: 1.2),
+                          side: BorderSide(
+                              color: Colors.red.shade300, width: 1.2),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -99,7 +101,8 @@ class KartuSertifikat extends StatelessWidget {
                         ),
                         child: const Text(
                           'Hapus',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 13, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),

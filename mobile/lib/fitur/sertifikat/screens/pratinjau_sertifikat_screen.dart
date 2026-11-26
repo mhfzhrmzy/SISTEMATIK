@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/services/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/models/jenis_file_sertifikat.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
 
-/// Halaman pratinjau PDF sertifikat di dalam aplikasi.
+/// Halaman pratinjau sertifikat (PDF atau gambar) di dalam aplikasi.
 ///
 /// File diunduh lebih dulu lewat API agar tetap memakai token siswa,
-/// lalu dirender langsung dari byte PDF memakai [PDFView].
+/// lalu dirender langsung dari byte: [PDFView] untuk PDF dan [Image.memory]
+/// untuk gambar PNG/JPG.
 class PratinjauSertifikatScreen extends StatefulWidget {
   const PratinjauSertifikatScreen({
     super.key,
@@ -30,7 +32,8 @@ class PratinjauSertifikatScreen extends StatefulWidget {
 class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
   late final LayananSertifikat _layananSertifikat;
 
-  Uint8List? _dataPdf;
+  Uint8List? _dataFile;
+  JenisFileSertifikat _jenisFile = JenisFileSertifikat.tidakDiketahui;
   String? _pesanGalat;
   bool _memuat = true;
   bool _sedangMengunduh = false;
@@ -61,9 +64,18 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
 
     try {
       final bytes = await _layananSertifikat.unduh(id);
+      final jenis = deteksiJenisFile(bytes, namaFile: widget.item.urlFile);
       if (!mounted) return;
+      if (!jenis.didukung) {
+        setState(() {
+          _memuat = false;
+          _pesanGalat = 'Format file sertifikat tidak didukung.';
+        });
+        return;
+      }
       setState(() {
-        _dataPdf = bytes;
+        _dataFile = bytes;
+        _jenisFile = jenis;
         _memuat = false;
       });
     } on KesalahanApi catch (error) {
@@ -90,7 +102,10 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
     setState(() => _sedangMengunduh = true);
     try {
       final bytes = await _layananSertifikat.unduh(id);
-      await simpanFile(bytes, 'sertifikat_$id.pdf');
+      final jenis = _jenisFile.didukung
+          ? _jenisFile
+          : deteksiJenisFile(bytes, namaFile: widget.item.urlFile);
+      await simpanFile(bytes, 'sertifikat_$id.${jenis.ekstensi}');
     } on KesalahanApi catch (error) {
       if (mounted) _tampilkanPesan(error.pesan);
     } catch (_) {
@@ -121,7 +136,7 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         actions: [
-          if (_jumlahHalaman > 1)
+          if (_jenisFile == JenisFileSertifikat.pdf && _jumlahHalaman > 1)
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(right: 16),
@@ -143,7 +158,7 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_pesanGalat != null || _dataPdf == null) {
+    if (_pesanGalat != null || _dataFile == null) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -206,8 +221,24 @@ class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
       );
     }
 
+    if (_jenisFile.adalahGambar) {
+      return InteractiveViewer(
+        minScale: 1,
+        maxScale: 5,
+        child: Center(
+          child: Image.memory(
+            _dataFile!,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => const Center(
+              child: Text('Gambar sertifikat gagal ditampilkan.'),
+            ),
+          ),
+        ),
+      );
+    }
+
     return PDFView(
-      pdfData: _dataPdf,
+      pdfData: _dataFile!,
       enableSwipe: true,
       swipeHorizontal: false,
       autoSpacing: true,

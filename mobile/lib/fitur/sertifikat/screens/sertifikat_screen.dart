@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/services/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/models/jenis_file_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/widgets/header_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/widgets/kartu_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/widgets/modal_filter_tanggal.dart';
@@ -168,7 +169,8 @@ class _SertifikatScreenState extends State<SertifikatScreen> {
     }
     try {
       final bytes = await _layananSertifikat.unduh(item.id!);
-      await simpanFile(bytes, 'sertifikat_${item.id}.pdf');
+      final jenis = deteksiJenisFile(bytes, namaFile: item.urlFile);
+      await simpanFile(bytes, 'sertifikat_${item.id}.${jenis.ekstensi}');
     } on KesalahanApi catch (error) {
       _tampilkanPesan(error.pesan);
     } catch (_) {
@@ -505,15 +507,15 @@ class _SertifikatScreenState extends State<SertifikatScreen> {
                               itemCount: items.length,
                               separatorBuilder: (_, __) =>
                                   const SizedBox(height: 14),
-                            itemBuilder: (ctx, idx) {
-                              final item = items[idx];
-                              return KartuSertifikat(
-                                item: item,
-                                onTapKartu: () => _bukaPratinjau(item),
-                                onUnduh: () => _unduhSertifikat(item),
-                                onHapus: () => _hapusSertifikat(item),
-                              );
-                            },
+                              itemBuilder: (ctx, idx) {
+                                final item = items[idx];
+                                return KartuSertifikat(
+                                  item: item,
+                                  onTapKartu: () => _bukaPratinjau(item),
+                                  onUnduh: () => _unduhSertifikat(item),
+                                  onHapus: () => _hapusSertifikat(item),
+                                );
+                              },
                             ),
                         ],
                       ),

@@ -1,11 +1,12 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:pretest_posttest_app/fitur/beranda/screens/beranda_screen.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/screens/leaderboard_screen.dart';
 import 'package:pretest_posttest_app/fitur/profil/screens/profil_screen.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/services/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/models/jenis_file_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/screens/sertifikat_screen.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/screens/upload_sertifikat_form_screen.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
@@ -97,16 +98,29 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
   @override
   Future<void> pilihFile() async {
     try {
-      final file = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (file == null) return;
+      final hasil = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['pdf', 'png', 'jpg', 'jpeg'],
+        withData: true,
+      );
+      if (hasil == null || hasil.files.isEmpty) return;
 
-      final bytes = await file.readAsBytes();
+      final file = hasil.files.single;
+      final bytes = file.bytes;
       if (!mounted) return;
 
-      // Hanya PDF yang boleh: cek ekstensi + tanda "magic" PDF (%PDF).
-      if (!_apakahPdf(file.name, bytes)) {
+      if (bytes == null || bytes.isEmpty) {
         _snackBar(
-          'Format tidak valid. Unggah sertifikat berformat PDF.',
+          'Gagal membaca file yang dipilih.',
+          warna: Colors.red.shade700,
+        );
+        return;
+      }
+
+      final jenis = deteksiJenisFile(bytes, namaFile: file.name);
+      if (!jenis.didukung) {
+        _snackBar(
+          'Format tidak valid. Unggah sertifikat PDF atau gambar PNG/JPG.',
           warna: Colors.red.shade700,
         );
         return;
@@ -123,24 +137,11 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
     }
   }
 
-  /// Validasi client-side: file harus PDF (ekstensi + magic bytes `%PDF`).
-  bool _apakahPdf(String nama, Uint8List bytes) {
-    final akhiran = nama.toLowerCase().split('.').last;
-    if (akhiran != 'pdf') return false;
-    // Magic bytes PDF: 0x25 0x50 0x44 0x46 ("%PDF").
-    if (bytes.length < 4) return false;
-    return bytes[0] == 0x25 &&
-        bytes[1] == 0x50 &&
-        bytes[2] == 0x44 &&
-        bytes[3] == 0x46;
-  }
-
   @override
   void hapusTanggal() => setState(() => tanggalTerpilih = null);
 
   @override
-  void hapusFile() =>
-      setState(() {
+  void hapusFile() => setState(() {
         namaFileTerpilih = null;
         _bytesFile = null;
       });
@@ -224,8 +225,7 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const ProfilScreen()));
     } else if (idx == 0) {
-      Navigator.of(context)
-          .pushAndRemoveUntil(
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const BerandaScreen()),
         (r) => false,
       );
@@ -314,8 +314,7 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
       onTap: _kembali,
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -327,7 +326,8 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.arrow_back_rounded, size: 14, color: WarnaAplikasi.utama),
+            Icon(Icons.arrow_back_rounded,
+                size: 14, color: WarnaAplikasi.utama),
             SizedBox(width: 4),
             Text(
               'Back',
@@ -346,8 +346,8 @@ class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
   Widget _judulSeksiForm() {
     return Row(
       children: [
-        const Icon(
-            Icons.workspace_premium_rounded, color: WarnaAplikasi.utama, size: 18),
+        const Icon(Icons.workspace_premium_rounded,
+            color: WarnaAplikasi.utama, size: 18),
         const SizedBox(width: 8),
         Text(
           sedangEdit ? 'Edit Sertifikat' : 'Form Upload Sertifikat',

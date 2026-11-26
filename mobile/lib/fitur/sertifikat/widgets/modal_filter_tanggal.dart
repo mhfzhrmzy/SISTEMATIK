@@ -26,8 +26,18 @@ class _ModalFilterTanggalState extends State<ModalFilterTanggal> {
 
   static String _formatTanggalPendek(DateTime d) {
     const bulan = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agt',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des'
     ];
     final hari = d.day.toString().padLeft(2, '0');
     final bln = bulan[d.month - 1];
@@ -133,8 +143,7 @@ class _ModalFilterTanggalState extends State<ModalFilterTanggal> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color:
-                              WarnaAplikasi.utama.withValues(alpha: 0.35),
+                          color: WarnaAplikasi.utama.withValues(alpha: 0.35),
                           width: 1.2,
                         ),
                       ),
@@ -188,7 +197,8 @@ class _ModalFilterTanggalState extends State<ModalFilterTanggal> {
                         builder: _temaPemilihTanggal,
                       );
                       if (picked != null) {
-                        if (tempMulai != null && picked.isBefore(tempMulai!)) return;
+                        if (tempMulai != null && picked.isBefore(tempMulai!))
+                          return;
                         setState(() {
                           tempAkhir = picked;
                         });
@@ -202,8 +212,7 @@ class _ModalFilterTanggalState extends State<ModalFilterTanggal> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color:
-                              WarnaAplikasi.utama.withValues(alpha: 0.35),
+                          color: WarnaAplikasi.utama.withValues(alpha: 0.35),
                           width: 1.2,
                         ),
                       ),
@@ -278,7 +287,8 @@ class _ModalFilterTanggalState extends State<ModalFilterTanggal> {
                       ? WarnaAplikasi.utama
                       : const Color(0xFFF6EFF1),
                   labelStyle: TextStyle(
-                    color: satuTahunDipilih ? Colors.white : WarnaAplikasi.utama,
+                    color:
+                        satuTahunDipilih ? Colors.white : WarnaAplikasi.utama,
                     fontSize: 11.5,
                     fontWeight: FontWeight.bold,
                   ),
