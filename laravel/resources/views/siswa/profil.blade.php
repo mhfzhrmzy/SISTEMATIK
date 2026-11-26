@@ -5,9 +5,9 @@
 @section('content')
 <div class="space-y-6">
 
-    <div class="border-b border-gray-100 pb-4 mb-6">
-        <h1 class="text-3xl font-bold text-[#1F2937] mb-1">Profil &amp; Informasi Siswa</h1>
-        <p class="text-base text-gray-600">Kelola informasi data diri, foto profil, dan kredensial keamanan akun Anda.</p>
+    <div class="portal-header-card">
+        <h1 class="portal-header-title">Profil &amp; Informasi Siswa</h1>
+        <p class="portal-header-subtitle">Kelola informasi data diri, foto profil, dan keamanan akun kamu.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
