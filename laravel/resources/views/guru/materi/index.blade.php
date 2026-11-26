@@ -72,7 +72,6 @@
                                value="{{ auth('guru')->user()->nama_lengkap ?? 'Guru Terautentikasi' }}"
                                readonly
                                class="w-full rounded-xl border border-slate-200 bg-slate-100/80 px-3.5 py-2 text-xs font-semibold text-slate-600 cursor-not-allowed">
-                        <input type="hidden" name="nip" value="{{ auth('guru')->id() }}">
                     </div>
                 </div>
 

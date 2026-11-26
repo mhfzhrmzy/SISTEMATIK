@@ -33,7 +33,6 @@ class MateriController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'nip' => 'nullable|exists:guru,nip',
             'kelas' => 'required|in:X-1,X-2,X 1,X 2,10 1,10 2,10-1,10-2',
             'tahun' => 'required|digits:4|integer|min:2020|max:2099',
             'jurusan' => 'required|in:Teknik Alat Berat,Teknik Kendaraan Ringan,Teknik Sepeda Motor,Teknik Pemesinan,Teknik Instalasi Listrik,Teknik Pembangkit Listrik,Teknik Mekatronika,Teknik Audio Video,Teknik Komputer & Jaringan,Teknik Konstruksi & Perumahan,Desain Permodelan & Informasi Bangunan,Desain Komunikasi Visual',
@@ -76,11 +75,13 @@ class MateriController extends Controller
             $filePath = $request->file('upload_file')->store('materi', 'public');
         }
 
-        $nip = $request->input('nip') ?: Auth::guard('guru')->id();
+        /** @var Guru $guru */
+        $guru = Auth::guard('guru')->user();
 
         Materi::create([
             'judul_materi' => $request->judul_materi,
-            'nip' => $nip,
+            'nip' => $guru->nip,
+            'guru_id' => $guru->id,
             'id_kelas' => $kelasModel?->id_kelas,
             'isi_materi' => $request->isi_materi ?? '',
             'upload_file' => $filePath,
@@ -118,7 +119,6 @@ class MateriController extends Controller
     public function update(Request $request, Materi $materi): RedirectResponse
     {
         $request->validate([
-            'nip' => 'nullable|exists:guru,nip',
             'kelas' => 'required|in:X-1,X-2,X 1,X 2,10 1,10 2,10-1,10-2',
             'tahun' => 'required|digits:4|integer|min:2020|max:2099',
             'jurusan' => 'required|in:Teknik Alat Berat,Teknik Kendaraan Ringan,Teknik Sepeda Motor,Teknik Pemesinan,Teknik Instalasi Listrik,Teknik Pembangkit Listrik,Teknik Mekatronika,Teknik Audio Video,Teknik Komputer & Jaringan,Teknik Konstruksi & Perumahan,Desain Permodelan & Informasi Bangunan,Desain Komunikasi Visual',
@@ -157,7 +157,8 @@ class MateriController extends Controller
 
         $data = [
             'judul_materi' => $request->judul_materi,
-            'nip' => $request->input('nip') ?: $materi->nip,
+            'nip' => $materi->nip ?? $materi->guru?->nip,
+            'guru_id' => $materi->guru_id ?? $materi->guru?->id,
             'id_kelas' => $kelasModel?->id_kelas,
             'isi_materi' => $request->isi_materi ?? '',
         ];

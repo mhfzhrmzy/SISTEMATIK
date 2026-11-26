@@ -78,9 +78,12 @@ class MateriManajemenController extends Controller
             $filePath = $request->file('upload_file')->store('materi', 'public');
         }
 
+        $guru = Guru::where('nip', $request->input('nip'))->first();
+
         Materi::create([
             'judul_materi' => $request->judul_materi,
             'nip' => $request->input('nip'),
+            'guru_id' => $guru?->id,
             'nip_superadmin' => Auth::guard('superadmin')->id(),
             'id_kelas' => $kelasModel?->id_kelas,
             'isi_materi' => $request->isi_materi ?? '',
@@ -158,9 +161,12 @@ class MateriManajemenController extends Controller
             'judul_materi.unique' => 'Judul materi sudah ada untuk kelas dan jurusan yang sama.',
         ]);
 
+        $guru = Guru::where('nip', $request->input('nip'))->first();
+
         $data = [
             'judul_materi' => $request->judul_materi,
             'nip' => $request->input('nip'),
+            'guru_id' => $guru?->id,
             'nip_superadmin' => Auth::guard('superadmin')->id() ?? $materi->nip_superadmin,
             'id_kelas' => $kelasModel?->id_kelas,
             'isi_materi' => $request->isi_materi ?? '',

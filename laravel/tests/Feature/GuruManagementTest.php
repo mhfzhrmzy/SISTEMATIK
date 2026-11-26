@@ -72,6 +72,32 @@ class GuruManagementTest extends TestCase
         ]);
     }
 
+    public function test_guru_create_materi_uses_authenticated_guru_identity(): void
+    {
+        $file = UploadedFile::fake()->create('modul_pemrograman.pdf', 500, 'application/pdf');
+
+        $response = $this->actingAs($this->guru, 'guru')
+            ->post(route('materi.store'), [
+                'judul_materi' => 'Dasar Pemrograman',
+                'nip' => (string) $this->guru->id,
+                'kelas' => '10 1',
+                'tahun' => 2026,
+                'jurusan' => 'Teknik Komputer & Jaringan',
+                'isi_materi' => 'Pengantar pemrograman dasar.',
+                'upload_file' => $file,
+            ]);
+
+        $response->assertRedirect(route('materi.index'));
+        $response->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('materi', [
+            'judul_materi' => 'Dasar Pemrograman',
+            'nip' => $this->guru->nip,
+            'guru_id' => $this->guru->id,
+            'id_kelas' => $this->kelas->id_kelas,
+        ]);
+    }
+
     public function test_guru_can_update_materi(): void
     {
         $materi = Materi::create([
