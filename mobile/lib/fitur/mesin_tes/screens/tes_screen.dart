@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/api_tts.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/models/soal.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/views/hasil_quiz_view.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/services/api_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/screens/hasil_quiz_screen.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/opsi_jawaban.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/baris_timer_audio.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/kartu_soal.dart';
@@ -18,7 +18,7 @@ import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 ///
 /// Cukup serahkan [judul] dan [daftarSoal], dan widget ini menangani
 /// navigasi antar soal, pemilihan jawaban, validasi, serta dialog konfirmasi.
-class TesView extends StatefulWidget {
+class TesScreen extends StatefulWidget {
   final String judul;
   final String? judulMateri;
   final String? tipeTest;
@@ -28,7 +28,7 @@ class TesView extends StatefulWidget {
   final int? sisaDetik;
   final LayananQuiz? layananQuiz;
 
-  const TesView({
+  const TesScreen({
     super.key,
     required this.judul,
     this.judulMateri,
@@ -41,10 +41,10 @@ class TesView extends StatefulWidget {
   });
 
   @override
-  State<TesView> createState() => _TesViewState();
+  State<TesScreen> createState() => _TesScreenState();
 }
 
-class _TesViewState extends State<TesView> with WidgetsBindingObserver {
+class _TesScreenState extends State<TesScreen> with WidgetsBindingObserver {
   late int _indeksSaatIni;
   late List<int?> _jawabanTerpilih;
   final ScrollController _kontrolerScroll = ScrollController();
@@ -207,7 +207,7 @@ class _TesViewState extends State<TesView> with WidgetsBindingObserver {
       setState(() => _sedangMengirim = false);
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(
-          builder: (_) => HasilQuizView(
+          builder: (_) => HasilQuizScreen(
             judulMateri: (widget.judulMateri != null &&
                     widget.judulMateri!.trim().isNotEmpty)
                 ? widget.judulMateri!

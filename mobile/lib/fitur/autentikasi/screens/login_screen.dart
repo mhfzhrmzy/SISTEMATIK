@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:pretest_posttest_app/fitur/autentikasi/data/api_autentikasi.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/services/api_autentikasi.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/widgets/header_autentikasi.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/widgets/ikon_avatar_autentikasi.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/widgets/kolom_teks_autentikasi.dart';
-import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
+import 'package:pretest_posttest_app/fitur/beranda/screens/beranda_screen.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 
 /// Halaman Login — entry point pertama setelah aplikasi terbuka.
-class LoginView extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   /// Pesan yang langsung ditampilkan, misalnya saat sesi kedaluwarsa.
   final String? pesanAwal;
 
-  const LoginView({super.key, this.pesanAwal});
+  const LoginScreen({super.key, this.pesanAwal});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _LoginScreenState extends State<LoginScreen> {
   final _kontrolerNisn = TextEditingController();
   final _kontrolerPassword = TextEditingController();
 
@@ -71,7 +71,7 @@ class _LoginViewState extends State<LoginView> {
       setState(() => _sedangMemuat = false);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => BerandaView(
+          builder: (_) => BerandaScreen(
             nama: hasil.pengguna.namaLengkap,
             kelas: hasil.pengguna.labelKelas,
           ),
@@ -100,7 +100,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    // Padding horizontal selaras dengan TesView (Pre/Post-Test)
+    // Padding horizontal selaras dengan TesScreen (Pre/Post-Test)
     final double hp =
         (MediaQuery.of(context).size.width * 0.075).clamp(22.0, 40.0);
 

@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
-import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/data/api_sertifikat.dart';
+import 'package:pretest_posttest_app/fitur/beranda/screens/beranda_screen.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/screens/leaderboard_screen.dart';
+import 'package:pretest_posttest_app/fitur/profil/screens/profil_screen.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/services/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/views/sertifikat_view.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/views/upload_sertifikat_form.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/screens/sertifikat_screen.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/screens/upload_sertifikat_form_screen.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 
 /// Halaman form upload sertifikat.
 ///
 /// Berperan sebagai [UploadSertifikatFormController] untuk widget form.
-class UploadSertifikatView extends StatefulWidget {
+class UploadSertifikatScreen extends StatefulWidget {
   final List<ItemSertifikat> daftarSertifikat;
   final ValueChanged<List<ItemSertifikat>>? saatDaftarBerubah;
 
-  const UploadSertifikatView({
+  const UploadSertifikatScreen({
     super.key,
     required this.daftarSertifikat,
     this.saatDaftarBerubah,
   });
 
   @override
-  State<UploadSertifikatView> createState() => _UploadSertifikatViewState();
+  State<UploadSertifikatScreen> createState() => _UploadSertifikatScreenState();
 }
 
-class _UploadSertifikatViewState extends State<UploadSertifikatView>
+class _UploadSertifikatScreenState extends State<UploadSertifikatScreen>
     with SingleTickerProviderStateMixin
     implements UploadSertifikatFormController {
   final _kunciForm = GlobalKey<FormState>();
@@ -211,7 +211,7 @@ class _UploadSertifikatViewState extends State<UploadSertifikatView>
   void _kembali() {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) => SertifikatView(
+        builder: (_) => SertifikatScreen(
           daftarAwal: List.from(_daftarLokal),
           layananSertifikat: _layanan,
         ),
@@ -222,16 +222,16 @@ class _UploadSertifikatViewState extends State<UploadSertifikatView>
   void _saatFooterDiketuk(int idx) {
     if (idx == 2) {
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const ProfilView()));
+          MaterialPageRoute(builder: (_) => const ProfilScreen()));
     } else if (idx == 0) {
       Navigator.of(context)
           .pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const BerandaView()),
+        MaterialPageRoute(builder: (_) => const BerandaScreen()),
         (r) => false,
       );
     } else if (idx == 1) {
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LeaderboardView()));
+          MaterialPageRoute(builder: (_) => const LeaderboardScreen()));
     }
   }
 

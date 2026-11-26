@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/views/tes_view.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/services/api_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/screens/tes_screen.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 
 /// Widget yang langsung mengambil quiz pertama yang tersedia untuk [idMateri]
-/// dan [tipeTest], lalu membuka [TesView] tanpa halaman daftar perantara.
+/// dan [tipeTest], lalu membuka [TesScreen] tanpa halaman daftar perantara.
 ///
 /// Jika quiz tidak ditemukan (daftar kosong) atau post-test sudah dikerjakan,
 /// ditampilkan pesan informatif.
-class LangsungKerjakanView extends StatefulWidget {
-  const LangsungKerjakanView({
+class LangsungKerjakanScreen extends StatefulWidget {
+  const LangsungKerjakanScreen({
     super.key,
     required this.idMateri,
     required this.tipeTest,
@@ -22,10 +22,10 @@ class LangsungKerjakanView extends StatefulWidget {
   final LayananQuiz? layananQuiz;
 
   @override
-  State<LangsungKerjakanView> createState() => _LangsungKerjakanViewState();
+  State<LangsungKerjakanScreen> createState() => _LangsungKerjakanScreenState();
 }
 
-class _LangsungKerjakanViewState extends State<LangsungKerjakanView> {
+class _LangsungKerjakanScreenState extends State<LangsungKerjakanScreen> {
   late final LayananQuiz _layananQuiz;
 
   // Status pengambilan data
@@ -81,10 +81,10 @@ class _LangsungKerjakanViewState extends State<LangsungKerjakanView> {
 
       if (!mounted) return;
 
-      // 4. Langsung ganti layar dengan TesView (tanpa histori list di tumpukan)
+      // 4. Langsung ganti layar dengan TesScreen (tanpa histori list di tumpukan)
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(
-          builder: (_) => TesView(
+          builder: (_) => TesScreen(
             key: ValueKey(detail.id),
             judul: detail.tipe == 'pretest' ? 'Pre-Test' : 'Post-Test',
             tipeTest: detail.tipe,

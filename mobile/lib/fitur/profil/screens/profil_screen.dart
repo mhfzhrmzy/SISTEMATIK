@@ -4,12 +4,12 @@ import 'package:pretest_posttest_app/inti/konstanta/konfigurasi_api.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
-import 'package:pretest_posttest_app/fitur/autentikasi/data/api_autentikasi.dart';
-import 'package:pretest_posttest_app/fitur/autentikasi/views/login_view.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
-import 'package:pretest_posttest_app/fitur/profil/views/pengaturan_akun_view.dart';
-import 'package:pretest_posttest_app/fitur/profil/data/api_profil.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/views/sertifikat_view.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/services/api_autentikasi.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/screens/login_screen.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/screens/leaderboard_screen.dart';
+import 'package:pretest_posttest_app/fitur/profil/screens/pengaturan_akun_screen.dart';
+import 'package:pretest_posttest_app/fitur/profil/services/api_profil.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/screens/sertifikat_screen.dart';
 
 /// Halaman Profil pengguna.
 ///
@@ -21,10 +21,10 @@ import 'package:pretest_posttest_app/fitur/sertifikat/views/sertifikat_view.dart
 ///
 /// Navigasi:
 /// - Tab Home  -> kembali ke Beranda (root route)
-/// - Tab Leaderboard -> [LeaderboardView]
-/// - Sertifikat & Portofolio -> [SertifikatView]
-/// - Keluar Akun -> dialog konfirmasi, lalu kembali ke [LoginView]
-class ProfilView extends StatefulWidget {
+/// - Tab Leaderboard -> [LeaderboardScreen]
+/// - Sertifikat & Portofolio -> [SertifikatScreen]
+/// - Keluar Akun -> dialog konfirmasi, lalu kembali ke [LoginScreen]
+class ProfilScreen extends StatefulWidget {
   /// Nama lengkap pengguna. Jika kosong, diambil dari sesi login.
   final String? nama;
 
@@ -32,7 +32,7 @@ class ProfilView extends StatefulWidget {
   final String? kelas;
   final LayananProfil? layananProfil;
 
-  const ProfilView({
+  const ProfilScreen({
     super.key,
     this.nama,
     this.kelas,
@@ -40,10 +40,10 @@ class ProfilView extends StatefulWidget {
   });
 
   @override
-  State<ProfilView> createState() => _ProfilViewState();
+  State<ProfilScreen> createState() => _ProfilScreenState();
 }
 
-class _ProfilViewState extends State<ProfilView> {
+class _ProfilScreenState extends State<ProfilScreen> {
   String get _nama => widget.nama ?? SesiPengguna.nama ?? 'Siswa';
 
   String get _kelas => widget.kelas ?? SesiPengguna.kelas ?? 'Kelas -';
@@ -62,7 +62,7 @@ class _ProfilViewState extends State<ProfilView> {
         break;
       case 1:
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LeaderboardView()),
+          MaterialPageRoute(builder: (_) => const LeaderboardScreen()),
         );
         break;
       case 2:
@@ -143,7 +143,7 @@ class _ProfilViewState extends State<ProfilView> {
     if (!mounted) return;
 
     navigator.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginView()),
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
       (route) => false,
     );
   }
@@ -196,7 +196,7 @@ class _ProfilViewState extends State<ProfilView> {
                                   terisi: true,
                                   saatDiketuk: () => Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (_) => PengaturanAkunView(
+                                      builder: (_) => PengaturanAkunScreen(
                                         namaAwal: _nama,
                                         layananProfil: widget.layananProfil,
                                       ),
@@ -209,7 +209,7 @@ class _ProfilViewState extends State<ProfilView> {
                                   terisi: false,
                                   saatDiketuk: () => Navigator.of(context).push(
                                     MaterialPageRoute(
-                                        builder: (_) => const SertifikatView()),
+                                        builder: (_) => const SertifikatScreen()),
                                   ),
                                 ),
 

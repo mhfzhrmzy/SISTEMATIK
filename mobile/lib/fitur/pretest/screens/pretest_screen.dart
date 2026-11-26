@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/views/langsung_kerjakan_view.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/services/api_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/screens/langsung_kerjakan_screen.dart';
 
 /// Membuka langsung halaman pengerjaan pre-test tanpa halaman daftar perantara.
-class PretestView extends StatelessWidget {
-  const PretestView({
+class PretestScreen extends StatelessWidget {
+  const PretestScreen({
     super.key,
     required this.idMateri,
     this.layananQuiz,
@@ -15,7 +15,7 @@ class PretestView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LangsungKerjakanView(
+    return LangsungKerjakanScreen(
       idMateri: idMateri,
       tipeTest: 'pretest',
       layananQuiz: layananQuiz,

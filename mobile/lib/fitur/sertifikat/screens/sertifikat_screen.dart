@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/data/api_sertifikat.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/services/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/widgets/header_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/widgets/kartu_sertifikat.dart';
@@ -9,30 +9,30 @@ import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/views/pratinjau_sertifikat_view.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/views/upload_sertifikat_view.dart';
-import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
-import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/screens/pratinjau_sertifikat_screen.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/screens/upload_sertifikat_screen.dart';
+import 'package:pretest_posttest_app/fitur/beranda/screens/beranda_screen.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/screens/leaderboard_screen.dart';
+import 'package:pretest_posttest_app/fitur/profil/screens/profil_screen.dart';
 
 /// Halaman daftar sertifikat & portofolio.
-class SertifikatView extends StatefulWidget {
-  /// Daftar sertifikat awal — bisa dioper dari UploadSertifikatView
+class SertifikatScreen extends StatefulWidget {
+  /// Daftar sertifikat awal — bisa dioper dari UploadSertifikatScreen
   /// setelah operasi CRUD agar data tetap sinkron.
   final List<ItemSertifikat>? daftarAwal;
   final LayananSertifikat? layananSertifikat;
 
-  const SertifikatView({
+  const SertifikatScreen({
     super.key,
     this.daftarAwal,
     this.layananSertifikat,
   });
 
   @override
-  State<SertifikatView> createState() => _SertifikatViewState();
+  State<SertifikatScreen> createState() => _SertifikatScreenState();
 }
 
-class _SertifikatViewState extends State<SertifikatView> {
+class _SertifikatScreenState extends State<SertifikatScreen> {
   // Daftar sertifikat — diisi dari daftarAwal jika ada, atau dari API.
   late List<ItemSertifikat> _daftarSertifikat;
   late final LayananSertifikat _layananSertifikat;
@@ -119,16 +119,16 @@ class _SertifikatViewState extends State<SertifikatView> {
   void _saatFooterDiketuk(int idx) {
     if (idx == 2) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const ProfilView()),
+        MaterialPageRoute(builder: (_) => const ProfilScreen()),
       );
     } else if (idx == 0) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const BerandaView()),
+        MaterialPageRoute(builder: (_) => const BerandaScreen()),
         (route) => false,
       );
     } else if (idx == 1) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LeaderboardView()),
+        MaterialPageRoute(builder: (_) => const LeaderboardScreen()),
       );
     }
   }
@@ -179,7 +179,7 @@ class _SertifikatViewState extends State<SertifikatView> {
   void _bukaPratinjau(ItemSertifikat item) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => PratinjauSertifikatView(
+        builder: (_) => PratinjauSertifikatScreen(
           item: item,
           layananSertifikat: _layananSertifikat,
         ),
@@ -250,7 +250,7 @@ class _SertifikatViewState extends State<SertifikatView> {
   void _navigasiUpload() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => UploadSertifikatView(
+        builder: (_) => UploadSertifikatScreen(
           daftarSertifikat: List.from(_daftarSertifikat),
           saatDaftarBerubah: (updated) {
             setState(() => _daftarSertifikat = updated);
@@ -303,7 +303,7 @@ class _SertifikatViewState extends State<SertifikatView> {
                               } else {
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
-                                      builder: (_) => const BerandaView()),
+                                      builder: (_) => const BerandaScreen()),
                                 );
                               }
                             },

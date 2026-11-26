@@ -30,30 +30,60 @@ lib/
 │   └── widgets/
 │       └── navigasi_bawah.dart            # Footer navigasi 3-tab
 └── fitur/
-    ├── autentikasi/
-    │   ├── views/    (login_view)
-    │   └── widgets/  (header, avatar, kolom_teks)
-    ├── beranda/
-    │   └── views/    (beranda_view — dashboard utama)
-    ├── materi/
-    │   ├── data/     (data_materi — dummy data)
-    │   ├── models/   (model_materi)
-    │   └── views/    (buka_materi_view)
-    ├── mesin_tes/
-    │   ├── models/   (soal)
-    │   ├── views/    (tes_view — reusable test engine)
-    │   └── widgets/  (header_tes, kartu_soal, opsi_jawaban, dll.)
-    ├── pretest/      (pretest_data, pretest_view)
-    ├── posttest/     (posttest_data, posttest_view)
-    ├── papan_peringkat/
-    │   ├── models/   (pengguna_peringkat)
-    │   ├── views/    (papan_peringkat_view)
-    │   └── widgets/  (batang_podium)
-    ├── profil/
-    │   └── views/    (profil_view, pengaturan_akun_view)
-    └── sertifikat/
-        ├── models/   (item_sertifikat)
-        └── views/    (sertifikat_view, upload_sertifikat_view)
+     ├── autentikasi/
+      │   ├── models/
+      │   ├── services/   (api_autentikasi)
+      │   ├── controllers/
+      │   ├── widgets/    (header, avatar, kolom_teks)
+       │   └── screens/    (login_screen)
+       ├── beranda/
+       │   ├── models/
+       │   ├── services/
+       │   ├── controllers/
+       │   ├── widgets/
+       │   └── screens/    (beranda_screen — dashboard utama)
+       ├── materi/
+       │   ├── models/     (model_materi)
+       │   ├── services/   (api_materi)
+       │   ├── controllers/
+       │   ├── widgets/
+       │   └── screens/    (buka_materi_screen)
+       ├── mesin_tes/
+       │   ├── models/     (soal)
+       │   ├── services/   (api_quiz, api_tts)
+       │   ├── controllers/
+       │   ├── widgets/    (header_tes, kartu_soal, opsi_jawaban, dll.)
+       │   └── screens/    (tes_screen — reusable test engine)
+       ├── pretest/
+       │   ├── models/
+       │   ├── services/
+       │   ├── controllers/
+       │   ├── widgets/
+       │   └── screens/    (pretest_screen)
+       ├── posttest/
+       │   ├── models/
+       │   ├── services/
+       │   ├── controllers/
+       │   ├── widgets/
+       │   └── screens/    (posttest_screen)
+       ├── leaderboard/
+       │   ├── models/     (pengguna_peringkat)
+       │   ├── services/   (api_leaderboard)
+       │   ├── controllers/
+       │   ├── widgets/    (batang_podium)
+       │   └── screens/    (leaderboard_screen)
+       ├── profil/
+       │   ├── models/
+       │   ├── services/   (api_profil)
+       │   ├── controllers/
+       │   ├── widgets/
+       │   └── screens/    (profil_screen, pengaturan_akun_screen)
+       └── sertifikat/
+           ├── models/     (item_sertifikat)
+           ├── services/   (api_sertifikat)
+           ├── controllers/
+           ├── widgets/
+           └── screens/    (sertifikat_screen, upload_sertifikat_screen)
 ```
 
 Folder lain di root project:

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pretest_posttest_app/fitur/autentikasi/models/pengguna_siswa.dart';
-import 'package:pretest_posttest_app/fitur/profil/data/api_profil.dart';
-import 'package:pretest_posttest_app/fitur/profil/views/pengaturan_akun_view.dart';
-import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
+import 'package:pretest_posttest_app/fitur/profil/services/api_profil.dart';
+import 'package:pretest_posttest_app/fitur/profil/screens/pengaturan_akun_screen.dart';
+import 'package:pretest_posttest_app/fitur/profil/screens/profil_screen.dart';
 
 class _LayananProfilPalsu extends LayananProfil {
   @override
@@ -25,11 +25,11 @@ class _LayananProfilPalsu extends LayananProfil {
 
 void main() {
   testWidgets(
-      'ProfilView renders header, menu, and navigates to PengaturanAkunView',
+      'ProfilScreen renders header, menu, and navigates to PengaturanAkunScreen',
       (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: ProfilView(
+        home: ProfilScreen(
           nama: 'Seto Son Horeg',
           kelas: 'Kelas X TKJ - SMKN 2 Jember',
           layananProfil: _LayananProfilPalsu(),
@@ -44,11 +44,11 @@ void main() {
     expect(find.text('Sertifikat & Portofolio'), findsOneWidget);
     expect(find.text('Keluar Akun'), findsOneWidget);
 
-    // Tap menu Pengaturan akun siswa -> navigasi ke PengaturanAkunView
+    // Tap menu Pengaturan akun siswa -> navigasi ke PengaturanAkunScreen
     await tester.tap(find.text('Pengaturan akun siswa'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(PengaturanAkunView), findsOneWidget);
+    expect(find.byType(PengaturanAkunScreen), findsOneWidget);
     expect(find.text('NISN'), findsOneWidget);
     expect(find.text('0084729103'), findsOneWidget);
     expect(find.text('Nama Lengkap'), findsOneWidget);

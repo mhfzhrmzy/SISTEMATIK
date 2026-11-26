@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
-import 'package:pretest_posttest_app/fitur/materi/data/api_materi.dart';
+import 'package:pretest_posttest_app/fitur/materi/services/api_materi.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/header_tes.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
-import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
+import 'package:pretest_posttest_app/fitur/profil/screens/profil_screen.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/screens/leaderboard_screen.dart';
 
 /// Halaman Buka Materi.
 ///
@@ -27,21 +27,21 @@ import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.da
 /// - Tombol navigasi halaman (< Back | Halaman X/Y | Next >) dan tombol Selesai FIXED di bawah.
 /// - NavigasiBawah fixed di bawah.
 /// - Responsif penuh di mobile & tablet (portrait maupun landscape).
-class BukaMateriView extends StatefulWidget {
+class BukaMateriScreen extends StatefulWidget {
   final ModelMateri materi;
   final LayananMateri? layananMateri;
 
-  const BukaMateriView({
+  const BukaMateriScreen({
     super.key,
     required this.materi,
     this.layananMateri,
   });
 
   @override
-  State<BukaMateriView> createState() => _BukaMateriViewState();
+  State<BukaMateriScreen> createState() => _BukaMateriScreenState();
 }
 
-class _BukaMateriViewState extends State<BukaMateriView> {
+class _BukaMateriScreenState extends State<BukaMateriScreen> {
   int _halamanSaatIni = 0;
   int _indeksFooter = 0;
   late final LayananMateri _layananMateri;
@@ -331,14 +331,14 @@ class _BukaMateriViewState extends State<BukaMateriView> {
     } else if (idx == 1) {
       setState(() => _indeksFooter = idx);
       await Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const LeaderboardView()),
+        MaterialPageRoute(builder: (_) => const LeaderboardScreen()),
       );
       if (!mounted) return;
       setState(() => _indeksFooter = 0);
     } else if (idx == 2) {
       setState(() => _indeksFooter = idx);
       await Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const ProfilView()),
+        MaterialPageRoute(builder: (_) => const ProfilScreen()),
       );
       if (!mounted) return;
       setState(() => _indeksFooter = 0);

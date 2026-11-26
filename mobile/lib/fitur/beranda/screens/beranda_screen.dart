@@ -5,13 +5,13 @@ import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
-import 'package:pretest_posttest_app/fitur/materi/data/api_materi.dart';
+import 'package:pretest_posttest_app/fitur/materi/services/api_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
-import 'package:pretest_posttest_app/fitur/materi/views/buka_materi_view.dart';
-import 'package:pretest_posttest_app/fitur/pretest/views/pretest_view.dart';
-import 'package:pretest_posttest_app/fitur/posttest/views/posttest_view.dart';
-import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
+import 'package:pretest_posttest_app/fitur/materi/screens/buka_materi_screen.dart';
+import 'package:pretest_posttest_app/fitur/pretest/screens/pretest_screen.dart';
+import 'package:pretest_posttest_app/fitur/posttest/screens/posttest_screen.dart';
+import 'package:pretest_posttest_app/fitur/profil/screens/profil_screen.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/screens/leaderboard_screen.dart';
 
 /// Halaman Beranda / Dashboard utama setelah pengguna login.
 ///
@@ -20,7 +20,7 @@ import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.da
 /// - Card ringkasan statistik (jumlah materi & quiz)
 /// - Grid materi yang scrollable
 /// - [NavigasiBawah] fixed di bawah
-class BerandaView extends StatefulWidget {
+class BerandaScreen extends StatefulWidget {
   /// Nama pengguna yang login. Jika kosong, diambil dari sesi.
   final String? nama;
 
@@ -28,7 +28,7 @@ class BerandaView extends StatefulWidget {
   final String? kelas;
   final LayananMateri? layananMateri;
 
-  const BerandaView({
+  const BerandaScreen({
     super.key,
     this.nama,
     this.kelas,
@@ -36,10 +36,10 @@ class BerandaView extends StatefulWidget {
   });
 
   @override
-  State<BerandaView> createState() => _BerandaViewState();
+  State<BerandaScreen> createState() => _BerandaScreenState();
 }
 
-class _BerandaViewState extends State<BerandaView> {
+class _BerandaScreenState extends State<BerandaScreen> {
   int _indeksFooter = 0;
   late final LayananMateri _layananMateri;
   List<ModelMateri> _materis = const [];
@@ -101,8 +101,8 @@ class _BerandaViewState extends State<BerandaView> {
 
     setState(() => _indeksFooter = idx);
     final Widget tujuan = idx == 1
-        ? const LeaderboardView()
-        : ProfilView(nama: _namaPengguna, kelas: _kelasPengguna);
+        ? const LeaderboardScreen()
+        : ProfilScreen(nama: _namaPengguna, kelas: _kelasPengguna);
 
     await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => tujuan),
@@ -122,20 +122,20 @@ class _BerandaViewState extends State<BerandaView> {
         saatPreTest: () {
           Navigator.of(ctx).push(
             MaterialPageRoute(
-              builder: (_) => PretestView(idMateri: materi.id),
+              builder: (_) => PretestScreen(idMateri: materi.id),
             ),
           );
         },
         saatBukaMateri: () async {
           await Navigator.of(ctx).push(
-            MaterialPageRoute(builder: (_) => BukaMateriView(materi: materi)),
+            MaterialPageRoute(builder: (_) => BukaMateriScreen(materi: materi)),
           );
           if (mounted) _muatUlangMateri();
         },
         saatPostTest: () {
           Navigator.of(ctx).push(
             MaterialPageRoute(
-              builder: (_) => PosttestView(idMateri: materi.id),
+              builder: (_) => PosttestScreen(idMateri: materi.id),
             ),
           );
         },

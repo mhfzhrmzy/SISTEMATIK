@@ -5,17 +5,17 @@ import 'package:pretest_posttest_app/inti/konstanta/konfigurasi_api.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
-import 'package:pretest_posttest_app/fitur/profil/data/api_profil.dart';
+import 'package:pretest_posttest_app/fitur/profil/services/api_profil.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
-import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
+import 'package:pretest_posttest_app/fitur/beranda/screens/beranda_screen.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/screens/leaderboard_screen.dart';
 
 /// Halaman Pengaturan Akun Siswa.
 ///
 /// Berisi formulir data profil siswa (NISN, Nama Lengkap, Kelas,
 /// Jurusan, Password Saat Ini, dan Password Baru) serta foto avatar
 /// dengan badge kamera sesuai desain UI mockup.
-class PengaturanAkunView extends StatefulWidget {
+class PengaturanAkunScreen extends StatefulWidget {
   /// Nama lengkap awal siswa.
   final String? namaAwal;
 
@@ -29,7 +29,7 @@ class PengaturanAkunView extends StatefulWidget {
   final String jurusan;
   final LayananProfil? layananProfil;
 
-  const PengaturanAkunView({
+  const PengaturanAkunScreen({
     super.key,
     this.namaAwal,
     this.nisn = '0084729103',
@@ -39,10 +39,10 @@ class PengaturanAkunView extends StatefulWidget {
   });
 
   @override
-  State<PengaturanAkunView> createState() => _PengaturanAkunViewState();
+  State<PengaturanAkunScreen> createState() => _PengaturanAkunScreenState();
 }
 
-class _PengaturanAkunViewState extends State<PengaturanAkunView> {
+class _PengaturanAkunScreenState extends State<PengaturanAkunScreen> {
   // ── Warna tema form ────────────────────────────────────────────────────────
   static const Color _warnaBorderPudar = Color(0xFFC795A4);
 
@@ -94,13 +94,13 @@ class _PengaturanAkunViewState extends State<PengaturanAkunView> {
     switch (idx) {
       case 0:
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const BerandaView()),
+          MaterialPageRoute(builder: (_) => const BerandaScreen()),
           (route) => false,
         );
         break;
       case 1:
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const LeaderboardView()),
+          MaterialPageRoute(builder: (_) => const LeaderboardScreen()),
         );
         break;
       case 2:

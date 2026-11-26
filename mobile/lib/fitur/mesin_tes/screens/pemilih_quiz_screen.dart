@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/views/tes_view.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/services/api_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/screens/tes_screen.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 
-class PemilihQuizView extends StatefulWidget {
-  const PemilihQuizView({
+class PemilihQuizScreen extends StatefulWidget {
+  const PemilihQuizScreen({
     super.key,
     required this.idMateri,
     required this.tipeTest,
@@ -17,10 +17,10 @@ class PemilihQuizView extends StatefulWidget {
   final LayananQuiz? layananQuiz;
 
   @override
-  State<PemilihQuizView> createState() => _PemilihQuizViewState();
+  State<PemilihQuizScreen> createState() => _PemilihQuizScreenState();
 }
 
-class _PemilihQuizViewState extends State<PemilihQuizView> {
+class _PemilihQuizScreenState extends State<PemilihQuizScreen> {
   late final LayananQuiz _layananQuiz;
   late Future<List<QuizRingkas>> _quizFuture;
 
@@ -153,7 +153,7 @@ class _HalamanKerjakanQuizState extends State<_HalamanKerjakanQuiz> {
           );
         }
         final detail = snapshot.data!;
-        return TesView(
+        return TesScreen(
           key: ValueKey(detail.id),
           judul: detail.tipe == 'pretest' ? 'Pre-Test' : 'Post-Test',
           tipeTest: detail.tipe,

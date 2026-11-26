@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 
-/// Kontrak yang dipenuhi [UploadSertifikatView] agar form dapat memantik
+/// Kontrak yang dipenuhi [UploadSertifikatScreen] agar form dapat memantik
 /// interaksi tanpa tahu detail state-nya.
 abstract class UploadSertifikatFormController {
   GlobalKey<FormState>? get kunciForm;

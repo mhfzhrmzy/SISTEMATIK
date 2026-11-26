@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:pretest_posttest_app/fitur/sertifikat/data/api_sertifikat.dart';
+import 'package:pretest_posttest_app/fitur/sertifikat/services/api_sertifikat.dart';
 import 'package:pretest_posttest_app/fitur/sertifikat/models/item_sertifikat.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
@@ -12,8 +12,8 @@ import 'package:pretest_posttest_app/inti/layanan/penyimpan_file.dart';
 ///
 /// File diunduh lebih dulu lewat API agar tetap memakai token siswa,
 /// lalu dirender langsung dari byte PDF memakai [PDFView].
-class PratinjauSertifikatView extends StatefulWidget {
-  const PratinjauSertifikatView({
+class PratinjauSertifikatScreen extends StatefulWidget {
+  const PratinjauSertifikatScreen({
     super.key,
     required this.item,
     this.layananSertifikat,
@@ -23,11 +23,11 @@ class PratinjauSertifikatView extends StatefulWidget {
   final LayananSertifikat? layananSertifikat;
 
   @override
-  State<PratinjauSertifikatView> createState() =>
-      _PratinjauSertifikatViewState();
+  State<PratinjauSertifikatScreen> createState() =>
+      _PratinjauSertifikatScreenState();
 }
 
-class _PratinjauSertifikatViewState extends State<PratinjauSertifikatView> {
+class _PratinjauSertifikatScreenState extends State<PratinjauSertifikatScreen> {
   late final LayananSertifikat _layananSertifikat;
 
   Uint8List? _dataPdf;

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
+import 'package:pretest_posttest_app/fitur/beranda/screens/beranda_screen.dart';
 
 void main() {
-  testWidgets('BerandaView renders header and status bar style properly',
+  testWidgets('BerandaScreen renders header and status bar style properly',
       (WidgetTester tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: BerandaView(
+        home: BerandaScreen(
           nama: 'Seto Son Horeg',
           kelas: 'Kelas X TKJ - SMKN 2 Jember',
         ),

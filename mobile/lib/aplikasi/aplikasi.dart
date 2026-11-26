@@ -5,8 +5,8 @@ import 'package:pretest_posttest_app/aplikasi/tema_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/navigasi_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
-import 'package:pretest_posttest_app/fitur/autentikasi/views/gerbang_sesi_view.dart';
-import 'package:pretest_posttest_app/fitur/autentikasi/views/login_view.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/screens/gerbang_sesi_screen.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/screens/login_screen.dart';
 
 /// Widget root aplikasi Dasar Python.
 class Aplikasi extends StatefulWidget {
@@ -40,7 +40,7 @@ class _AplikasiState extends State<Aplikasi> with WidgetsBindingObserver {
     }
 
     navigator.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => LoginView(pesanAwal: pesan)),
+      MaterialPageRoute(builder: (_) => LoginScreen(pesanAwal: pesan)),
       (route) => false,
     );
   }
@@ -79,7 +79,7 @@ class _AplikasiState extends State<Aplikasi> with WidgetsBindingObserver {
         ),
       ),
       // Tentukan halaman awal dari sesi yang tersimpan.
-      home: const GerbangSesiView(),
+      home: const GerbangSesiScreen(),
     );
   }
 }

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/views/leaderboard_view.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
+import 'package:pretest_posttest_app/fitur/beranda/screens/beranda_screen.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/screens/leaderboard_screen.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/services/api_quiz.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/header_tes.dart';
-import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
+import 'package:pretest_posttest_app/fitur/profil/screens/profil_screen.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
 
 /// Halaman after submit quiz yang menampilkan ringkasan hasil pengerjaan kuis.
-class HasilQuizView extends StatelessWidget {
+class HasilQuizScreen extends StatelessWidget {
   final String judulMateri;
   final String tipeTest;
   final HasilQuiz hasil;
 
-  const HasilQuizView({
+  const HasilQuizScreen({
     super.key,
     required this.judulMateri,
     required this.tipeTest,
@@ -35,23 +35,23 @@ class HasilQuizView extends StatelessWidget {
   void _saatFooterDiketuk(BuildContext context, int idx) {
     if (idx == 0) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const BerandaView()),
+        MaterialPageRoute(builder: (_) => const BerandaScreen()),
         (route) => false,
       );
     } else if (idx == 1) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LeaderboardView()),
+        MaterialPageRoute(builder: (_) => const LeaderboardScreen()),
       );
     } else if (idx == 2) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const ProfilView()),
+        MaterialPageRoute(builder: (_) => const ProfilScreen()),
       );
     }
   }
 
   void _saatSelesai(BuildContext context) {
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const BerandaView()),
+      MaterialPageRoute(builder: (_) => const BerandaScreen()),
       (route) => false,
     );
   }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/data/api_quiz.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/services/api_quiz.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/models/soal.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/views/hasil_quiz_view.dart';
-import 'package:pretest_posttest_app/fitur/mesin_tes/views/tes_view.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/screens/hasil_quiz_screen.dart';
+import 'package:pretest_posttest_app/fitur/mesin_tes/screens/tes_screen.dart';
 import 'package:pretest_posttest_app/fitur/mesin_tes/widgets/baris_timer_audio.dart';
 
 const _soalContoh = Soal(
@@ -13,12 +13,12 @@ const _soalContoh = Soal(
 );
 
 void main() {
-  testWidgets('TesView handles quizzes without questions', (
+  testWidgets('TesScreen handles quizzes without questions', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: TesView(
+        home: TesScreen(
           judul: 'Pre-Test',
           daftarSoal: [],
         ),
@@ -34,7 +34,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: TesView(
+        home: TesScreen(
           judul: 'Pre-Test',
           tipeTest: 'pretest',
           daftarSoal: [_soalContoh],
@@ -55,7 +55,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: TesView(
+        home: TesScreen(
           judul: 'Post-Test',
           tipeTest: 'posttest',
           daftarSoal: [_soalContoh],
@@ -82,7 +82,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: TesView(
+        home: TesScreen(
           judul: 'Post-Test',
           tipeTest: 'posttest',
           daftarSoal: [_soalContoh],
@@ -106,7 +106,7 @@ void main() {
   });
 
   testWidgets(
-      'HasilQuizView renders stats accurately and excludes rata-rata waktu', (
+      'HasilQuizScreen renders stats accurately and excludes rata-rata waktu', (
     WidgetTester tester,
   ) async {
     const hasil = HasilQuiz(
@@ -117,7 +117,7 @@ void main() {
 
     await tester.pumpWidget(
       const MaterialApp(
-        home: HasilQuizView(
+        home: HasilQuizScreen(
           judulMateri: 'Dasar Python',
           tipeTest: 'posttest',
           hasil: hasil,

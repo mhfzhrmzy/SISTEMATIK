@@ -5,11 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/preferensi_lokal.dart';
 import 'package:pretest_posttest_app/inti/widgets/navigasi_bawah.dart';
-import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
-import 'package:pretest_posttest_app/fitur/materi/data/api_materi.dart';
+import 'package:pretest_posttest_app/fitur/beranda/screens/beranda_screen.dart';
+import 'package:pretest_posttest_app/fitur/materi/services/api_materi.dart';
 import 'package:pretest_posttest_app/fitur/materi/models/model_materi.dart';
-import 'package:pretest_posttest_app/fitur/profil/views/profil_view.dart';
-import 'package:pretest_posttest_app/fitur/leaderboard/data/api_leaderboard.dart';
+import 'package:pretest_posttest_app/fitur/profil/screens/profil_screen.dart';
+import 'package:pretest_posttest_app/fitur/leaderboard/services/api_leaderboard.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/models/model_leaderboard.dart';
 import 'package:pretest_posttest_app/fitur/leaderboard/widgets/batang_podium.dart'
     show BatangPodium, BatangPodiumKosong, AvatarSiswa;
@@ -17,14 +17,14 @@ import 'package:pretest_posttest_app/fitur/leaderboard/widgets/batang_podium.dar
 /// Halaman Leaderboard (papan peringkat).
 ///
 /// 0 = Keseluruhan, 1 = Permateri
-class LeaderboardView extends StatefulWidget {
-  const LeaderboardView({super.key});
+class LeaderboardScreen extends StatefulWidget {
+  const LeaderboardScreen({super.key});
 
   @override
-  State<LeaderboardView> createState() => _LeaderboardViewState();
+  State<LeaderboardScreen> createState() => _LeaderboardScreenState();
 }
 
-class _LeaderboardViewState extends State<LeaderboardView> {
+class _LeaderboardScreenState extends State<LeaderboardScreen> {
   static const Duration _intervalRefresh = Duration(seconds: 30);
   static const int _tabKeseluruhan = 0;
   static const int _tabPermateri = 1;
@@ -150,14 +150,14 @@ class _LeaderboardViewState extends State<LeaderboardView> {
     if (idx == 0) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (_) => const BerandaView(),
+          builder: (_) => const BerandaScreen(),
         ),
         (route) => false,
       );
     } else if (idx == 2) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => const ProfilView(),
+          builder: (_) => const ProfilScreen(),
         ),
       );
     }

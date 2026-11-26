@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pretest_posttest_app/inti/konstanta/warna_aplikasi.dart';
 import 'package:pretest_posttest_app/inti/layanan/kesalahan_api.dart';
 import 'package:pretest_posttest_app/inti/layanan/sesi_pengguna.dart';
-import 'package:pretest_posttest_app/fitur/autentikasi/data/api_autentikasi.dart';
-import 'package:pretest_posttest_app/fitur/autentikasi/views/login_view.dart';
-import 'package:pretest_posttest_app/fitur/beranda/views/beranda_view.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/services/api_autentikasi.dart';
+import 'package:pretest_posttest_app/fitur/autentikasi/screens/login_screen.dart';
+import 'package:pretest_posttest_app/fitur/beranda/screens/beranda_screen.dart';
 
 enum _StatusSesi { memuat, masuk, login, galat }
 
@@ -15,14 +15,14 @@ enum _StatusSesi { memuat, masuk, login, galat }
 /// 2. Jika tidak ada atau kedaluwarsa, tampilkan Login.
 /// 3. Jika ada, validasi ke `GET /api/siswa/profil`.
 /// 4. Jika valid, masuk Beranda. Jika 401, kembali ke Login.
-class GerbangSesiView extends StatefulWidget {
-  const GerbangSesiView({super.key});
+class GerbangSesiScreen extends StatefulWidget {
+  const GerbangSesiScreen({super.key});
 
   @override
-  State<GerbangSesiView> createState() => _GerbangSesiViewState();
+  State<GerbangSesiScreen> createState() => _GerbangSesiScreenState();
 }
 
-class _GerbangSesiViewState extends State<GerbangSesiView> {
+class _GerbangSesiScreenState extends State<GerbangSesiScreen> {
   _StatusSesi _status = _StatusSesi.memuat;
   String? _pesan;
 
@@ -131,9 +131,9 @@ class _GerbangSesiViewState extends State<GerbangSesiView> {
       case _StatusSesi.memuat:
         return const _HalamanMemuat();
       case _StatusSesi.login:
-        return LoginView(pesanAwal: _pesan);
+        return LoginScreen(pesanAwal: _pesan);
       case _StatusSesi.masuk:
-        return BerandaView(
+        return BerandaScreen(
           nama: SesiPengguna.nama,
           kelas: SesiPengguna.kelas,
         );
