@@ -23,6 +23,9 @@ class HasilLeaderboard {
 }
 
 /// Layanan komunikasi dengan endpoint leaderboard Laravel.
+///
+/// Mendukung paginasi: batch pertama (limit=10) untuk Top 3 + baris 4–10,
+/// batch berikutnya (offset=10,20,...) untuk siswa di peringkat 11+.
 class LayananLeaderboard {
   const LayananLeaderboard();
 
@@ -30,21 +33,30 @@ class LayananLeaderboard {
   static String _keyCachePermateri(int idMateri) =>
       'leaderboard_permateri_$idMateri';
 
+  static const int _batasHalaman = 10;
+
   /// Mengambil daftar peringkat siswa sekelas untuk semua materi
   /// (mode "Keseluruhan").
-  Future<HasilLeaderboard> ambilLeaderboardKeseluruhan() {
+  Future<HasilLeaderboard> ambilLeaderboardKeseluruhan({
+    int offset = 0,
+  }) {
     return _ambilLeaderboard(
       tipeLeaderboard: 'keseluruhan',
+      offset: offset,
       keyCache: _keyCacheKeseluruhan,
     );
   }
 
   /// Mengambil daftar peringkat siswa sekelas untuk satu materi tertentu
   /// (mode "Permateri").
-  Future<HasilLeaderboard> ambilLeaderboardPermateri(int idMateri) {
+  Future<HasilLeaderboard> ambilLeaderboardPermateri(
+    int idMateri, {
+    int offset = 0,
+  }) {
     return _ambilLeaderboard(
       tipeLeaderboard: 'permateri',
       idMateri: idMateri,
+      offset: offset,
       keyCache: _keyCachePermateri(idMateri),
     );
   }
@@ -52,12 +64,14 @@ class LayananLeaderboard {
   Future<HasilLeaderboard> _ambilLeaderboard({
     required String tipeLeaderboard,
     int? idMateri,
+    required int offset,
     required String keyCache,
   }) async {
-    final path = idMateri == null
-        ? '/siswa/leaderboard?tipe_leaderboard=$tipeLeaderboard'
-        : '/siswa/leaderboard?tipe_leaderboard=$tipeLeaderboard'
-            '&materi_id=$idMateri';
+    final basePath = idMateri == null
+        ? '/siswa/leaderboard'
+        : '/siswa/leaderboard?materi_id=$idMateri';
+    final path = '$basePath?tipe_leaderboard=$tipeLeaderboard'
+        '&limit=$_batasHalaman&offset=$offset';
 
     try {
       final response = await KlienApi.get(path);
@@ -70,15 +84,17 @@ class LayananLeaderboard {
                 ModelLeaderboard.fromJson(item as Map<String, dynamic>))
             .toList();
 
-        // Simpan ke cache untuk offline.
-        await CacheLokal.simpan(keyCache, listJson);
+        // Simpan ke cache untuk offline (hanya batch pertama).
+        if (offset == 0) {
+          await CacheLokal.simpan(keyCache, listJson);
+        }
 
         return HasilLeaderboard(
           kelas: data['kelas']?.toString(),
           jurusan: data['jurusan']?.toString(),
           totalSiswa: data['total_siswa'] is num
               ? data['total_siswa'].toInt()
-              : listJson.length,
+              : (offset + daftar.length),
           data: daftar,
         );
       }
@@ -92,9 +108,12 @@ class LayananLeaderboard {
         statusCode: response.statusCode,
       );
     } catch (e) {
-      // Offline atau API gagal — coba cache.
+      // Offline atau API gagal — coba cache (hanya batch pertama).
       if (e is KesalahanApi && e.statusCode == 401) {
         rethrow; // Sesi berakhir, jangan pakai cache.
+      }
+      if (offset != 0) {
+        rethrow; // Batch lanjutan tidak ada cache.
       }
 
       final cached = await CacheLokal.baca(keyCache);
