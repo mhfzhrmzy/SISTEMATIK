@@ -15,7 +15,7 @@
 
             <!-- Dashboard -->
             <a href="{{ route('superadmin.index', ['menu' => 'dashboard']) }}" 
-               class="px-4 py-3 rounded-2xl flex items-center gap-3 text-sm font-semibold transition {{ ($menu ?? '') === 'dashboard' && !request()->routeIs('superadmin.materi.*') && !request()->routeIs('superadmin.quiz.*') && !request()->routeIs('superadmin.soal.*') ? 'bg-[#6D1837] text-white shadow-md shadow-amber-950/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+               class="px-4 py-3 rounded-2xl flex items-center gap-3 text-sm font-semibold transition {{ ($menu ?? '') === 'dashboard' && !request()->routeIs('superadmin.materi.*') && !request()->routeIs('superadmin.quiz.*') && !request()->routeIs('superadmin.soal.*') && !request()->routeIs('superadmin.sertifikat.*') ? 'bg-[#6D1837] text-white shadow-md shadow-amber-950/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                 </svg>
@@ -59,6 +59,15 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                 </svg>
                 <span>Kelola Quiz</span>
+            </a>
+
+            <!-- Kelola Sertifikat -->
+            <a href="{{ route('superadmin.sertifikat.index') }}" 
+               class="px-4 py-3 rounded-2xl flex items-center gap-3 text-sm font-semibold transition {{ request()->routeIs('superadmin.sertifikat.*') || ($menu ?? '') === 'sertifikat' ? 'bg-[#6D1837] text-white shadow-md shadow-amber-950/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+                <span>Kelola Sertifikat</span>
             </a>
         </nav>
     </div>

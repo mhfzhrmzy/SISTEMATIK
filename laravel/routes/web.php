@@ -15,6 +15,7 @@ use App\Http\Controllers\Siswa\SertifikatSiswaController;
 use App\Http\Controllers\Superadmin\GuruManajemenController;
 use App\Http\Controllers\Superadmin\MateriManajemenController;
 use App\Http\Controllers\Superadmin\QuizManajemenController;
+use App\Http\Controllers\Superadmin\SertifikatManajemenController;
 use App\Http\Controllers\Superadmin\SiswaManajemenController;
 use App\Http\Controllers\Superadmin\SoalManajemenController;
 use App\Http\Controllers\Superadmin\SuperadminController;
@@ -66,7 +67,7 @@ Route::middleware('role:guru')->group(function () {
     Route::controller(SertifikatController::class)->group(function () {
         Route::get('/sertifikat', 'index')->name('sertifikat.index');
         Route::get('/sertifikat/siswa', 'getSiswaByFilter')->name('sertifikat.siswa-json');
-        Route::post('/sertifikat/create', 'create')->name('sertifikat.create');
+        Route::match(['get', 'post'], '/sertifikat/create', 'create')->name('sertifikat.create');
         Route::post('/sertifikat', 'store')->name('sertifikat.store');
         Route::delete('/sertifikat/{sertifikat}', 'destroy')->name('sertifikat.destroy');
     });
@@ -158,6 +159,14 @@ Route::middleware('role:superadmin')->group(function () {
             Route::get('/soal/{soal}/edit', 'edit')->name('soal.edit');
             Route::put('/soal/{soal}', 'update')->name('soal.update');
             Route::delete('/soal/{soal}', 'destroy')->name('soal.destroy');
+        });
+
+        Route::controller(SertifikatManajemenController::class)->group(function () {
+            Route::get('/sertifikat', 'index')->name('sertifikat.index');
+            Route::get('/sertifikat/siswa', 'getSiswaByFilter')->name('sertifikat.siswa-json');
+            Route::match(['get', 'post'], '/sertifikat/create', 'create')->name('sertifikat.create');
+            Route::post('/sertifikat', 'store')->name('sertifikat.store');
+            Route::delete('/sertifikat/{sertifikat}', 'destroy')->name('sertifikat.destroy');
         });
     });
 });

@@ -2,163 +2,30 @@
 
 namespace App\Http\Controllers\Guru;
 
+use App\Http\Controllers\Concerns\ManagesSertifikatPenerbitan;
 use App\Http\Controllers\Controller;
-use App\Models\Kelas;
-use App\Models\PenggunaSiswa;
-use App\Models\Sertifikat;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class SertifikatController extends Controller
 {
-    /**
-     * Menampilkan daftar seluruh sertifikat yang sudah diterbitkan.
-     */
-    public function index()
-    {
-        $sertifikat = Sertifikat::with(['siswa.kelas.jurusan', 'materi', 'kategori'])
-            ->latest()
-            ->get();
+    use ManagesSertifikatPenerbitan;
 
-        return view('guru.sertifikat.index', compact('sertifikat'));
+    protected function sertifikatViewPrefix(): string
+    {
+        return 'guru.sertifikat';
     }
 
-    /**
-     * Mengembalikan daftar siswa dalam format JSON untuk filter dinamis di frontend.
-     * Query params: kelas, jurusan
-     */
-    public function getSiswaByFilter(Request $request)
+    protected function sertifikatIndexRoute(): string
     {
-        $query = PenggunaSiswa::with('kelas.jurusan')->orderBy('nama_lengkap');
-
-        if ($request->filled('kelas')) {
-            $parts = preg_split('/[\s\-]+/', (string) $request->kelas);
-            $tingkat = Kelas::parseTingkat($parts[0] ?? 0);
-            $rombel = (int) ($parts[1] ?? 0);
-            $query->whereHas('kelas', function ($q) use ($tingkat, $rombel) {
-                $q->where('tingkat', $tingkat);
-                if ($rombel > 0) {
-                    $q->where('rombel', $rombel);
-                }
-            });
-        }
-
-        if ($request->filled('jurusan')) {
-            $query->whereHas('kelas.jurusan', function ($q) use ($request) {
-                $q->where('nama_jurusan', $request->jurusan);
-            });
-        }
-
-        $siswa = $query->get(['nisn', 'nama_lengkap', 'id_kelas'])->map(function ($s) {
-            return [
-                'nisn' => $s->nisn,
-                'nama_lengkap' => $s->nama_lengkap,
-                'kelas' => (string) $s->kelas,
-                'jurusan' => (string) ($s->jurusan ?? ''),
-            ];
-        });
-
-        return response()->json($siswa);
+        return 'sertifikat.index';
     }
 
-    /**
-     * Menerima POST dari index (daftar siswa terpilih), lalu menampilkan form upload.
-     * Menyimpan daftar NISN ke session agar aman dari manipulasi URL.
-     */
-    public function create(Request $request)
+    protected function sertifikatSessionPrefix(): string
     {
-        $request->validate([
-            'student_ids' => ['required', 'array', 'min:1'],
-            'student_ids.*' => ['required', 'exists:pengguna_siswa,nisn'],
-        ], [
-            'student_ids.required' => 'Pilih minimal satu siswa terlebih dahulu.',
-            'student_ids.min' => 'Pilih minimal satu siswa terlebih dahulu.',
-        ]);
-
-        $siswaTerpilih = PenggunaSiswa::with('kelas.jurusan')
-            ->whereIn('nisn', $request->student_ids)
-            ->orderBy('nama_lengkap')
-            ->get();
-
-        session(['sertifikat_target_ids' => $siswaTerpilih->pluck('nisn')->toArray()]);
-
-        return view('guru.sertifikat.create', compact('siswaTerpilih'));
+        return 'sertifikat';
     }
 
-    /**
-     * Menyimpan sertifikat dan mendistribusikannya ke semua siswa yang dipilih.
-     */
-    public function store(Request $request)
+    protected function sertifikatStorageFolder(): string
     {
-        $validated = $request->validate([
-            'id_materi' => ['nullable', 'exists:materi,id_materi'],
-            'judul_sertifikat' => ['required', 'string', 'max:255'],
-            'penerbit' => ['nullable', 'string', 'max:255'],
-            'deskripsi' => ['nullable', 'string'],
-            'file_sertifikat' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
-        ]);
-
-        $targetNisns = session('sertifikat_target_ids', []);
-
-        if (empty($targetNisns)) {
-            return redirect()->route('sertifikat.index')
-                ->with('error', 'Sesi pilihan siswa telah habis. Silakan pilih siswa kembali.');
-        }
-
-        $fileSertifikat = $request->file('file_sertifikat');
-        $hashFilePertama = hash_file('sha256', $fileSertifikat->getRealPath());
-        $tanggalTerbit = now();
-        $namaPenerbit = $validated['penerbit'] ?? 'SMKN 2 Jember';
-
-        $pathFilePertama = $fileSertifikat->store('sertifikat/guru', 'public');
-        $ekstensi = $fileSertifikat->getClientOriginalExtension();
-
-        $jumlahBerhasil = 0;
-
-        foreach ($targetNisns as $urutan => $nisn) {
-            if ($urutan === 0) {
-                $pathFile = $pathFilePertama;
-                $hashFile = $hashFilePertama;
-            } else {
-                $namaFileBaru = 'sertifikat/guru/'.Str::uuid().'.'.$ekstensi;
-                Storage::disk('public')->copy($pathFilePertama, $namaFileBaru);
-                $pathFile = $namaFileBaru;
-                $hashFile = hash('sha256', $hashFilePertama.$nisn);
-            }
-
-            Sertifikat::create([
-                'nisn' => $nisn,
-                'id_materi' => $validated['id_materi'] ?? null,
-                'judul_sertifikat' => $validated['judul_sertifikat'],
-                'penerbit' => $namaPenerbit,
-                'tanggal_terbit' => $tanggalTerbit,
-                'deskripsi' => $validated['deskripsi'] ?? null,
-                'file_sertifikat' => $pathFile,
-                'file_hash' => $hashFile,
-                'tipe_sertifikat' => ! empty($validated['id_materi']) ? 'materi' : 'mandiri',
-            ]);
-
-            $jumlahBerhasil++;
-        }
-
-        session()->forget('sertifikat_target_ids');
-
-        return redirect()->route('sertifikat.index')
-            ->with('success', "Sertifikat berhasil diterbitkan untuk {$jumlahBerhasil} siswa.");
-    }
-
-    /**
-     * Menghapus sertifikat beserta file fisiknya dari storage.
-     */
-    public function destroy(Sertifikat $sertifikat)
-    {
-        if ($sertifikat->file_sertifikat && Storage::disk('public')->exists($sertifikat->file_sertifikat)) {
-            Storage::disk('public')->delete($sertifikat->file_sertifikat);
-        }
-
-        $sertifikat->delete();
-
-        return back()->with('success', 'Sertifikat berhasil dihapus.');
+        return 'sertifikat/guru';
     }
 }
