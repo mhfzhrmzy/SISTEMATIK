@@ -30,6 +30,9 @@ class LeaderboardController extends Controller
             ->whereHas('pengguna', function ($query) use ($siswa) {
                 $query->where('id_kelas', $siswa->id_kelas);
             })
+            ->whereHas('quiz', function ($query) {
+                $query->where('tipe_test', 'posttest');
+            })
             ->whereHas('quiz.materi.kelas', function ($query) use ($siswa) {
                 $query->where('tahun', $siswa->tahun);
             });
