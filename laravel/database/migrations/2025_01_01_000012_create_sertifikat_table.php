@@ -17,8 +17,6 @@ return new class extends Migration
             $table->string('penerbit')->nullable();
             $table->date('tanggal_terbit')->nullable();
             $table->text('deskripsi')->nullable();
-            $table->unsignedInteger('jam_pelatihan')->nullable();
-            $table->string('event_kompetisi')->nullable();
             $table->string('file_sertifikat');
             $table->string('file_hash', 64)->nullable()->unique();
             $table->string('badge_url')->nullable();

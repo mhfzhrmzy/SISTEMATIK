@@ -30,7 +30,7 @@
             <div class="bg-white rounded-2xl shadow-xs hover:shadow-md transition-all duration-200 p-5 flex flex-col">
                 <div class="flex-1">
                     <div class="flex items-center justify-between gap-2 mb-2.5">
-                        <span class="text-xs font-semibold px-3 py-1 rounded-full {{ $item->tipe_sertifikat === 'materi' ? 'bg-[#7B1038] text-white shadow-2xs' : 'bg-[#E8F8F0] text-[#1F9254]' }}">
+                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-[#7B1038] text-white shadow-2xs">
                             {{ $item->tipe_sertifikat === 'materi' ? 'Kelulusan Modul' : 'Mandiri' }}
                         </span>
                         <span class="text-sm text-gray-600">{{ $item->tanggal_terbit ? \Carbon\Carbon::parse($item->tanggal_terbit)->locale('id')->translatedFormat('j F Y') : '-' }}</span>
@@ -46,7 +46,7 @@
                 </div>
                 <div class="mt-auto pt-3.5 border-t border-gray-100 flex items-center justify-between gap-3">
                     <button type="button"
-                            class="text-sm font-semibold px-4 py-2 rounded-xl border border-[#7B1038] text-[#7B1038] hover:bg-[#7B1038] hover:text-white transition"
+                            class="text-sm font-semibold px-4 py-2 rounded-xl bg-[#7B1038] hover:bg-[#5E0C2B] text-white shadow-2xs transition cursor-pointer"
                             onclick="tampilkanSertifikat('{{ asset('storage/' . $item->file_sertifikat) }}', '{{ addslashes($item->judul_sertifikat) }}', '{{ addslashes($item->penerbit ?? '') }}')">
                         Lihat Sertifikat
                     </button>
@@ -105,20 +105,6 @@
                     </div>
                 </div>
             </div>
-
-            {{-- Footer --}}
-            <div class="px-6 py-4 border-t border-gray-100 bg-white flex items-center justify-end gap-3 shrink-0">
-                <button type="button"
-                        onclick="tutupModalSertifikat()"
-                        class="px-5 py-2.5 text-sm font-semibold rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
-                    Tutup
-                </button>
-                <button type="button"
-                        onclick="window.open(currentSertifikatUrl, '_blank')"
-                        class="px-5 py-2.5 text-sm font-semibold rounded-xl bg-[#7B1038] hover:bg-[#5E0C2B] text-white shadow-xs transition">
-                    Buka di Tab Baru
-                </button>
-            </div>
         </div>
     </div>
 
@@ -129,10 +115,7 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
 
-        let currentSertifikatUrl = '';
-
         function tampilkanSertifikat(url, judul, penerbit) {
-            currentSertifikatUrl = url;
             const modal = document.getElementById('modal-preview-sertifikat');
             const modalPanel = document.getElementById('panel-modal-sertifikat');
             const judulEl = document.getElementById('judul-modal-sertifikat');
@@ -250,7 +233,6 @@
             setTimeout(() => {
                 modal.classList.add('hidden');
                 document.body.style.overflow = '';
-                currentSertifikatUrl = '';
                 const pembuat = document.getElementById('pembuat-sertifikat');
                 if (pembuat) pembuat.innerHTML = '';
             }, 150);

@@ -13,7 +13,6 @@ class Sertifikat extends Model
     protected $fillable = [
         'nisn', 'id_materi',
         'judul_sertifikat', 'id_kategori', 'penerbit', 'deskripsi',
-        'jam_pelatihan', 'event_kompetisi',
         'file_sertifikat', 'file_hash', 'badge_url',
         'tipe_sertifikat', 'terverifikasi', 'tanggal_terbit',
     ];
