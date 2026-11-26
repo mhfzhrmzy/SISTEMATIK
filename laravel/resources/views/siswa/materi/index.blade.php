@@ -3,21 +3,12 @@
 @section('title', 'Bahan Ajar Aktif — Portal Siswa')
 
 @section('content')
-<div class="space-y-4 sm:space-y-5">
+<div class="w-full pb-8">
 
     {{-- Header Bagian --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
-        <div>
-            <span class="portal-badge text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
-                PORTAL BELAJAR
-            </span>
-            <h1 class="text-3xl font-bold text-[#1F2937] mb-1">
-                Bahan Ajar Aktif
-            </h1>
-            <p class="text-base text-gray-600">
-                Koleksi modul pembelajaran dan materi aktif untuk kelas Anda.
-            </p>
-        </div>
+    <div class="portal-header-card">
+        <h1 class="portal-header-title">Bahan Ajar Aktif</h1>
+        <p class="portal-header-subtitle">Daftar modul pembelajaran dan materi aktif untuk kelas kamu.</p>
     </div>
 
     {{-- 3. Daftar Kartu Materi (Grid 2 Kolom Responsif Sesuai Referensi) --}}

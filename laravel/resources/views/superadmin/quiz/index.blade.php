@@ -161,7 +161,7 @@
                     </div>
 
                     <div class="md:col-span-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 text-xs text-amber-800">
-                        ℹ️ Setiap quiz otomatis bernilai total <strong>100 Poin</strong>. Setiap materi hanya dapat memiliki <strong>1 pre-test</strong> dan <strong>1 post-test</strong>.
+                        Setiap quiz otomatis bernilai total <strong>100 Poin</strong>. Setiap materi hanya dapat memiliki <strong>1 pre-test</strong> dan <strong>1 post-test</strong>.
                     </div>
                     <button type="submit" id="btn-submit" class="md:col-span-4 bg-[#6D1837] hover:bg-[#521128] text-white text-sm font-bold py-2.5 rounded-xl transition duration-150 shadow-sm cursor-pointer">
                         Simpan &amp; Buat Quiz
@@ -224,10 +224,10 @@
                                     <td class="px-3 py-3 text-right">
                                         <div class="inline-flex items-center justify-end gap-1.5">
                                             <a href="{{ route('superadmin.soal.index', $quiz) }}" class="inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold px-2.5 py-1 rounded-lg border border-blue-200 text-xs transition">
-                                                📝 Soal ({{ $quiz->soal->count() }})
+                                                Soal ({{ $quiz->soal->count() }})
                                             </a>
                                             <button type="button" onclick="openJadwalModal({{ $quiz->id_quiz }}, '{{ $quiz->tanggal?->format('Y-m-d') }}', '{{ $quiz->jam_mulai }}', {{ $quiz->timer }})" class="inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-2.5 py-1 rounded-lg border border-indigo-200 text-xs transition cursor-pointer">
-                                                📅 Jadwal
+                                                Jadwal
                                             </button>
                                             <form action="{{ route('superadmin.quiz.destroy', $quiz) }}" method="POST" class="inline m-0 p-0" onsubmit="return confirm('Hapus quiz ini beserta seluruh soalnya?')">
                                                 @csrf @method('DELETE')
@@ -256,7 +256,7 @@
 {{-- Modal Edit Jadwal Quiz --}}
 <div id="modal-jadwal" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center">
     <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-4">
-        <h3 class="text-base font-bold text-slate-900 mb-4">📅 Ubah Jadwal Quiz</h3>
+        <h3 class="text-base font-bold text-slate-900 mb-4">Ubah Jadwal Quiz</h3>
         <form id="form-jadwal" method="POST">
             @csrf
             @method('PATCH')
@@ -391,7 +391,7 @@
 
         const allUsed = pretestUsed && posttestUsed;
         if (allUsed && materiId) {
-            tipeInfo.textContent = '⚠️ Materi ini sudah memiliki pre-test dan post-test.';
+            tipeInfo.textContent = 'Materi ini sudah memiliki pre-test dan post-test.';
             tipeInfo.classList.remove('hidden');
             btnSubmit.disabled = true;
             btnSubmit.classList.add('opacity-50', 'cursor-not-allowed');

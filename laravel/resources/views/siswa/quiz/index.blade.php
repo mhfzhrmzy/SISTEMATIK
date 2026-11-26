@@ -3,7 +3,35 @@
 @section('title', 'Daftar Quiz — ' . $materi->judul_materi)
 
 @section('content')
-<div class="portal-stack w-full">
+@php
+    $isEmptyQuiz = $quizzes->isEmpty();
+@endphp
+@if ($isEmptyQuiz)
+@push('styles')
+<style>
+    @media (min-width: 768px) {
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        body > main {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        body > main > div {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+    }
+</style>
+@endpush
+@endif
+<div class="portal-stack w-full {{ $isEmptyQuiz ? 'portal-empty-root' : '' }}">
 
     {{-- Breadcrumb --}}
     <nav class="flex items-center gap-2 text-sm text-gray-600">
@@ -37,26 +65,29 @@
             </p>
         </div>
 
-        <div class="flex items-center gap-3 shrink-0">
-            <div class="portal-stat-box bg-gray-50 px-4 py-2.5 text-center">
-                <span class="text-sm text-gray-600 uppercase tracking-wider block font-semibold">Tersedia</span>
+        <div class="flex items-center gap-6 shrink-0">
+            <div class="text-center">
+                <span class="text-xs sm:text-sm text-gray-500 uppercase tracking-wider block font-semibold">Tersedia</span>
                 <span class="text-base font-bold text-[#1F2937]">{{ $quizzes->count() }} Quiz</span>
             </div>
-            <div class="portal-stat-box bg-slate-100 border border-slate-200 px-4 py-2.5 text-center">
-                <span class="text-sm text-gray-600 uppercase tracking-wider block font-semibold">Selesai</span>
+            <div class="w-px h-8 bg-gray-200" aria-hidden="true"></div>
+            <div class="text-center">
+                <span class="text-xs sm:text-sm text-gray-500 uppercase tracking-wider block font-semibold">Selesai</span>
                 <span class="text-base font-bold text-[#7B1038]">{{ $attemptedIds->count() }} Dikerjakan</span>
             </div>
         </div>
     </x-card>
 
-    @if ($quizzes->isEmpty())
-        <x-card padding="" class="portal-card text-center">
-            <h3 class="text-base font-bold text-[#1F2937] mb-1">Belum Ada Quiz</h3>
-            <p class="text-sm text-gray-600">Guru belum menambahkan quiz untuk modul materi ini.</p>
-            <a href="{{ route('portal.materi.index') }}"
-               class="inline-block mt-4 text-sm font-semibold text-[#7B1038] hover:underline">
-                Kembali ke Portal
-            </a>
+    @if ($isEmptyQuiz)
+        <x-card padding="" class="portal-card portal-empty-card text-center">
+            <div class="flex flex-col items-center justify-center max-w-md mx-auto">
+                <h3 class="text-lg font-bold text-[#1F2937] mb-1.5">Belum Ada Quiz</h3>
+                <p class="text-sm sm:text-base text-gray-600">Guru belum menambahkan quiz untuk modul materi ini.</p>
+                <a href="{{ route('portal.materi.index') }}"
+                   class="inline-flex items-center justify-center mt-6 px-5 py-2.5 rounded-xl border border-gray-300 bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition">
+                    Kembali ke Portal
+                </a>
+            </div>
         </x-card>
     @else
         @php

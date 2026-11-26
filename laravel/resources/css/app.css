@@ -195,6 +195,27 @@ input[type="file"]::-webkit-file-upload-button:hover {
     border-radius: var(--radius-panel);
 }
 
+.portal-empty-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px 24px;
+}
+
+@media (min-width: 768px) {
+    .portal-empty-root {
+        flex: 1 1 auto;
+    }
+
+    .portal-empty-card {
+        flex: 1 1 auto;
+        min-height: 280px;
+        padding: 48px 32px;
+    }
+}
+
 .portal-pdf-preview,
 #pdf-scroll-box,
 .pdf-page-wrapper {
@@ -291,11 +312,6 @@ a.materi-step-btn:focus-visible {
     border-radius: var(--radius-control);
 }
 
-.portal-stat-box {
-    border-radius: var(--radius-panel);
-    box-sizing: border-box;
-}
-
 /* Halaman Hasil Quiz (Pretest & Posttest) */
 .hasil-poin-num {
     font-size: 36px;
@@ -377,12 +393,14 @@ a.materi-step-btn:focus-visible {
     min-width: 0;
 }
 
-.lb-header-card {
+.lb-header-card,
+.portal-header-card {
     background-color: var(--maroon, #7B1038);
     border-radius: var(--radius-card, 20px);
     padding: 32px;
     margin-bottom: 24px;
     box-shadow: none;
+    box-sizing: border-box;
 }
 
 .lb-header-top {
@@ -398,7 +416,8 @@ a.materi-step-btn:focus-visible {
     flex: 1 1 auto;
 }
 
-.lb-header-title {
+.lb-header-title,
+.portal-header-title {
     color: #FFFFFF;
     font-size: 32px;
     font-weight: 700;
@@ -406,7 +425,8 @@ a.materi-step-btn:focus-visible {
     margin: 0 0 6px 0;
 }
 
-.lb-header-subtitle {
+.lb-header-subtitle,
+.portal-header-subtitle {
     color: rgba(255, 255, 255, 0.8);
     font-size: 16px;
     line-height: 1.5;
@@ -450,6 +470,33 @@ a.materi-step-btn:focus-visible {
 
 .lb-chip--link:hover {
     background-color: rgba(255, 255, 255, 0.26);
+}
+
+.lb-header-card--guru {
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin-bottom: 24px;
+}
+
+.lb-header-card--guru .lb-header-title {
+    color: #0F172A;
+}
+
+.lb-header-card--guru .lb-header-subtitle {
+    color: #475569;
+}
+
+.lb-header-card--guru .lb-chip {
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: var(--text-gray-700);
+}
+
+.lb-header-card--guru .lb-chip--link:hover {
+    background-color: #FFFFFF;
+    border-color: var(--maroon, #7B1038);
+    color: var(--maroon, #7B1038);
 }
 
 .lb-filter-group {
@@ -522,22 +569,6 @@ a.materi-step-btn:focus-visible {
     margin-bottom: 16px;
 }
 
-.lb-status-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-pill, 9999px);
-    padding: 6px 14px;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.2;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    background-color: var(--maroon, #7B1038);
-    color: #FFFFFF;
-    white-space: nowrap;
-}
-
 .lb-table-card {
     width: 100%;
     min-width: 0;
@@ -547,6 +578,10 @@ a.materi-step-btn:focus-visible {
     background-color: #FFFFFF;
     border: 1px solid #E5E7EB;
     margin-bottom: 32px;
+}
+
+.lb-table-card--siswa {
+    border-radius: var(--radius-control, 12px);
 }
 
 .lb-table-scroll {
@@ -665,11 +700,17 @@ a.materi-step-btn:focus-visible {
 }
 
 @media (max-width: 640px) {
-    .lb-header-card {
+    .lb-header-card,
+    .portal-header-card {
         padding: 24px;
     }
 
-    .lb-header-title {
+    .lb-header-card.lb-header-card--guru {
+        padding: 0;
+    }
+
+    .lb-header-title,
+    .portal-header-title {
         font-size: 24px;
     }
 }

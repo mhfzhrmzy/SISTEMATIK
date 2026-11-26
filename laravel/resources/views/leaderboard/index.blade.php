@@ -31,8 +31,8 @@
 @endif
 <div class="lb-page {{ $isEmptyBoard ? 'lb-empty-root pb-0' : 'pb-8' }}">
 
-    <!-- Header Card Maroon -->
-    <div class="lb-header-card">
+    <!-- Header Leaderboard -->
+    <div class="lb-header-card {{ !$isSiswa ? 'lb-header-card--guru' : '' }}">
         <div class="lb-header-top">
             <div class="lb-header-text">
                 <h1 class="lb-header-title">Peringkat Poin Siswa</h1>
@@ -107,7 +107,7 @@
                         <input type="radio" name="tipe_leaderboard" value="permateri" class="hidden"
                                @checked($tipeLeaderboard === 'permateri') onchange="this.form.submit()">
                         <span class="lb-filter-btn {{ $tipeLeaderboard === 'permateri' ? 'lb-filter-btn--active' : 'lb-filter-btn--inactive' }}">
-                            Permateri
+                            Per materi
                         </span>
                     </label>
                 </div>
@@ -199,7 +199,7 @@
                         <input type="radio" name="tipe_leaderboard" value="permateri" class="hidden"
                                @checked($tipeLeaderboard === 'permateri') onchange="this.form.submit()">
                         <span class="lb-filter-btn {{ $tipeLeaderboard === 'permateri' ? 'lb-filter-btn--active' : 'lb-filter-btn--inactive' }}">
-                            Permateri
+                            Per materi
                         </span>
                     </label>
                 </div>
@@ -235,11 +235,7 @@
                     <div class="text-sm text-gray-600 font-medium">
                         Menampilkan Leaderboard: <strong class="text-base font-semibold text-gray-900">{{ $selectedMateri->judul_materi }}</strong>
                     </div>
-                    @if ($isSiswa)
-                        <span class="lb-status-badge">
-                            Post-Test
-                        </span>
-                    @else
+                    @if (!$isSiswa)
                         {{-- Opsi Tipe Test Guru --}}
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="text-sm font-semibold text-gray-700 mr-1">Tipe Test:</span>
@@ -274,11 +270,7 @@
                 <p class="text-sm text-gray-600">
                     Akumulasi seluruh nilai Post-Test siswa di Kelas {{ $kelas }} | {{ $jurusan }}.
                 </p>
-                @if ($isSiswa)
-                    <span class="lb-status-badge">
-                        Post-Test
-                    </span>
-                @else
+                @if (!$isSiswa)
                     <div class="flex items-center gap-2 flex-wrap">
                         <span class="text-sm font-semibold text-gray-700 mr-1">Tipe Test:</span>
                         <label class="cursor-pointer">
@@ -307,7 +299,7 @@
     </form>
 
     <!-- Table Leaderboard -->
-    <div class="lb-table-card {{ $isEmptyBoard ? 'lb-table-card--empty' : '' }}">
+    <div class="lb-table-card {{ $isSiswa ? 'lb-table-card--siswa' : '' }} {{ $isEmptyBoard ? 'lb-table-card--empty' : '' }}">
         <div class="lb-table-scroll">
             <table class="lb-table">
                 <thead>
@@ -334,9 +326,13 @@
                         <tr class="{{ $isOwnAccount ? 'lb-row--own' : '' }}">
                             {{-- Peringkat --}}
                             <td class="lb-col-rank">
-                                <span class="lb-rank-circle {{ $index === 0 ? 'lb-rank-circle--first' : 'lb-rank-circle--other' }}">
-                                    {{ $index + 1 }}
-                                </span>
+                                @if ($isSiswa)
+                                    <span class="text-sm font-medium text-gray-700 tabular-nums">{{ $index + 1 }}</span>
+                                @else
+                                    <span class="lb-rank-circle {{ $index === 0 ? 'lb-rank-circle--first' : 'lb-rank-circle--other' }}">
+                                        {{ $index + 1 }}
+                                    </span>
+                                @endif
                             </td>
 
                             {{-- Nama Siswa --}}

@@ -59,7 +59,7 @@
                 @if($soals->isEmpty())
                     <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 mb-8">
                         <h3 class="text-sm font-bold text-emerald-900 mb-2 flex items-center gap-2">
-                            <span>📊 Import Soal dari Spreadsheet / CSV</span>
+                            <span>Import Soal dari Spreadsheet / CSV</span>
                             <span class="text-[10px] bg-emerald-200 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Hanya sekali</span>
                         </h3>
                         <p class="text-xs text-emerald-700 mb-4">
@@ -74,13 +74,12 @@
                                 Upload &amp; Import CSV
                             </button>
                             <a href="{{ route('superadmin.soal.template') }}" class="inline-flex items-center gap-1 border border-emerald-600 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold px-3 py-2 rounded-xl transition duration-150">
-                                ⬇️ Unduh Template CSV
+                                Unduh Template CSV
                             </a>
                         </form>
                     </div>
                 @else
-                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-8 flex items-start gap-3">
-                        <span class="text-lg">🔒</span>
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-8">
                         <div>
                             <p class="text-xs font-bold text-slate-700">Import CSV Tidak Tersedia</p>
                             <p class="text-[11px] text-slate-500 mt-0.5">
@@ -122,14 +121,14 @@
                                         title="Klik untuk menonaktifkan acak soal & jawaban bagi siswa"
                                         class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm transition duration-150 cursor-pointer">
                                     <span class="w-2 h-2 rounded-full bg-emerald-200 animate-ping"></span>
-                                    🔀 Soal &amp; Jawaban Diacak (Aktif)
+                                    Soal &amp; Jawaban Diacak (Aktif)
                                 </button>
                             @else
                                 <button type="submit" 
                                         title="Klik untuk mengaktifkan acak soal & jawaban bagi siswa"
                                         class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm transition duration-150 cursor-pointer">
                                     <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                                    🔀 Acak Soal: Nonaktif (Klik untuk Acak)
+                                    Acak Soal: Nonaktif (Klik untuk Acak)
                                 </button>
                             @endif
                         </form>
@@ -137,7 +136,7 @@
 
                     @if($quiz->is_shuffle)
                         <span class="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl font-medium">
-                            ✨ Setiap siswa akan menerima urutan soal &amp; pilihan jawaban yang diacak secara otomatis.
+                            Setiap siswa akan menerima urutan soal &amp; pilihan jawaban yang diacak secara otomatis.
                         </span>
                     @endif
                 </div>
@@ -221,7 +220,7 @@ function checkDuplicates() {
     });
 
     if (duplicateLabels.length > 0) {
-        dupWarn.innerHTML = '⚠️ <strong>Pertanyaan duplikat terdeteksi:</strong><ul class="list-disc list-inside mt-1">' +
+        dupWarn.innerHTML = '<strong>Pertanyaan duplikat terdeteksi:</strong><ul class="list-disc list-inside mt-1">' +
             duplicateLabels.map(d => '<li>' + d + '</li>').join('') + '</ul>';
         dupWarn.classList.remove('hidden');
     } else {
@@ -239,7 +238,7 @@ function tambahSoal() {
     div.innerHTML = `
         <div class="flex justify-between items-center mb-1">
             <span class="font-bold text-xs text-slate-700 uppercase">Form Soal #${formNo}</span>
-            <button type="button" onclick="hapusForm(${i})" class="text-xs text-red-500 hover:text-red-700 font-semibold border border-red-300 rounded-lg px-2 py-0.5 hover:bg-red-50 cursor-pointer">✕ Hapus Form</button>
+            <button type="button" onclick="hapusForm(${i})" class="text-xs text-red-500 hover:text-red-700 font-semibold border border-red-300 rounded-lg px-2 py-0.5 hover:bg-red-50 cursor-pointer">Hapus Form</button>
         </div>
         <textarea name="soals[${i}][pertanyaan]" rows="2" placeholder="Tuliskan teks pertanyaan di sini..." required
             data-pertanyaan="true" data-form-no="${formNo}"

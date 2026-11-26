@@ -239,8 +239,11 @@
                                                            title="Pratinjau Pas 1 Halaman">
                                                             Pratinjau
                                                         </a>
-                                                        <a href="{{ $saFitUrl }}" target="_blank" class="text-[#6D1837] hover:underline font-bold text-xs" title="Buka di tab baru (Pas 1 Halaman)">
-                                                            ↗
+                                                        <a href="{{ $saFitUrl }}"
+                                                           target="_blank"
+                                                           class="p-1 rounded-lg text-slate-500 hover:text-[#7B1038] hover:bg-slate-100 transition duration-150"
+                                                           title="Buka di tab baru (Pas 1 Halaman)">
+                                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                                         </a>
                                                     </div>
                                                 @else
