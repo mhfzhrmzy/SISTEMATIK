@@ -411,6 +411,10 @@ a.materi-step-btn:focus-visible {
     flex-wrap: wrap;
 }
 
+.lb-header-top--center {
+    align-items: center;
+}
+
 .lb-header-text {
     min-width: 0;
     flex: 1 1 auto;

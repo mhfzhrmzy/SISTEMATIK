@@ -6,9 +6,6 @@
 <div class="space-y-6">
 
     <div class="border-b border-gray-100 pb-4 mb-6">
-        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
-            AKUN SAYA
-        </span>
         <h1 class="text-3xl font-bold text-[#1F2937] mb-1">Profil &amp; Informasi Siswa</h1>
         <p class="text-base text-gray-600">Kelola informasi data diri, foto profil, dan kredensial keamanan akun Anda.</p>
     </div>

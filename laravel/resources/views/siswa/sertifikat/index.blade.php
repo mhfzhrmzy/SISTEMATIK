@@ -5,19 +5,33 @@
 @section('content')
 <div class="w-full pb-8">
 
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 pb-4 mb-3">
-        <div>
-            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-[#7B1038] text-white mb-2 shadow-2xs">
-                PRESTASI BELAJAR
-            </span>
-            <h1 class="text-3xl font-bold text-[#1F2937] mb-1">Daftar Sertifikat &amp; Portofolio</h1>
-            <p class="text-base text-gray-600">Koleksi sertifikat kelulusan modul dan sertifikat mandiri Anda.</p>
+    <div class="lb-header-card">
+        <div class="lb-header-top lb-header-top--center">
+            <div class="lb-header-text">
+                <h1 class="lb-header-title">Daftar Sertifikat &amp; Portofolio</h1>
+                <p class="lb-header-subtitle">Koleksi sertifikat kelulusan modul dan sertifikat mandiri Anda.</p>
+            </div>
+
+            <div class="lb-header-actions">
+                <span class="text-sm font-semibold text-white/90 whitespace-nowrap">
+                    {{ $sertifikat->count() }} Sertifikat
+                </span>
+            </div>
         </div>
-        <a href="{{ route('siswa.sertifikat.create') }}"
-           class="inline-flex items-center gap-2 bg-[#7B1038] hover:bg-[#5E0C2B] text-white text-base font-semibold px-5 py-2.5 rounded-xl shadow-xs transition self-start sm:self-auto shrink-0">
-            + Upload Sertifikat Baru
-        </a>
     </div>
+
+    @if (session('success'))
+        <div id="alert-sertifikat-success"
+             class="mb-4 rounded-2xl bg-white border border-gray-200 border-l-4 border-l-[#7B1038] shadow-xs px-5 py-3.5 flex items-center justify-between gap-3 transition-opacity duration-200">
+            <p class="text-sm font-medium text-[#1F2937]">{{ session('success') }}</p>
+            <button type="button"
+                    onclick="document.getElementById('alert-sertifikat-success')?.remove()"
+                    class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition shrink-0 cursor-pointer"
+                    aria-label="Tutup notifikasi">
+                &times;
+            </button>
+        </div>
+    @endif
 
     {{-- Filter tanggal --}}
     <div class="mb-4 sm:mb-5">
@@ -27,10 +41,17 @@
     {{-- Grid Kartu Sertifikat --}}
     <div class="certificate-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 20px;">
         @forelse ($sertifikat as $item)
-            <div class="bg-white rounded-2xl shadow-xs hover:shadow-md transition-all duration-200 p-5 flex flex-col">
+            <div class="bg-white rounded-2xl shadow-xs hover:shadow-md transition-all duration-200 p-5 flex flex-col cursor-pointer"
+                 role="button"
+                 tabindex="0"
+                 data-url="{{ asset('storage/' . $item->file_sertifikat) }}"
+                 data-judul="{{ $item->judul_sertifikat }}"
+                 data-penerbit="{{ $item->penerbit ?? '' }}"
+                 onclick="bukaKartuSertifikat(this, event)"
+                 onkeydown="if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('[data-no-preview]')) { event.preventDefault(); bukaKartuSertifikat(this, event); }">
                 <div class="flex-1">
                     <div class="flex items-center justify-between gap-2 mb-2.5">
-                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-[#7B1038] text-white shadow-2xs">
+                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
                             {{ $item->tipe_sertifikat === 'materi' ? 'Kelulusan Modul' : 'Mandiri' }}
                         </span>
                         <span class="text-sm text-gray-600">{{ $item->tanggal_terbit ? \Carbon\Carbon::parse($item->tanggal_terbit)->locale('id')->translatedFormat('j F Y') : '-' }}</span>
@@ -44,18 +65,29 @@
                         <p class="text-sm text-gray-700 mt-2.5 bg-gray-50 px-3.5 py-2.5 rounded-xl leading-relaxed line-clamp-3">{{ $item->deskripsi }}</p>
                     @endif
                 </div>
-                <div class="mt-auto pt-3.5 border-t border-gray-100 flex items-center justify-between gap-3">
-                    <button type="button"
-                            class="text-sm font-semibold px-4 py-2 rounded-xl bg-[#7B1038] hover:bg-[#5E0C2B] text-white shadow-2xs transition cursor-pointer"
-                            onclick="tampilkanSertifikat('{{ asset('storage/' . $item->file_sertifikat) }}', '{{ addslashes($item->judul_sertifikat) }}', '{{ addslashes($item->penerbit ?? '') }}')">
-                        Lihat Sertifikat
-                    </button>
+                <div class="mt-auto pt-3.5 border-t border-gray-100 flex items-center justify-end gap-2.5" data-no-preview onclick="event.stopPropagation()">
                     @if ($item->tipe_sertifikat === 'mandiri')
-                        <form action="{{ route('siswa.sertifikat.destroy', $item->id_sertifikat) }}" method="POST" onsubmit="return confirm('Hapus sertifikat ini?')" class="inline">
+                        <form action="{{ route('siswa.sertifikat.destroy', $item->id_sertifikat) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-sm font-semibold px-4 py-2 rounded-xl border border-rose-500 text-rose-600 hover:bg-rose-600 hover:text-white transition">Hapus</button>
+                            <button type="button"
+                                    data-judul="{{ $item->judul_sertifikat }}"
+                                    onclick="bukaModalHapus(this)"
+                                    class="text-sm font-semibold px-4 py-2 rounded-xl border border-rose-500 text-rose-600 hover:bg-rose-600 hover:text-white transition cursor-pointer">
+                                Hapus
+                            </button>
                         </form>
+                    @endif
+                    @if ($item->file_sertifikat)
+                        @php
+                            $extSertifikat = pathinfo($item->file_sertifikat, PATHINFO_EXTENSION);
+                            $namaUnduh = \Illuminate\Support\Str::slug($item->judul_sertifikat ?: 'sertifikat') . ($extSertifikat ? '.' . $extSertifikat : '');
+                        @endphp
+                        <a href="{{ asset('storage/' . $item->file_sertifikat) }}"
+                           download="{{ $namaUnduh }}"
+                           class="text-sm font-semibold px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 transition cursor-pointer">
+                            Unduh
+                        </a>
                     @endif
                 </div>
             </div>
@@ -108,11 +140,46 @@
         </div>
     </div>
 
+    {{-- Modal Konfirmasi Hapus Sertifikat --}}
+    <div id="modal-hapus-sertifikat"
+         class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-150 opacity-0"
+         role="dialog" aria-modal="true" aria-labelledby="judul-modal-hapus">
+        <div id="panel-modal-hapus"
+             class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-150 ease-out">
+            <div class="p-6">
+                <h3 id="judul-modal-hapus" class="text-lg font-bold text-[#1F2937]">Hapus Sertifikat?</h3>
+                <p class="text-sm text-gray-600 mt-1.5 leading-relaxed">
+                    Sertifikat <span id="judul-hapus-sertifikat" class="font-semibold text-[#1F2937]"></span> akan dihapus secara permanen dari portofolio Anda.
+                </p>
+
+                <div class="mt-6 flex items-center justify-end gap-3">
+                    <button type="button"
+                            onclick="tutupModalHapus()"
+                            class="px-4 py-2.5 text-sm font-semibold rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="button"
+                            id="btn-konfirmasi-hapus"
+                            class="px-5 py-2.5 text-sm font-semibold rounded-xl bg-[#7B1038] hover:bg-[#5E0C2B] text-white shadow-xs transition cursor-pointer">
+                        Ya, Hapus
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         if (window.pdfjsLib) {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+
+        function bukaKartuSertifikat(cardEl, event) {
+            if (event && event.target && event.target.closest('[data-no-preview]')) {
+                return;
+            }
+            tampilkanSertifikat(cardEl.dataset.url || '', cardEl.dataset.judul || '', cardEl.dataset.penerbit || '');
         }
 
         function tampilkanSertifikat(url, judul, penerbit) {
@@ -239,15 +306,72 @@
         }
 
         document.addEventListener('keydown', function (e) {
-            const modal = document.getElementById('modal-preview-sertifikat');
-            if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
-                tutupModalSertifikat();
+            if (e.key === 'Escape') {
+                const modalPreview = document.getElementById('modal-preview-sertifikat');
+                const modalHapus = document.getElementById('modal-hapus-sertifikat');
+                if (modalPreview && !modalPreview.classList.contains('hidden')) {
+                    tutupModalSertifikat();
+                }
+                if (modalHapus && !modalHapus.classList.contains('hidden')) {
+                    tutupModalHapus();
+                }
             }
         });
 
         document.getElementById('modal-preview-sertifikat').addEventListener('click', function (e) {
             if (e.target === this) {
                 tutupModalSertifikat();
+            }
+        });
+
+        let formHapusAktif = null;
+
+        function bukaModalHapus(btn) {
+            const modal = document.getElementById('modal-hapus-sertifikat');
+            const panel = document.getElementById('panel-modal-hapus');
+            const judulSpan = document.getElementById('judul-hapus-sertifikat');
+            formHapusAktif = btn.closest('form');
+
+            if (judulSpan) {
+                const judul = (btn.dataset.judul || '').trim();
+                judulSpan.textContent = judul ? `"${judul}"` : 'ini';
+            }
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+                panel.classList.remove('scale-95', 'opacity-0');
+                panel.classList.add('scale-100', 'opacity-100');
+            });
+        }
+
+        function tutupModalHapus() {
+            const modal = document.getElementById('modal-hapus-sertifikat');
+            const panel = document.getElementById('panel-modal-hapus');
+            if (!modal || modal.classList.contains('hidden')) return;
+
+            modal.classList.add('opacity-0');
+            panel.classList.remove('scale-100', 'opacity-100');
+            panel.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+                formHapusAktif = null;
+            }, 150);
+        }
+
+        document.getElementById('btn-konfirmasi-hapus').addEventListener('click', function () {
+            if (formHapusAktif) {
+                formHapusAktif.submit();
+            }
+        });
+
+        document.getElementById('modal-hapus-sertifikat').addEventListener('click', function (e) {
+            if (e.target === this) {
+                tutupModalHapus();
             }
         });
     </script>

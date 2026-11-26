@@ -4,15 +4,21 @@
     $namaBulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 @endphp
 
-{{-- Baris judul + tombol Filter --}}
-<div class="flex items-center justify-between">
+{{-- Baris judul + tombol Upload & Filter --}}
+<div class="flex flex-wrap items-center justify-between gap-3">
     <h3 class="text-xl font-semibold text-slate-900">Daftar Sertifikat</h3>
 
-    <div class="relative" id="filterWrap">
-        <button type="button" id="btnFilter" aria-expanded="false"
-                class="inline-flex items-center px-5 py-2.5 text-base font-semibold rounded-xl border transition duration-150 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 {{ $filterAktif ? 'bg-[#7B1038] text-white border-[#7B1038] shadow-xs hover:bg-[#5E0C2B]' : 'bg-white text-slate-700 border-slate-300 hover:border-[#7B1038] hover:text-[#7B1038] shadow-2xs' }}">
-            <span>Filter{{ $filterAktif ? ' (Aktif)' : '' }}</span>
-        </button>
+    <div class="flex items-center gap-3 flex-wrap">
+        <a href="{{ route('siswa.sertifikat.create') }}"
+           class="inline-flex items-center px-5 py-2.5 text-base font-semibold rounded-xl bg-[#7B1038] hover:bg-[#5E0C2B] text-white shadow-xs transition duration-150">
+            + Upload Sertifikat Baru
+        </a>
+
+        <div class="relative" id="filterWrap">
+            <button type="button" id="btnFilter" aria-expanded="false"
+                    class="inline-flex items-center px-5 py-2.5 text-base font-semibold rounded-xl border transition duration-150 focus:outline-none focus:ring-2 focus:ring-[#7B1038]/20 {{ $filterAktif ? 'bg-[#7B1038] text-white border-[#7B1038] shadow-xs hover:bg-[#5E0C2B]' : 'bg-white text-slate-700 border-slate-300 hover:border-[#7B1038] hover:text-[#7B1038] shadow-2xs' }}">
+                <span>Filter{{ $filterAktif ? ' (Aktif)' : '' }}</span>
+            </button>
 
         {{-- Panel filter (tersembunyi sampai tombol diklik) --}}
         <form id="formFilter" method="GET" action="{{ route('siswa.sertifikat.index') }}"
@@ -87,6 +93,7 @@
                 </button>
             </div>
         </form>
+        </div>
     </div>
 </div>
 
