@@ -5,7 +5,7 @@ Future<Map<String, dynamic>?> pilihFileSertifikat() async {
     type: FileType.custom,
     allowedExtensions: const ['pdf', 'png', 'jpg', 'jpeg'],
   );
-  if (daftar == null || daftar.isEmpty) return null;
+  if (daftar.isEmpty) return null;
 
   final file = daftar.single;
   final bytes = await file.readAsBytes();
